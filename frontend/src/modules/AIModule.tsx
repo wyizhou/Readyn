@@ -500,7 +500,7 @@ function DraftRow({ x }: { x: DraftDay }) {
   )
 }
 
-function TrainTab({ onSaved }: { onSaved: Props['onSaved'] }) {
+function TrainTab({ onSaved, onApply }: { onSaved: Props['onSaved']; onApply: Props['onApply'] }) {
   const [draft, setDraft] = useState<Draft>(baseDraft)
   const [msgs, setMsgs] = useState<Message[]>([
     {
@@ -664,7 +664,7 @@ function TrainTab({ onSaved }: { onSaved: Props['onSaved'] }) {
                 >
                   保存到训练库
                 </Button>
-                <Button variant="secondary" iconLeft={<Icon name="calendar-check" size={15} />}>
+                <Button variant="secondary" iconLeft={<Icon name="calendar-check" size={15} />} onClick={onApply}>
                   应用到日历
                 </Button>
               </Fragment>
@@ -683,9 +683,10 @@ export interface Props {
   seed: { q: string; nonce: number } | null
   body: { weight: number; bmi: number }
   onSaved: () => void
+  onApply: () => void
 }
 
-export function AIModule({ data, tab, setTab, seed, body, onSaved }: Props) {
+export function AIModule({ data, tab, setTab, seed, body, onSaved, onApply }: Props) {
   const tabs = [
     { id: 'train', label: 'AI 训练', sub: '对话生成课表', icon: 'wand-2' },
     { id: 'chat', label: 'AI 对话', sub: '运动专家解读', icon: 'message-square-text' },
@@ -742,7 +743,7 @@ export function AIModule({ data, tab, setTab, seed, body, onSaved }: Props) {
           )
         })}
       </div>
-      {tab === 'train' ? <TrainTab onSaved={onSaved} /> : <ChatTab data={data} seed={seed} body={body} />}
+      {tab === 'train' ? <TrainTab onSaved={onSaved} onApply={onApply} /> : <ChatTab data={data} seed={seed} body={body} />}
     </div>
   )
 }

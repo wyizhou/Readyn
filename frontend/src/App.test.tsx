@@ -80,6 +80,51 @@ describe('App integration', () => {
     expect(await screen.findByText('退出登录')).toBeInTheDocument()
   })
 
+  it('marks today’s workout done and back in Training', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('训练日历'))
+    const mark = screen.getByRole('button', { name: '标记完成' })
+    await user.click(mark)
+    expect(screen.getByRole('button', { name: /已完成 · 取消/ })).toBeInTheDocument()
+  })
+
+  it('applies a saved plan from the Library to the training calendar', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('训练库'))
+    await user.click(screen.getByText('我的计划'))
+    await user.click(screen.getAllByRole('button', { name: '应用' })[0])
+    expect(topHeading()).toContain('训练日历')
+  })
+
+  it('applies the AI-drafted plan to the calendar', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
+    await user.click(screen.getByRole('button', { name: '应用到日历' }))
+    expect(topHeading()).toContain('训练日历')
+  })
+
+  it('records a new weight entry that shows in the log', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('体重记录'))
+    await user.type(screen.getByPlaceholderText('例如 65.6'), '70.3')
+    await user.click(screen.getByRole('button', { name: '记录体重' }))
+    expect(screen.getAllByText('70.3').length).toBeGreaterThan(0)
+  })
+
+  it('opens a training-library template detail and returns', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('训练库'))
+    await user.click(screen.getByText('节奏跑 8km'))
+    expect(topHeading()).toContain('节奏跑 8km')
+    await user.click(await screen.findByRole('button', { name: /返回/ }))
+    expect(topHeading()).toContain('训练库')
+  })
+
   it('opens the settings center and toggles a notification preference', async () => {
     const user = userEvent.setup()
     render(<App />)

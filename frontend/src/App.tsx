@@ -329,7 +329,15 @@ export default function App() {
             />
           )}
           {!detail && view === 'library' && (
-            <Library data={D} tab={libTab} setTab={setLibTab} onNewFromAI={openTrain} onOpenTemplate={openTemplate} onOpenPlan={openPlan} />
+            <Library
+              data={D}
+              tab={libTab}
+              setTab={setLibTab}
+              onNewFromAI={openTrain}
+              onOpenTemplate={openTemplate}
+              onOpenPlan={openPlan}
+              onApplyPlan={() => setView('training')}
+            />
           )}
           {!detail && view === 'weight' && <WeightModule weightLog={weightLog} profile={profile} onAdd={addWeight} today={TODAY} />}
           {!detail && view === 'connectors' && <Connectors data={D} tab={connTab} setTab={setConnTab} onOpenConnector={openConnector} />}
@@ -344,6 +352,7 @@ export default function App() {
                 setLibTab('plans')
                 setView('library')
               }}
+              onApply={() => setView('training')}
             />
           )}
         </main>

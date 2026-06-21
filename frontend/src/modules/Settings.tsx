@@ -416,6 +416,9 @@ function Privacy({ settings, onChange }: SectionProps) {
 }
 
 function DataAccount({ onLogout }: { onLogout: () => void }) {
+  const [fmt, setFmt] = useState('CSV')
+  const [range, setRange] = useState('全部')
+  const [requested, setRequested] = useState(false)
   return (
     <div>
       <SectionHead
@@ -434,16 +437,25 @@ function DataAccount({ onLogout }: { onLogout: () => void }) {
       />
       <Card title="数据导出" style={{ marginBottom: 16 }}>
         <Row label="导出格式">
-          <Seg value="CSV" setValue={() => {}} options={['CSV', 'GPX', 'JSON']} />
+          <Seg value={fmt} setValue={setFmt} options={['CSV', 'GPX', 'JSON']} />
         </Row>
         <Divider />
         <Row label="时间范围">
-          <Seg value="全部" setValue={() => {}} options={['全部', '近一年', '自定义']} />
+          <Seg value={range} setValue={setRange} options={['全部', '近一年', '自定义']} />
         </Row>
         <Divider />
-        <Row label="导出数据" desc="生成下载包，完成后邮件通知">
-          <Button variant="secondary" size="sm" iconLeft={<Icon name="download" size={14} />}>
-            请求导出
+        <Row label="导出数据" desc={requested ? `已请求 ${range} 范围的 ${fmt} 导出 · 完成后邮件通知` : '生成下载包，完成后邮件通知'}>
+          <Button
+            variant={requested ? 'ghost' : 'secondary'}
+            size="sm"
+            iconLeft={<Icon name={requested ? 'check' : 'download'} size={14} color={requested ? 'var(--green-500)' : undefined} />}
+            disabled={requested}
+            onClick={() => {
+              setRequested(true)
+              setTimeout(() => setRequested(false), 2400)
+            }}
+          >
+            {requested ? '已请求导出' : '请求导出'}
           </Button>
         </Row>
       </Card>

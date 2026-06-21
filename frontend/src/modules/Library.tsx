@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { Badge, Button, Tabs, IconButton } from '../design-system'
 import { Icon } from '../components/Icon'
 import type { ApexData, Template, LibraryPlan } from '../lib/types'
@@ -21,6 +21,7 @@ const sportIcon = (s: string): string =>
   ({ 跑步: 'footprints', 登山: 'mountain', 抱石: 'grip', 难度: 'route', 徒步: 'tent-tree' })[s] || 'circle'
 
 function TemplateCard({ tpl, meta, onOpen }: { tpl: Template; meta: SportMeta; onOpen: () => void }) {
+  const [added, setAdded] = useState(false)
   return (
     <div
       onClick={onOpen}
@@ -134,14 +135,16 @@ function TemplateCard({ tpl, meta, onOpen }: { tpl: Template; meta: SportMeta; o
         </div>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           <IconButton
-            label="加入计划"
-            variant="outline"
+            label={added ? '已加入计划' : '加入计划'}
+            variant={added ? 'ghost' : 'outline'}
             size="sm"
             onClick={(e) => {
               e.stopPropagation()
+              setAdded(true)
+              setTimeout(() => setAdded(false), 1600)
             }}
           >
-            <Icon name="calendar-plus" size={15} />
+            <Icon name={added ? 'check' : 'calendar-plus'} size={15} color={added ? 'var(--green-500)' : undefined} />
           </IconButton>
           <IconButton
             label="查看"
@@ -160,7 +163,7 @@ function TemplateCard({ tpl, meta, onOpen }: { tpl: Template; meta: SportMeta; o
   )
 }
 
-function PlanCard({ plan, onOpen }: { plan: LibraryPlan; onOpen: () => void }) {
+function PlanCard({ plan, onOpen, onApply }: { plan: LibraryPlan; onOpen: () => void; onApply: () => void }) {
   return (
     <div
       onClick={onOpen}
@@ -270,6 +273,7 @@ function PlanCard({ plan, onOpen }: { plan: LibraryPlan; onOpen: () => void }) {
         iconLeft={<Icon name="calendar-check" size={14} />}
         onClick={(e) => {
           e.stopPropagation()
+          onApply()
         }}
       >
         应用
@@ -285,9 +289,10 @@ export interface LibraryProps {
   onNewFromAI: () => void
   onOpenTemplate: (tpl: Template, sport: string) => void
   onOpenPlan: (plan: LibraryPlan) => void
+  onApplyPlan: (plan: LibraryPlan) => void
 }
 
-export function Library({ data, tab, setTab, onNewFromAI, onOpenTemplate, onOpenPlan }: LibraryProps) {
+export function Library({ data, tab, setTab, onNewFromAI, onOpenTemplate, onOpenPlan, onApplyPlan }: LibraryProps) {
   const lib = data.library
   const counts = { running: lib.running.length, climbing: lib.climbing.length, plans: lib.plans.length }
   const sportTab = tab === 'running' || tab === 'climbing' ? tab : null
@@ -310,7 +315,7 @@ export function Library({ data, tab, setTab, onNewFromAI, onOpenTemplate, onOpen
           <Button variant="gradient" iconLeft={<Icon name="sparkles" size={15} />} onClick={onNewFromAI}>
             AI 生成计划
           </Button>
-          <Button variant="secondary" iconLeft={<Icon name="plus" size={15} />}>
+          <Button variant="secondary" iconLeft={<Icon name="plus" size={15} />} onClick={onNewFromAI}>
             新建模板
           </Button>
         </div>
@@ -367,7 +372,7 @@ export function Library({ data, tab, setTab, onNewFromAI, onOpenTemplate, onOpen
             </span>
           </div>
           {lib.plans.map((p) => (
-            <PlanCard key={p.id} plan={p} onOpen={() => onOpenPlan(p)} />
+            <PlanCard key={p.id} plan={p} onOpen={() => onOpenPlan(p)} onApply={() => onApplyPlan(p)} />
           ))}
         </div>
       )}
