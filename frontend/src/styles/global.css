@@ -47,6 +47,36 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
+/* Animations carried over from the prototype (spinner + typing dots) */
+@keyframes apexspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.apex-spin {
+  animation: apexspin 0.8s linear infinite;
+}
+@keyframes apexdot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+.apex-dot {
+  animation: apexdot 1.1s ease-in-out infinite;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-faint);
+}
+
 /* Custom scrollbar for the dark instrument-panel aesthetic */
 * {
   scrollbar-width: thin;

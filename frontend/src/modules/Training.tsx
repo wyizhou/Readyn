@@ -65,16 +65,37 @@ function DayCol({ day }: { day: PlanDay }) {
           <span style={{ font: 'var(--fw-bold) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-strong)' }}>{day.d}</span>
           <span style={{ font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-mono)', color: 'var(--text-faint)' }}>{day.date}</span>
         </div>
-        <span
-          style={{
-            font: 'var(--fw-semibold) 10px/1 var(--font-sans)',
-            letterSpacing: 'var(--ls-wide)',
-            textTransform: 'uppercase',
-            color: st.c,
-          }}
-        >
-          {st.label}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {day.adapted && (
+            <span
+              title="AI 已调整"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                font: 'var(--fw-semibold) 9px/1 var(--font-sans)',
+                color: 'var(--violet-300)',
+                background: 'rgba(124,77,255,0.16)',
+                padding: '4px 6px',
+                borderRadius: 'var(--r-pill)',
+              }}
+            >
+              <Icon name="sparkles" size={10} color="var(--violet-300)" />
+              AI
+            </span>
+          )}
+          {day.status === 'done' && <Icon name="check-circle-2" size={15} color="var(--green-500)" />}
+          <span
+            style={{
+              font: 'var(--fw-semibold) 10px/1 var(--font-sans)',
+              letterSpacing: 'var(--ls-wide)',
+              textTransform: 'uppercase',
+              color: st.c,
+            }}
+          >
+            {st.label}
+          </span>
+        </div>
       </div>
       {day.status === 'rest' ? (
         <div
@@ -116,32 +137,6 @@ function DayCol({ day }: { day: PlanDay }) {
             <span style={{ font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-mono)', color: 'var(--text-faint)' }}>{it.dur}</span>
           </div>
         </div>
-      )}
-      {day.adapted && (
-        <span
-          title="AI 已调整"
-          style={{
-            position: 'absolute',
-            top: 12,
-            right: 40,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            font: 'var(--fw-semibold) 9px/1 var(--font-sans)',
-            color: 'var(--violet-300)',
-            background: 'rgba(124,77,255,0.16)',
-            padding: '4px 6px',
-            borderRadius: 'var(--r-pill)',
-          }}
-        >
-          <Icon name="sparkles" size={10} color="var(--violet-300)" />
-          AI
-        </span>
-      )}
-      {day.status === 'done' && (
-        <span style={{ position: 'absolute', top: 13, right: 14 }}>
-          <Icon name="check-circle-2" size={15} color="var(--green-500)" />
-        </span>
       )}
     </div>
   )
@@ -506,6 +501,7 @@ export interface Props {
 
 export function Training({ data, onOpenAITrain, onOpenAIChat }: Props) {
   const [linkAct, setLinkAct] = useState<UnlinkedActivity | null>(null)
+  const [markedDone, setMarkedDone] = useState(false)
   const plan = data.plan
   const w = data.workout
 
@@ -705,10 +701,14 @@ export function Training({ data, onOpenAITrain, onOpenAIChat }: Props) {
             ))}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18 }}>
-            <Button variant="primary" iconLeft={<Icon name="check" size={15} />}>
-              标记完成
+            <Button
+              variant={markedDone ? 'secondary' : 'primary'}
+              iconLeft={<Icon name={markedDone ? 'check-circle-2' : 'check'} size={15} />}
+              onClick={() => setMarkedDone((v) => !v)}
+            >
+              {markedDone ? '已完成 · 取消' : '标记完成'}
             </Button>
-            <Button variant="secondary" iconLeft={<Icon name="repeat" size={15} />}>
+            <Button variant="secondary" iconLeft={<Icon name="repeat" size={15} />} onClick={onOpenAITrain}>
               替换课程
             </Button>
             <span

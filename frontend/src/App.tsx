@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Button, Tabs } from './design-system'
 import { Icon } from './components/Icon'
 import { Sidebar } from './components/Sidebar'
@@ -83,24 +83,39 @@ export default function App() {
   const [detail, setDetail] = useState<Detail | null>(null)
   const [spec, setSpec] = useState(false)
 
-  // Load the real dataset from the backend; silently keep mock data if offline.
+  const [syncing, setSyncing] = useState(false)
+
+  const applyData = useCallback((d: ApexData) => {
+    setData(d)
+    setWeightLog(d.weightLog)
+    setProfile({ ...d.profile })
+  }, [])
+
+  // Manual re-sync (the dashboard "同步" button) with a spinner state.
+  const reload = useCallback(() => {
+    setSyncing(true)
+    return api
+      .bootstrap()
+      .then(applyData)
+      .catch(() => {
+        /* backend unavailable — keep current data */
+      })
+      .finally(() => setSyncing(false))
+  }, [applyData])
+
+  // Initial load from the backend; silently keep mock data if offline.
   useEffect(() => {
-    let cancelled = false
+    let active = true
     api
       .bootstrap()
       .then((d) => {
-        if (cancelled) return
-        setData(d)
-        setWeightLog(d.weightLog)
-        setProfile({ ...d.profile })
+        if (active) applyData(d)
       })
-      .catch(() => {
-        /* backend unavailable — stay on local mock data */
-      })
+      .catch(() => {})
     return () => {
-      cancelled = true
+      active = false
     }
-  }, [])
+  }, [applyData])
 
   const currentWeight = weightLog[0] ? weightLog[0].kg : profile.targetWeight
   const bmi = calcBmi(currentWeight, profile.height)
@@ -187,8 +202,13 @@ export default function App() {
         />
       )}
       {!detail && view === 'dashboard' && (
-        <Button variant="secondary" iconLeft={<Icon name="refresh-cw" size={15} />}>
-          同步
+        <Button
+          variant="secondary"
+          iconLeft={<Icon name="refresh-cw" size={15} style={syncing ? { animation: 'apexspin 0.8s linear infinite' } : undefined} />}
+          disabled={syncing}
+          onClick={reload}
+        >
+          {syncing ? '同步中…' : '同步'}
         </Button>
       )}
       {!detail && view === 'connectors' && (
