@@ -649,7 +649,7 @@ export function ProfileModal({
             variant="ghost"
             iconLeft={<Icon name="log-out" size={15} />}
             onClick={() => {
-              window.location.href = '登录.html'
+              window.location.href = '/login.html'
             }}
           >
             退出登录
