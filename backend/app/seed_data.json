@@ -1,0 +1,2567 @@
+{
+  "profile": {
+    "name": "林 越",
+    "handle": "@linyue",
+    "role": "多项目耐力 / 攀岩",
+    "disciplines": [
+      "跑步",
+      "登山",
+      "徒步",
+      "抱石",
+      "难度"
+    ],
+    "location": "成都 · CN",
+    "since": "2021",
+    "sex": "男",
+    "birth": "1996-04",
+    "height": 176,
+    "restingHR": 47,
+    "maxHR": 189,
+    "goal": "50km 越野完赛",
+    "targetWeight": 65,
+    "aiProvider": "OpenAI",
+    "aiBase": "https://api.openai.com/v1",
+    "aiKey": "",
+    "aiModel": "gpt-4o"
+  },
+  "weightLog": [
+    {
+      "date": "2026-06-18",
+      "kg": 65.8,
+      "fat": 12.4,
+      "note": "晨起空腹"
+    },
+    {
+      "date": "2026-06-15",
+      "kg": 66.1,
+      "fat": 12.6
+    },
+    {
+      "date": "2026-06-11",
+      "kg": 66
+    },
+    {
+      "date": "2026-06-08",
+      "kg": 66.4,
+      "note": "长距离后"
+    },
+    {
+      "date": "2026-06-04",
+      "kg": 66.6,
+      "fat": 12.9
+    },
+    {
+      "date": "2026-06-01",
+      "kg": 66.5
+    },
+    {
+      "date": "2026-05-28",
+      "kg": 66.9
+    },
+    {
+      "date": "2026-05-24",
+      "kg": 67,
+      "fat": 13.2
+    },
+    {
+      "date": "2026-05-20",
+      "kg": 67.2
+    },
+    {
+      "date": "2026-05-15",
+      "kg": 67
+    },
+    {
+      "date": "2026-05-10",
+      "kg": 67.5,
+      "fat": 13.6
+    },
+    {
+      "date": "2026-05-04",
+      "kg": 67.4
+    }
+  ],
+  "today": {
+    "readiness": 78,
+    "hrv": 71,
+    "hrvDelta": 4,
+    "rhr": 47,
+    "rhrDelta": -2,
+    "sleep": 7.4,
+    "sleepScore": 84,
+    "acwr": 1.18,
+    "ctl": 72.5,
+    "atl": 88.7,
+    "tsb": -16.2,
+    "weekLoad": 612,
+    "weekLoadDelta": 8.4,
+    "recoveryState": "balanced",
+    "strain": 13.6
+  },
+  "pmc": [
+    {
+      "i": 0,
+      "ctl": 58.3,
+      "atl": 63.1,
+      "tsb": -4.9,
+      "load": 70
+    },
+    {
+      "i": 1,
+      "ctl": 58.6,
+      "atl": 64.1,
+      "tsb": -5.6,
+      "load": 70
+    },
+    {
+      "i": 2,
+      "ctl": 58.8,
+      "atl": 65,
+      "tsb": -6.1,
+      "load": 70
+    },
+    {
+      "i": 3,
+      "ctl": 59.1,
+      "atl": 65.7,
+      "tsb": -6.6,
+      "load": 70
+    },
+    {
+      "i": 4,
+      "ctl": 59.4,
+      "atl": 66.3,
+      "tsb": -6.9,
+      "load": 70
+    },
+    {
+      "i": 5,
+      "ctl": 59.6,
+      "atl": 66.8,
+      "tsb": -7.2,
+      "load": 70
+    },
+    {
+      "i": 6,
+      "ctl": 59.9,
+      "atl": 67.3,
+      "tsb": -7.4,
+      "load": 70
+    },
+    {
+      "i": 7,
+      "ctl": 61,
+      "atl": 72.9,
+      "tsb": -11.9,
+      "load": 107
+    },
+    {
+      "i": 8,
+      "ctl": 62.2,
+      "atl": 78.6,
+      "tsb": -16.4,
+      "load": 113
+    },
+    {
+      "i": 9,
+      "ctl": 63.2,
+      "atl": 82,
+      "tsb": -18.9,
+      "load": 102
+    },
+    {
+      "i": 10,
+      "ctl": 63.7,
+      "atl": 82.5,
+      "tsb": -18.8,
+      "load": 85
+    },
+    {
+      "i": 11,
+      "ctl": 64,
+      "atl": 81.7,
+      "tsb": -17.7,
+      "load": 77
+    },
+    {
+      "i": 12,
+      "ctl": 64.5,
+      "atl": 82.2,
+      "tsb": -17.7,
+      "load": 85
+    },
+    {
+      "i": 13,
+      "ctl": 65.4,
+      "atl": 85.1,
+      "tsb": -19.7,
+      "load": 103
+    },
+    {
+      "i": 14,
+      "ctl": 66.6,
+      "atl": 89.1,
+      "tsb": -22.5,
+      "load": 113
+    },
+    {
+      "i": 15,
+      "ctl": 67.5,
+      "atl": 91.6,
+      "tsb": -24.1,
+      "load": 107
+    },
+    {
+      "i": 16,
+      "ctl": 66.8,
+      "atl": 83.9,
+      "tsb": -17.1,
+      "load": 38
+    },
+    {
+      "i": 17,
+      "ctl": 66,
+      "atl": 76.5,
+      "tsb": -10.5,
+      "load": 32
+    },
+    {
+      "i": 18,
+      "ctl": 65.2,
+      "atl": 70.5,
+      "tsb": -5.2,
+      "load": 34
+    },
+    {
+      "i": 19,
+      "ctl": 64.6,
+      "atl": 66.3,
+      "tsb": -1.6,
+      "load": 41
+    },
+    {
+      "i": 20,
+      "ctl": 64.2,
+      "atl": 63.6,
+      "tsb": 0.7,
+      "load": 47
+    },
+    {
+      "i": 21,
+      "ctl": 63.8,
+      "atl": 61.2,
+      "tsb": 2.7,
+      "load": 47
+    },
+    {
+      "i": 22,
+      "ctl": 63.2,
+      "atl": 58.1,
+      "tsb": 5.1,
+      "load": 40
+    },
+    {
+      "i": 23,
+      "ctl": 63.4,
+      "atl": 59.7,
+      "tsb": 3.7,
+      "load": 69
+    },
+    {
+      "i": 24,
+      "ctl": 63.5,
+      "atl": 60.9,
+      "tsb": 2.6,
+      "load": 68
+    },
+    {
+      "i": 25,
+      "ctl": 64,
+      "atl": 64.4,
+      "tsb": -0.4,
+      "load": 85
+    },
+    {
+      "i": 26,
+      "ctl": 65,
+      "atl": 70.1,
+      "tsb": -5.2,
+      "load": 105
+    },
+    {
+      "i": 27,
+      "ctl": 66,
+      "atl": 75.7,
+      "tsb": -9.7,
+      "load": 109
+    },
+    {
+      "i": 28,
+      "ctl": 66.7,
+      "atl": 78.3,
+      "tsb": -11.6,
+      "load": 94
+    },
+    {
+      "i": 29,
+      "ctl": 66.9,
+      "atl": 77.6,
+      "tsb": -10.7,
+      "load": 73
+    },
+    {
+      "i": 30,
+      "ctl": 66.8,
+      "atl": 76,
+      "tsb": -9.1,
+      "load": 66
+    },
+    {
+      "i": 31,
+      "ctl": 67.1,
+      "atl": 76.4,
+      "tsb": -9.3,
+      "load": 79
+    },
+    {
+      "i": 32,
+      "ctl": 67.9,
+      "atl": 79.8,
+      "tsb": -11.9,
+      "load": 100
+    },
+    {
+      "i": 33,
+      "ctl": 68.9,
+      "atl": 84.1,
+      "tsb": -15.2,
+      "load": 110
+    },
+    {
+      "i": 34,
+      "ctl": 69.7,
+      "atl": 86.3,
+      "tsb": -16.7,
+      "load": 100
+    },
+    {
+      "i": 35,
+      "ctl": 69.9,
+      "atl": 85.2,
+      "tsb": -15.4,
+      "load": 79
+    },
+    {
+      "i": 36,
+      "ctl": 69.8,
+      "atl": 82.5,
+      "tsb": -12.7,
+      "load": 66
+    },
+    {
+      "i": 37,
+      "ctl": 69.9,
+      "atl": 81.3,
+      "tsb": -11.4,
+      "load": 74
+    },
+    {
+      "i": 38,
+      "ctl": 70.5,
+      "atl": 83.2,
+      "tsb": -12.7,
+      "load": 95
+    },
+    {
+      "i": 39,
+      "ctl": 71.4,
+      "atl": 86.9,
+      "tsb": -15.5,
+      "load": 109
+    },
+    {
+      "i": 40,
+      "ctl": 72.2,
+      "atl": 89.4,
+      "tsb": -17.2,
+      "load": 104
+    },
+    {
+      "i": 41,
+      "ctl": 72.5,
+      "atl": 88.7,
+      "tsb": -16.2,
+      "load": 85
+    }
+  ],
+  "templateDetails": {
+    "r1": {
+      "structure": [
+        {
+          "block": "热身",
+          "dur": "15 min",
+          "zone": "Z1–Z2",
+          "detail": "慢跑 + 4×100m 加速跑，唤醒神经肌肉"
+        },
+        {
+          "block": "主组",
+          "reps": 6,
+          "work": {
+            "dur": "1 km",
+            "zone": "Z4",
+            "detail": "阈值配速 3:55/km"
+          },
+          "rest": {
+            "dur": "90 s",
+            "zone": "Z1",
+            "detail": "慢跑恢复"
+          }
+        },
+        {
+          "block": "放松",
+          "dur": "10 min",
+          "zone": "Z1",
+          "detail": "慢跑 + 静态拉伸"
+        }
+      ],
+      "progression": [
+        "第 1–2 周 · 5×1km",
+        "第 3–4 周 · 6×1km",
+        "第 5 周 · 6×1km，组间缩短至 75s"
+      ],
+      "cues": "前两组克制按目标配速，末两组若有余力可微提速；全程 HR 漂移控制在 5% 内。"
+    },
+    "r3": {
+      "structure": [
+        {
+          "block": "热身",
+          "dur": "10 min",
+          "zone": "Z1",
+          "detail": "渐进提速至有氧区"
+        },
+        {
+          "block": "主组",
+          "dur": "90 min",
+          "zone": "Z2",
+          "detail": "匀速有氧，鼻吸鼻呼可对话，控制 HR 漂移"
+        },
+        {
+          "block": "放松",
+          "dur": "10 min",
+          "zone": "Z1",
+          "detail": "慢跑 + 拉伸"
+        }
+      ],
+      "progression": [
+        "每 2 周时长 +10 min",
+        "隔周可在末段加入 10 min 节奏跑",
+        "赛前峰值 130–150 min"
+      ],
+      "cues": "强度比时长更需克制——宁可慢也不要进入 Z3。补给与水分按长距离标准。"
+    },
+    "c1": {
+      "structure": [
+        {
+          "block": "热身",
+          "dur": "20 min",
+          "detail": "关节活动 + 易线路 ARC + 指力渐进激活"
+        },
+        {
+          "block": "主组",
+          "sets": "6–8 次尝试",
+          "target": "V6–V7",
+          "detail": "冲击极限难度，每次全力，组间 3–4 min 完全恢复"
+        },
+        {
+          "block": "放松",
+          "dur": "10 min",
+          "detail": "拮抗肌训练 + 前臂拉伸"
+        }
+      ],
+      "progression": [
+        "第 1 周 · V5 巩固动作库",
+        "第 2–3 周 · V6 项目攻坚",
+        "第 4 周 · V6 完攀 + 尝试 V7"
+      ],
+      "cues": "质量优先于数量，单条线尝试 ≤ 8 次以保护肌腱；状态不佳则降级为系统板循环。"
+    },
+    "c2": {
+      "structure": [
+        {
+          "block": "热身",
+          "dur": "15 min",
+          "detail": "血流冲刺 + 渐进负荷悬挂"
+        },
+        {
+          "block": "主组",
+          "sets": "6 组",
+          "target": "最大力量",
+          "detail": "7s 悬挂 / 3 min 间歇 · 半钩或开放手，20mm 岩点"
+        },
+        {
+          "block": "放松",
+          "dur": "8 min",
+          "detail": "前臂放松 + 拮抗"
+        }
+      ],
+      "progression": [
+        "以体重悬挂达标后逐周加配重 2.5kg",
+        "每 4 周减载一周",
+        "记录每组最大可挂配重"
+      ],
+      "cues": "指力训练需充分恢复，训练后 48h 避免最大强度抓握；任何关节刺痛立即停止。"
+    }
+  },
+  "metrics": {
+    "hrv": {
+      "name": "心率变异性 (HRV)",
+      "short": "HRV",
+      "value": 71,
+      "unit": "ms",
+      "delta": "+4 vs 基线",
+      "deltaTone": "pos",
+      "status": "基线抬升",
+      "statusTone": "positive",
+      "color": "var(--green-500)",
+      "definition": "静息下逐次心跳间期 (RR) 的变异程度，反映自主神经系统的副交感（恢复）活性。数值越高、越稳定，通常代表恢复越充分、对训练的适应越好。",
+      "formula": "RMSSD = √( Σ(RRᵢ₊₁ − RRᵢ)² / (N − 1) )",
+      "bands": [
+        {
+          "label": "偏低",
+          "range": "< 55 ms",
+          "color": "var(--red-500)"
+        },
+        {
+          "label": "正常",
+          "range": "55 – 65 ms",
+          "color": "var(--amber-500)"
+        },
+        {
+          "label": "良好",
+          "range": "> 65 ms（高于基线）",
+          "color": "var(--green-500)",
+          "active": true
+        }
+      ],
+      "factors": [
+        {
+          "label": "睡眠质量",
+          "impact": "pos",
+          "v": "评分 84"
+        },
+        {
+          "label": "急性负荷",
+          "impact": "neg",
+          "v": "612 AU（偏高）"
+        },
+        {
+          "label": "酒精 / 应激",
+          "impact": "neg",
+          "v": "无记录"
+        },
+        {
+          "label": "静息心率",
+          "impact": "pos",
+          "v": "47 bpm（下降）"
+        }
+      ],
+      "ai": {
+        "text": "近 10 天 RMSSD 基线由 64ms 升至 71ms，夜间波动收窄，说明身体对当前有氧块适应良好。这是承接一个高强度区的可靠信号——可在 HRV 维持高位的日子安排阈值或抱石极限尝试；若单日骤降 > 8ms，则优先安排恢复。",
+        "tags": [
+          "基线抬升",
+          "适应良好",
+          "可加强度"
+        ]
+      },
+      "related": [
+        "rhr",
+        "sleep",
+        "acwr"
+      ]
+    },
+    "acwr": {
+      "name": "急慢性负荷比 (ACWR)",
+      "short": "ACWR",
+      "value": 1.18,
+      "unit": "",
+      "delta": "连续两周上升",
+      "deltaTone": "neg",
+      "status": "接近高位",
+      "statusTone": "caution",
+      "color": "var(--amber-500)",
+      "definition": "近 7 天急性负荷与近 28 天慢性负荷的比值，衡量训练量变化的\"激进程度\"。比值过高意味着身体来不及适应，伤病风险显著上升。",
+      "formula": "ACWR = 急性负荷(7d 平均) / 慢性负荷(28d 平均)",
+      "bands": [
+        {
+          "label": "欠负荷",
+          "range": "< 0.8",
+          "color": "var(--blue-500)"
+        },
+        {
+          "label": "最佳区间",
+          "range": "0.8 – 1.3",
+          "color": "var(--green-500)",
+          "active": true
+        },
+        {
+          "label": "高风险",
+          "range": "> 1.5",
+          "color": "var(--red-500)"
+        }
+      ],
+      "factors": [
+        {
+          "label": "本周负荷",
+          "impact": "neg",
+          "v": "612 AU（↑8.4%）"
+        },
+        {
+          "label": "慢性基线",
+          "impact": "pos",
+          "v": "519 AU"
+        },
+        {
+          "label": "周末长距离",
+          "impact": "neg",
+          "v": "计划 132 AU"
+        }
+      ],
+      "ai": {
+        "text": "ACWR 已达 1.18 且连续两周上升，逼近 1.3 的风险阈值。建议把周六长距离爬升控制在 130 AU 内，并确保周四主动恢复质量；本周不必整体减量，但应避免再叠加计划外的高强度。",
+        "tags": [
+          "接近上限",
+          "关注周末",
+          "勿再加量"
+        ]
+      },
+      "related": [
+        "ctl",
+        "tsb"
+      ]
+    },
+    "ctl": {
+      "name": "慢性训练负荷 (CTL · 体能)",
+      "short": "CTL",
+      "value": 78,
+      "unit": "",
+      "delta": "稳步上升",
+      "deltaTone": "pos",
+      "status": "体能积累",
+      "statusTone": "positive",
+      "color": "var(--blue-500)",
+      "definition": "训练负荷的 42 天指数加权平均，代表长期积累的\"体能\"。CTL 缓慢上升是健康进步的标志，骤升则往往伴随疲劳与风险。",
+      "formula": "CTLₜ = CTLₜ₋₁ + (负荷ₜ − CTLₜ₋₁) / 42",
+      "bands": [
+        {
+          "label": "基础期",
+          "range": "< 60",
+          "color": "var(--ink-500)"
+        },
+        {
+          "label": "进阶",
+          "range": "60 – 85",
+          "color": "var(--blue-500)",
+          "active": true
+        },
+        {
+          "label": "竞赛期",
+          "range": "> 85",
+          "color": "var(--violet-500)"
+        }
+      ],
+      "factors": [
+        {
+          "label": "近 6 周趋势",
+          "impact": "pos",
+          "v": "+12 CTL"
+        },
+        {
+          "label": "疲劳 ATL",
+          "impact": "neg",
+          "v": "89"
+        },
+        {
+          "label": "状态 TSB",
+          "impact": "neg",
+          "v": "−4"
+        }
+      ],
+      "ai": {
+        "text": "体能 CTL 在过去 6 周由 66 升至 78，曲线平滑、无骤升，是理想的积累节奏。当前疲劳略高于体能（TSB −4），属正常的负荷吸收期；保持节奏，赛前 2–3 周再安排减载以让 TSB 转正。",
+        "tags": [
+          "平滑上升",
+          "积累良好",
+          "赛前再减载"
+        ]
+      },
+      "related": [
+        "acwr",
+        "tsb"
+      ]
+    },
+    "tsb": {
+      "name": "训练状态平衡 (TSB · 状态)",
+      "short": "TSB",
+      "value": -4,
+      "unit": "",
+      "delta": "中性偏疲劳",
+      "deltaTone": "neg",
+      "status": "负荷吸收",
+      "statusTone": "caution",
+      "color": "var(--amber-500)",
+      "definition": "昨日 CTL 与 ATL 之差，代表当前\"竞技状态/新鲜度\"。正值表示新鲜、适合比赛；负值表示疲劳、处于训练吸收期。",
+      "formula": "TSB = CTLₜ₋₁ − ATLₜ₋₁",
+      "bands": [
+        {
+          "label": "疲劳",
+          "range": "< −10",
+          "color": "var(--red-500)"
+        },
+        {
+          "label": "中性",
+          "range": "−10 – +5",
+          "color": "var(--amber-500)",
+          "active": true
+        },
+        {
+          "label": "新鲜 / 竞赛",
+          "range": "> +5",
+          "color": "var(--green-500)"
+        }
+      ],
+      "factors": [
+        {
+          "label": "体能 CTL",
+          "impact": "pos",
+          "v": "78"
+        },
+        {
+          "label": "疲劳 ATL",
+          "impact": "neg",
+          "v": "89"
+        }
+      ],
+      "ai": {
+        "text": "状态 TSB 为 −4，处于中性偏疲劳的负荷吸收区，与当前的有氧积累块吻合，无需担心。若计划近期参赛，建议提前 10–14 天逐步减载，使 TSB 回升至 +5 以上以获得最佳竞技状态。",
+        "tags": [
+          "吸收期",
+          "正常",
+          "赛前减载"
+        ]
+      },
+      "related": [
+        "ctl",
+        "acwr"
+      ]
+    },
+    "rhr": {
+      "name": "静息心率 (RHR)",
+      "short": "RHR",
+      "value": 47,
+      "unit": "bpm",
+      "delta": "−2 vs 均值",
+      "deltaTone": "pos",
+      "status": "低位稳定",
+      "statusTone": "positive",
+      "color": "var(--cyan-500)",
+      "definition": "清晨完全静息时的心率，反映心血管效率与整体疲劳。长期下降通常代表有氧能力提升；短期升高则提示疲劳、应激或潜在疾病。",
+      "formula": "清晨睡眠期最低心率的 7 日滚动均值",
+      "bands": [
+        {
+          "label": "优秀",
+          "range": "< 50 bpm",
+          "color": "var(--green-500)",
+          "active": true
+        },
+        {
+          "label": "良好",
+          "range": "50 – 60 bpm",
+          "color": "var(--blue-500)"
+        },
+        {
+          "label": "偏高",
+          "range": "> 65 bpm",
+          "color": "var(--amber-500)"
+        }
+      ],
+      "factors": [
+        {
+          "label": "HRV",
+          "impact": "pos",
+          "v": "71 ms"
+        },
+        {
+          "label": "睡眠",
+          "impact": "pos",
+          "v": "7.4 h"
+        },
+        {
+          "label": "急性负荷",
+          "impact": "neg",
+          "v": "612 AU"
+        }
+      ],
+      "ai": {
+        "text": "静息心率维持在 47bpm 的低位，较月均下降 2bpm，与 HRV 抬升一致，印证有氧效率在提升。继续关注清晨数值，若某日较基线 + 5bpm 以上且 HRV 同步下降，是过度疲劳的早期信号。",
+        "tags": [
+          "低位稳定",
+          "有氧提升"
+        ]
+      },
+      "related": [
+        "hrv",
+        "sleep"
+      ]
+    },
+    "sleep": {
+      "name": "睡眠质量",
+      "short": "睡眠",
+      "value": 84,
+      "unit": "分",
+      "delta": "近 7 晚均值",
+      "deltaTone": "pos",
+      "status": "稳定良好",
+      "statusTone": "positive",
+      "color": "var(--violet-500)",
+      "definition": "综合睡眠时长、深睡/REM 占比与连续性的评分。睡眠是恢复的基石，直接影响 HRV、激素水平与训练适应。",
+      "formula": "评分 = f(时长, 深睡%, REM%, 连续性, 入睡延迟)",
+      "bands": [
+        {
+          "label": "不足",
+          "range": "< 70",
+          "color": "var(--red-500)"
+        },
+        {
+          "label": "一般",
+          "range": "70 – 80",
+          "color": "var(--amber-500)"
+        },
+        {
+          "label": "良好",
+          "range": "> 80",
+          "color": "var(--green-500)",
+          "active": true
+        }
+      ],
+      "factors": [
+        {
+          "label": "平均时长",
+          "impact": "pos",
+          "v": "7.4 h"
+        },
+        {
+          "label": "深睡占比",
+          "impact": "pos",
+          "v": "~20%"
+        },
+        {
+          "label": "晚间高强度",
+          "impact": "neg",
+          "v": "周五偏晚"
+        }
+      ],
+      "ai": {
+        "text": "近 7 晚平均 7.4h、评分 84，深睡占比稳定，恢复质量良好。周五一晚偏短（评分 70）与当天难度课时间偏晚相关；建议把高强度训练安排在 20:00 前，以保护当晚深睡。",
+        "tags": [
+          "质量稳定",
+          "注意晚间强度"
+        ]
+      },
+      "related": [
+        "hrv",
+        "rhr"
+      ]
+    }
+  },
+  "activityDetails": {
+    "a1": {
+      "device": "Garmin Forerunner 965",
+      "sport": "跑步",
+      "weather": {
+        "temp": 24,
+        "hum": 62,
+        "wind": "东南 2.1 m/s"
+      },
+      "elapsed": "1:02:40",
+      "moving": "58:12",
+      "calories": 742,
+      "cadence": 182,
+      "stride": 1.18,
+      "trainingEffect": "4.2 · 无氧",
+      "hrDrift": 4.1,
+      "vo2": 56,
+      "target": {
+        "pace": "3:55 /km",
+        "load": 92,
+        "zone": "Z4 阈值",
+        "from": "训练日历 · 周一计划"
+      },
+      "actual": {
+        "pace": "3:52 /km",
+        "load": 96,
+        "zone": "Z4"
+      },
+      "ai": {
+        "verdict": "达标",
+        "tone": "positive",
+        "text": "6 组阈值配速均匀（标准差 < 3s），HR 漂移仅 4.1%，末组未掉速，说明阈值耐受良好。组间慢跑偏长，下次可缩短 15s 以提升训练密度；注意跑后 24h HRV，若回落 > 8ms 则周三转轻松有氧。",
+        "tags": [
+          "配速稳定",
+          "HR 漂移低",
+          "可提升密度"
+        ]
+      }
+    },
+    "a2": {
+      "device": "8a.nu · 手动记录",
+      "sport": "抱石",
+      "gym": "岩时攀岩馆 · 成都",
+      "elapsed": "1:42:00",
+      "calories": 612,
+      "avgHR": 121,
+      "peakHR": 158,
+      "target": {
+        "grade": "V6–V7 极限尝试",
+        "load": 80,
+        "from": "训练日历 · 周二计划"
+      },
+      "actual": {
+        "maxGrade": "V6",
+        "sends": 7,
+        "load": 74
+      },
+      "sends": [
+        {
+          "grade": "V6",
+          "line": "红色 · 12 号",
+          "attempts": 4,
+          "status": "send",
+          "style": "指力 / 锁定"
+        },
+        {
+          "grade": "V6",
+          "line": "黑色 · 7 号",
+          "attempts": 6,
+          "status": "project",
+          "style": "动态 / 协调"
+        },
+        {
+          "grade": "V5",
+          "line": "蓝色 · 3 号",
+          "attempts": 1,
+          "status": "flash",
+          "style": "平衡"
+        },
+        {
+          "grade": "V5",
+          "line": "绿色 · 9 号",
+          "attempts": 2,
+          "status": "send",
+          "style": "力量耐力"
+        },
+        {
+          "grade": "V4",
+          "line": "黄色 · 21 号",
+          "attempts": 1,
+          "status": "flash",
+          "style": "技术"
+        }
+      ],
+      "ai": {
+        "verdict": "接近目标",
+        "tone": "accent",
+        "text": "完成 7 条线、极限 V6（红色 12 号 4 次解决），接近 V6–V7 目标。黑色 7 号动态段仍是项目点，建议下次单独做接触力量热身后优先尝试。本次峰值心率 158、总时长 1h42，攀爬密度偏高，注意指屈肌腱恢复，48h 内避免最大指力。",
+        "tags": [
+          "极限 V6",
+          "7 条完攀",
+          "注意指力恢复"
+        ]
+      }
+    }
+  },
+  "hrv": [
+    {
+      "i": 0,
+      "v": 66,
+      "base": 66
+    },
+    {
+      "i": 1,
+      "v": 71,
+      "base": 68
+    },
+    {
+      "i": 2,
+      "v": 68,
+      "base": 69
+    },
+    {
+      "i": 3,
+      "v": 67,
+      "base": 70
+    },
+    {
+      "i": 4,
+      "v": 72,
+      "base": 71
+    },
+    {
+      "i": 5,
+      "v": 73,
+      "base": 71
+    },
+    {
+      "i": 6,
+      "v": 68,
+      "base": 71
+    },
+    {
+      "i": 7,
+      "v": 68,
+      "base": 70
+    },
+    {
+      "i": 8,
+      "v": 71,
+      "base": 68
+    },
+    {
+      "i": 9,
+      "v": 68,
+      "base": 67
+    },
+    {
+      "i": 10,
+      "v": 62,
+      "base": 65
+    },
+    {
+      "i": 11,
+      "v": 63,
+      "base": 63
+    },
+    {
+      "i": 12,
+      "v": 65,
+      "base": 62
+    },
+    {
+      "i": 13,
+      "v": 61,
+      "base": 61
+    },
+    {
+      "i": 14,
+      "v": 58,
+      "base": 61
+    },
+    {
+      "i": 15,
+      "v": 62,
+      "base": 61
+    },
+    {
+      "i": 16,
+      "v": 65,
+      "base": 62
+    },
+    {
+      "i": 17,
+      "v": 61,
+      "base": 63
+    },
+    {
+      "i": 18,
+      "v": 62,
+      "base": 65
+    },
+    {
+      "i": 19,
+      "v": 73,
+      "base": 70
+    },
+    {
+      "i": 20,
+      "v": 73,
+      "base": 72
+    },
+    {
+      "i": 21,
+      "v": 71,
+      "base": 73
+    },
+    {
+      "i": 22,
+      "v": 73,
+      "base": 74
+    },
+    {
+      "i": 23,
+      "v": 78,
+      "base": 75
+    },
+    {
+      "i": 24,
+      "v": 75,
+      "base": 75
+    },
+    {
+      "i": 25,
+      "v": 71,
+      "base": 74
+    },
+    {
+      "i": 26,
+      "v": 74,
+      "base": 73
+    },
+    {
+      "i": 27,
+      "v": 75,
+      "base": 72
+    }
+  ],
+  "sleep": [
+    {
+      "d": "周一",
+      "deep": 1.4,
+      "rem": 1.6,
+      "light": 4,
+      "awake": 0.3,
+      "score": 81
+    },
+    {
+      "d": "周二",
+      "deep": 1.1,
+      "rem": 1.4,
+      "light": 3.8,
+      "awake": 0.5,
+      "score": 73
+    },
+    {
+      "d": "周三",
+      "deep": 1.6,
+      "rem": 1.8,
+      "light": 4.2,
+      "awake": 0.2,
+      "score": 88
+    },
+    {
+      "d": "周四",
+      "deep": 1.5,
+      "rem": 1.7,
+      "light": 4.1,
+      "awake": 0.3,
+      "score": 85
+    },
+    {
+      "d": "周五",
+      "deep": 1.2,
+      "rem": 1.3,
+      "light": 3.6,
+      "awake": 0.6,
+      "score": 70
+    },
+    {
+      "d": "周六",
+      "deep": 1.8,
+      "rem": 1.9,
+      "light": 4.4,
+      "awake": 0.2,
+      "score": 91
+    },
+    {
+      "d": "周日",
+      "deep": 1.5,
+      "rem": 1.7,
+      "light": 4.2,
+      "awake": 0.3,
+      "score": 84
+    }
+  ],
+  "hrZones": [
+    {
+      "z": "Z1",
+      "label": "恢复",
+      "pct": 22,
+      "color": "var(--ink-500)"
+    },
+    {
+      "z": "Z2",
+      "label": "有氧",
+      "pct": 41,
+      "color": "var(--blue-500)"
+    },
+    {
+      "z": "Z3",
+      "label": "节奏",
+      "pct": 19,
+      "color": "var(--cyan-500)"
+    },
+    {
+      "z": "Z4",
+      "label": "阈值",
+      "pct": 13,
+      "color": "var(--amber-500)"
+    },
+    {
+      "z": "Z5",
+      "label": "无氧",
+      "pct": 5,
+      "color": "var(--red-500)"
+    }
+  ],
+  "disciplineSplit": [
+    {
+      "name": "跑步",
+      "icon": "footprints",
+      "load": 268,
+      "pct": 44,
+      "color": "var(--blue-500)",
+      "trend": [
+        40,
+        44,
+        39,
+        48,
+        52,
+        50,
+        55
+      ]
+    },
+    {
+      "name": "登山",
+      "icon": "mountain",
+      "load": 142,
+      "pct": 23,
+      "color": "var(--violet-500)",
+      "trend": [
+        20,
+        18,
+        26,
+        22,
+        28,
+        24,
+        30
+      ]
+    },
+    {
+      "name": "抱石",
+      "icon": "grip",
+      "load": 118,
+      "pct": 19,
+      "color": "var(--cyan-500)",
+      "trend": [
+        22,
+        24,
+        18,
+        20,
+        19,
+        23,
+        21
+      ]
+    },
+    {
+      "name": "难度",
+      "icon": "route",
+      "load": 56,
+      "pct": 9,
+      "color": "var(--green-500)",
+      "trend": [
+        8,
+        10,
+        9,
+        12,
+        8,
+        11,
+        9
+      ]
+    },
+    {
+      "name": "徒步",
+      "icon": "tent-tree",
+      "load": 28,
+      "pct": 5,
+      "color": "var(--amber-500)",
+      "trend": [
+        4,
+        6,
+        5,
+        7,
+        4,
+        6,
+        5
+      ]
+    }
+  ],
+  "balance": [
+    {
+      "axis": "有氧耐力",
+      "v": 82
+    },
+    {
+      "axis": "爬升能力",
+      "v": 74
+    },
+    {
+      "axis": "上肢力量",
+      "v": 68
+    },
+    {
+      "axis": "指力",
+      "v": 71
+    },
+    {
+      "axis": "柔韧",
+      "v": 58
+    },
+    {
+      "axis": "恢复",
+      "v": 79
+    }
+  ],
+  "boulderPyramid": [
+    {
+      "grade": "V8",
+      "sends": 1,
+      "color": "var(--red-500)"
+    },
+    {
+      "grade": "V7",
+      "sends": 3,
+      "color": "var(--amber-500)"
+    },
+    {
+      "grade": "V6",
+      "sends": 8,
+      "color": "var(--cyan-500)"
+    },
+    {
+      "grade": "V5",
+      "sends": 17,
+      "color": "var(--blue-500)"
+    },
+    {
+      "grade": "V4",
+      "sends": 29,
+      "color": "var(--violet-500)"
+    }
+  ],
+  "heatmap": [
+    {
+      "i": 0,
+      "v": 2
+    },
+    {
+      "i": 1,
+      "v": 3
+    },
+    {
+      "i": 2,
+      "v": 1
+    },
+    {
+      "i": 3,
+      "v": 3
+    },
+    {
+      "i": 4,
+      "v": 3
+    },
+    {
+      "i": 5,
+      "v": 2
+    },
+    {
+      "i": 6,
+      "v": 4
+    },
+    {
+      "i": 7,
+      "v": 3
+    },
+    {
+      "i": 8,
+      "v": 3
+    },
+    {
+      "i": 9,
+      "v": 4
+    },
+    {
+      "i": 10,
+      "v": 2
+    },
+    {
+      "i": 11,
+      "v": 2
+    },
+    {
+      "i": 12,
+      "v": 2
+    },
+    {
+      "i": 13,
+      "v": 0
+    },
+    {
+      "i": 14,
+      "v": 2
+    },
+    {
+      "i": 15,
+      "v": 1
+    },
+    {
+      "i": 16,
+      "v": 0
+    },
+    {
+      "i": 17,
+      "v": 1
+    },
+    {
+      "i": 18,
+      "v": 0
+    },
+    {
+      "i": 19,
+      "v": 0
+    },
+    {
+      "i": 20,
+      "v": 1
+    },
+    {
+      "i": 21,
+      "v": 0
+    },
+    {
+      "i": 22,
+      "v": 1
+    },
+    {
+      "i": 23,
+      "v": 1
+    },
+    {
+      "i": 24,
+      "v": 0
+    },
+    {
+      "i": 25,
+      "v": 2
+    },
+    {
+      "i": 26,
+      "v": 2
+    },
+    {
+      "i": 27,
+      "v": 2
+    },
+    {
+      "i": 28,
+      "v": 4
+    },
+    {
+      "i": 29,
+      "v": 2
+    },
+    {
+      "i": 30,
+      "v": 3
+    },
+    {
+      "i": 31,
+      "v": 4
+    },
+    {
+      "i": 32,
+      "v": 2
+    },
+    {
+      "i": 33,
+      "v": 4
+    },
+    {
+      "i": 34,
+      "v": 3
+    },
+    {
+      "i": 35,
+      "v": 2
+    },
+    {
+      "i": 36,
+      "v": 3
+    },
+    {
+      "i": 37,
+      "v": 2
+    },
+    {
+      "i": 38,
+      "v": 1
+    },
+    {
+      "i": 39,
+      "v": 2
+    },
+    {
+      "i": 40,
+      "v": 0
+    },
+    {
+      "i": 41,
+      "v": 0
+    },
+    {
+      "i": 42,
+      "v": 1
+    },
+    {
+      "i": 43,
+      "v": 0
+    },
+    {
+      "i": 44,
+      "v": 1
+    },
+    {
+      "i": 45,
+      "v": 0
+    },
+    {
+      "i": 46,
+      "v": 0
+    },
+    {
+      "i": 47,
+      "v": 1
+    },
+    {
+      "i": 48,
+      "v": 0
+    },
+    {
+      "i": 49,
+      "v": 1
+    },
+    {
+      "i": 50,
+      "v": 2
+    },
+    {
+      "i": 51,
+      "v": 1
+    },
+    {
+      "i": 52,
+      "v": 2
+    },
+    {
+      "i": 53,
+      "v": 3
+    },
+    {
+      "i": 54,
+      "v": 2
+    },
+    {
+      "i": 55,
+      "v": 4
+    },
+    {
+      "i": 56,
+      "v": 3
+    },
+    {
+      "i": 57,
+      "v": 2
+    },
+    {
+      "i": 58,
+      "v": 4
+    },
+    {
+      "i": 59,
+      "v": 2
+    },
+    {
+      "i": 60,
+      "v": 2
+    },
+    {
+      "i": 61,
+      "v": 3
+    },
+    {
+      "i": 62,
+      "v": 1
+    },
+    {
+      "i": 63,
+      "v": 2
+    },
+    {
+      "i": 64,
+      "v": 2
+    },
+    {
+      "i": 65,
+      "v": 0
+    },
+    {
+      "i": 66,
+      "v": 1
+    },
+    {
+      "i": 67,
+      "v": 0
+    },
+    {
+      "i": 68,
+      "v": 0
+    },
+    {
+      "i": 69,
+      "v": 1
+    },
+    {
+      "i": 70,
+      "v": 0
+    },
+    {
+      "i": 71,
+      "v": 0
+    },
+    {
+      "i": 72,
+      "v": 1
+    },
+    {
+      "i": 73,
+      "v": 0
+    },
+    {
+      "i": 74,
+      "v": 2
+    },
+    {
+      "i": 75,
+      "v": 2
+    },
+    {
+      "i": 76,
+      "v": 1
+    },
+    {
+      "i": 77,
+      "v": 3
+    },
+    {
+      "i": 78,
+      "v": 2
+    },
+    {
+      "i": 79,
+      "v": 2
+    },
+    {
+      "i": 80,
+      "v": 4
+    },
+    {
+      "i": 81,
+      "v": 2
+    },
+    {
+      "i": 82,
+      "v": 3
+    },
+    {
+      "i": 83,
+      "v": 4
+    },
+    {
+      "i": 84,
+      "v": 2
+    },
+    {
+      "i": 85,
+      "v": 3
+    },
+    {
+      "i": 86,
+      "v": 2
+    },
+    {
+      "i": 87,
+      "v": 1
+    },
+    {
+      "i": 88,
+      "v": 3
+    },
+    {
+      "i": 89,
+      "v": 1
+    },
+    {
+      "i": 90,
+      "v": 0
+    }
+  ],
+  "activities": [
+    {
+      "id": "a1",
+      "name": "阈值间歇 6×1km",
+      "sport": "跑步",
+      "icon": "footprints",
+      "date": "今天 · 06:40",
+      "dist": "12.4 km",
+      "dur": "58:12",
+      "load": 96,
+      "hr": 162,
+      "flag": "high",
+      "note": "配速达标，HR 漂移 4%"
+    },
+    {
+      "id": "a2",
+      "name": "抱石训练馆",
+      "sport": "抱石",
+      "icon": "grip",
+      "date": "昨天 · 19:10",
+      "dist": "—",
+      "dur": "1:42",
+      "load": 74,
+      "hr": 121,
+      "flag": "ok",
+      "note": "完攀 V5 ×3 · 极限 V6"
+    },
+    {
+      "id": "a3",
+      "name": "龙泉山长距离",
+      "sport": "登山",
+      "icon": "mountain",
+      "date": "周日 · 07:20",
+      "dist": "24.8 km",
+      "dur": "3:36",
+      "load": 138,
+      "hr": 138,
+      "flag": "high",
+      "note": "累计爬升 1240m"
+    },
+    {
+      "id": "a4",
+      "name": "轻松有氧",
+      "sport": "跑步",
+      "icon": "footprints",
+      "date": "周六 · 17:05",
+      "dist": "8.0 km",
+      "dur": "44:30",
+      "load": 42,
+      "hr": 132,
+      "flag": "ok",
+      "note": "Z2 控制良好"
+    },
+    {
+      "id": "a5",
+      "name": "岩馆难度路线",
+      "sport": "难度",
+      "icon": "route",
+      "date": "周五 · 20:00",
+      "dur": "1:20",
+      "dist": "—",
+      "load": 56,
+      "hr": 118,
+      "flag": "ok",
+      "note": "5.12a on-sight 尝试"
+    },
+    {
+      "id": "a6",
+      "name": "城郊徒步",
+      "sport": "徒步",
+      "icon": "tent-tree",
+      "date": "周四 · 09:00",
+      "dist": "15.2 km",
+      "dur": "3:10",
+      "load": 28,
+      "hr": 108,
+      "flag": "ok",
+      "note": "主动恢复"
+    }
+  ],
+  "insights": [
+    {
+      "id": "i1",
+      "tone": "caution",
+      "icon": "triangle-alert",
+      "title": "ACWR 接近高位",
+      "body": "急性:慢性负荷比已达 1.18，连续两周上升。建议本周末用一次主动恢复替换长距离，避免越过 1.3 的伤病风险区。",
+      "tag": "风险预警"
+    },
+    {
+      "id": "i2",
+      "tone": "positive",
+      "icon": "trending-up",
+      "title": "HRV 基线抬升",
+      "body": "近 10 天 RMSSD 基线由 64ms 升至 71ms，且睡眠保持稳定 —— 身体对当前有氧块适应良好,可承接一个高强度区。",
+      "tag": "自动洞察"
+    },
+    {
+      "id": "i3",
+      "tone": "accent",
+      "icon": "sparkles",
+      "title": "指力恢复已就绪",
+      "body": "距上次最大指力训练已 4 天,上肢负荷处于低位。明天适合安排一次抱石极限尝试 (V6–V7)。",
+      "tag": "训练建议"
+    }
+  ],
+  "plan": {
+    "week": "第 6 周 · 基础强化",
+    "focus": "有氧容量 + 指力",
+    "compliance": 86,
+    "days": [
+      {
+        "d": "周一",
+        "date": "06-15",
+        "items": [
+          {
+            "t": "阈值间歇 6×1km",
+            "sport": "跑步",
+            "load": 96,
+            "done": true,
+            "dur": "60min"
+          }
+        ],
+        "status": "done"
+      },
+      {
+        "d": "周二",
+        "date": "06-16",
+        "items": [
+          {
+            "t": "抱石极限尝试",
+            "sport": "抱石",
+            "load": 78,
+            "done": true,
+            "dur": "90min"
+          }
+        ],
+        "status": "done"
+      },
+      {
+        "d": "周三",
+        "date": "06-17",
+        "items": [
+          {
+            "t": "轻松有氧 Z2",
+            "sport": "跑步",
+            "load": 44,
+            "done": true,
+            "dur": "45min"
+          }
+        ],
+        "status": "done"
+      },
+      {
+        "d": "周四",
+        "date": "06-18",
+        "items": [
+          {
+            "t": "主动恢复 + 柔韧",
+            "sport": "徒步",
+            "load": 28,
+            "done": false,
+            "dur": "50min"
+          }
+        ],
+        "status": "today"
+      },
+      {
+        "d": "周五",
+        "date": "06-19",
+        "items": [
+          {
+            "t": "难度耐力路线",
+            "sport": "难度",
+            "load": 56,
+            "done": false,
+            "dur": "80min"
+          }
+        ],
+        "status": "planned"
+      },
+      {
+        "d": "周六",
+        "date": "06-20",
+        "items": [
+          {
+            "t": "长距离爬升",
+            "sport": "登山",
+            "load": 132,
+            "done": false,
+            "dur": "210min"
+          }
+        ],
+        "status": "planned",
+        "adapted": true
+      },
+      {
+        "d": "周日",
+        "date": "06-21",
+        "items": [
+          {
+            "t": "完全休息",
+            "sport": "休息",
+            "load": 0,
+            "done": false,
+            "dur": "—"
+          }
+        ],
+        "status": "rest"
+      }
+    ]
+  },
+  "workout": {
+    "title": "主动恢复 + 柔韧",
+    "sport": "徒步",
+    "when": "今天 · 建议 17:00 前",
+    "target": "Z1–低 Z2 · 心率 < 135 bpm",
+    "load": 28,
+    "duration": "50 min",
+    "rationale": "今晨 HRV 偏低 4ms 且周累计负荷已偏高，AI 已将原计划「节奏跑」下调为主动恢复，保护周六的长距离爬升质量。",
+    "steps": [
+      {
+        "t": "热身 步行",
+        "d": "10 min",
+        "z": "Z1"
+      },
+      {
+        "t": "匀速徒步",
+        "d": "30 min",
+        "z": "Z2",
+        "note": "保持鼻吸鼻呼"
+      },
+      {
+        "t": "动态柔韧 + 髋",
+        "d": "10 min",
+        "z": "Z1"
+      }
+    ]
+  },
+  "connectors": [
+    {
+      "id": "garmin",
+      "name": "Garmin Connect",
+      "cat": "可穿戴",
+      "status": "connected",
+      "icon": "watch",
+      "color": "#007CC3",
+      "sync": "2 分钟前",
+      "metrics": [
+        "跑步",
+        "HRV",
+        "睡眠",
+        "心率"
+      ],
+      "records": "4,812"
+    },
+    {
+      "id": "coros",
+      "name": "COROS",
+      "cat": "可穿戴",
+      "status": "connected",
+      "icon": "watch",
+      "color": "#FF4D14",
+      "sync": "1 小时前",
+      "metrics": [
+        "登山",
+        "爬升",
+        "气压"
+      ],
+      "records": "1,204"
+    },
+    {
+      "id": "strava",
+      "name": "Strava",
+      "cat": "社区",
+      "status": "connected",
+      "icon": "activity",
+      "color": "#FC4C02",
+      "sync": "12 分钟前",
+      "metrics": [
+        "活动",
+        "路线",
+        "配速"
+      ],
+      "records": "3,196"
+    },
+    {
+      "id": "whoop",
+      "name": "WHOOP",
+      "cat": "恢复",
+      "status": "syncing",
+      "icon": "heart-pulse",
+      "color": "#16C98C",
+      "sync": "同步中…",
+      "metrics": [
+        "HRV",
+        "恢复",
+        "强度"
+      ],
+      "records": "912"
+    },
+    {
+      "id": "oura",
+      "name": "Oura Ring",
+      "cat": "恢复",
+      "status": "available",
+      "icon": "circle-dot",
+      "color": "#8C9EFF",
+      "sync": "—",
+      "metrics": [
+        "睡眠",
+        "HRV",
+        "体温"
+      ],
+      "records": "—"
+    },
+    {
+      "id": "apple",
+      "name": "Apple Health",
+      "cat": "聚合",
+      "status": "available",
+      "icon": "heart",
+      "color": "#FF4D5E",
+      "sync": "—",
+      "metrics": [
+        "全部"
+      ],
+      "records": "—"
+    },
+    {
+      "id": "8anu",
+      "name": "8a.nu",
+      "cat": "攀岩",
+      "status": "connected",
+      "icon": "mountain-snow",
+      "color": "#FFB020",
+      "sync": "昨天",
+      "metrics": [
+        "抱石",
+        "难度",
+        "完攀"
+      ],
+      "records": "486"
+    },
+    {
+      "id": "suunto",
+      "name": "Suunto",
+      "cat": "可穿戴",
+      "status": "available",
+      "icon": "watch",
+      "color": "#0099E5",
+      "sync": "—",
+      "metrics": [
+        "训练",
+        "路线"
+      ],
+      "records": "—"
+    }
+  ],
+  "schema": [
+    {
+      "canonical": "activity.load",
+      "type": "number · AU",
+      "sources": [
+        "Garmin TSS",
+        "Strava RE",
+        "COROS TL"
+      ],
+      "coverage": 100
+    },
+    {
+      "canonical": "recovery.hrv_rmssd",
+      "type": "number · ms",
+      "sources": [
+        "Garmin",
+        "WHOOP",
+        "Oura"
+      ],
+      "coverage": 96
+    },
+    {
+      "canonical": "sleep.stages",
+      "type": "object",
+      "sources": [
+        "Garmin",
+        "Oura",
+        "WHOOP"
+      ],
+      "coverage": 88
+    },
+    {
+      "canonical": "heart.zones",
+      "type": "array",
+      "sources": [
+        "Garmin",
+        "COROS"
+      ],
+      "coverage": 100
+    },
+    {
+      "canonical": "climb.send",
+      "type": "object",
+      "sources": [
+        "8a.nu"
+      ],
+      "coverage": 74
+    },
+    {
+      "canonical": "elevation.gain",
+      "type": "number · m",
+      "sources": [
+        "COROS",
+        "Strava",
+        "Suunto"
+      ],
+      "coverage": 92
+    }
+  ],
+  "library": {
+    "running": [
+      {
+        "id": "r1",
+        "name": "阈值间歇 6×1km",
+        "type": "间歇",
+        "target": "Z4 · 阈值配速",
+        "load": 96,
+        "dur": "60 min",
+        "uses": 14,
+        "desc": "6 组 1km @ 阈值，组间慢跑 90s。提升乳酸阈与配速耐力。"
+      },
+      {
+        "id": "r2",
+        "name": "节奏跑 8km",
+        "type": "节奏",
+        "target": "Z3 · 舒适偏快",
+        "load": 72,
+        "dur": "45 min",
+        "uses": 9,
+        "desc": "持续节奏跑，控制 HR 漂移 < 5%。建立比赛配速感。"
+      },
+      {
+        "id": "r3",
+        "name": "长距离慢跑",
+        "type": "耐力",
+        "target": "Z2 · 有氧",
+        "load": 88,
+        "dur": "110 min",
+        "uses": 22,
+        "desc": "低强度长距离，鼻吸鼻呼可对话。扩展有氧基础与脂肪供能。"
+      },
+      {
+        "id": "r4",
+        "name": "法特莱克变速",
+        "type": "变速",
+        "target": "Z2–Z4",
+        "load": 64,
+        "dur": "50 min",
+        "uses": 6,
+        "desc": "自由变速跑，按地形与感觉切换强度。趣味性与速度耐力兼顾。"
+      },
+      {
+        "id": "r5",
+        "name": "恢复跑",
+        "type": "恢复",
+        "target": "Z1 · 极轻松",
+        "load": 30,
+        "dur": "35 min",
+        "uses": 18,
+        "desc": "主动恢复，促进血液循环。HRV 偏低日的首选。"
+      },
+      {
+        "id": "r6",
+        "name": "Yasso 800",
+        "type": "间歇",
+        "target": "Z4 · VO2max",
+        "load": 90,
+        "dur": "55 min",
+        "uses": 4,
+        "desc": "10×800m，组间等时慢跑。经典马拉松配速预测训练。"
+      }
+    ],
+    "climbing": [
+      {
+        "id": "c1",
+        "name": "抱石极限尝试",
+        "type": "最大力量",
+        "target": "V6–V7",
+        "load": 78,
+        "dur": "90 min",
+        "uses": 11,
+        "desc": "充分热身后冲击极限难度，组间 3–4 min。每次 ≤ 8 次尝试保护肌腱。"
+      },
+      {
+        "id": "c2",
+        "name": "指力板训练",
+        "type": "指力",
+        "target": "最大力量",
+        "load": 48,
+        "dur": "40 min",
+        "uses": 8,
+        "desc": "悬挂训练，7s 挂 / 3min 歇。发展最大指力，需充分恢复窗口。"
+      },
+      {
+        "id": "c3",
+        "name": "耐力路线 4×4",
+        "type": "耐力",
+        "target": "V3–V4",
+        "load": 70,
+        "dur": "75 min",
+        "uses": 7,
+        "desc": "4 条线连续完成 ×4 组。发展抗泵与力量耐力。"
+      },
+      {
+        "id": "c4",
+        "name": "ARC 有氧耐力",
+        "type": "有氧",
+        "target": "简单 · 不脱手",
+        "load": 54,
+        "dur": "60 min",
+        "uses": 5,
+        "desc": "低强度持续攀爬 20min×组，建立毛细血管与恢复能力。"
+      },
+      {
+        "id": "c5",
+        "name": "Campus 爆发",
+        "type": "爆发力",
+        "target": "进阶",
+        "load": 44,
+        "dur": "35 min",
+        "uses": 3,
+        "desc": "岩点动态发力，发展接触力量。仅在状态良好时安排。"
+      },
+      {
+        "id": "c6",
+        "name": "系统板循环",
+        "type": "力量耐力",
+        "target": "V4–V5",
+        "load": 66,
+        "dur": "50 min",
+        "uses": 6,
+        "desc": "对称岩点循环，发展核心张力与稳定性。"
+      }
+    ],
+    "plans": [
+      {
+        "id": "p1",
+        "name": "有氧容量强化 · 4 周",
+        "goal": "提升有氧耐力",
+        "weeks": 4,
+        "load": 1980,
+        "sessions": 22,
+        "sports": [
+          "跑步",
+          "抱石",
+          "登山"
+        ],
+        "updated": "2 天前",
+        "source": "AI"
+      },
+      {
+        "id": "p2",
+        "name": "攀岩力量周期 · 6 周",
+        "goal": "抱石突破 V7",
+        "weeks": 6,
+        "load": 2640,
+        "sessions": 30,
+        "sports": [
+          "抱石",
+          "难度",
+          "跑步"
+        ],
+        "updated": "上周",
+        "source": "手动"
+      },
+      {
+        "id": "p3",
+        "name": "越野赛备赛 · 8 周",
+        "goal": "50km 越野完赛",
+        "weeks": 8,
+        "load": 4120,
+        "sessions": 44,
+        "sports": [
+          "跑步",
+          "登山",
+          "徒步"
+        ],
+        "updated": "3 周前",
+        "source": "AI"
+      }
+    ]
+  },
+  "calendar": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+  ],
+  "calendarEvents": {
+    "1": {
+      "p": {
+        "t": "节奏跑 8km",
+        "s": "跑步",
+        "load": 72
+      },
+      "a": {
+        "s": "跑步",
+        "load": 74,
+        "linked": true
+      }
+    },
+    "2": {
+      "p": {
+        "t": "抱石极限",
+        "s": "抱石",
+        "load": 78
+      },
+      "a": {
+        "s": "抱石",
+        "load": 74,
+        "linked": true
+      }
+    },
+    "4": {
+      "p": {
+        "t": "长距离慢跑",
+        "s": "跑步",
+        "load": 88
+      },
+      "a": {
+        "s": "跑步",
+        "load": 90,
+        "linked": true
+      }
+    },
+    "5": {
+      "p": {
+        "t": "难度耐力",
+        "s": "难度",
+        "load": 56
+      },
+      "a": {
+        "s": "难度",
+        "load": 56,
+        "linked": true
+      }
+    },
+    "6": {
+      "p": {
+        "t": "长距离爬升",
+        "s": "登山",
+        "load": 132
+      },
+      "a": {
+        "s": "登山",
+        "load": 138,
+        "linked": true
+      }
+    },
+    "8": {
+      "p": {
+        "t": "阈值间歇",
+        "s": "跑步",
+        "load": 96
+      },
+      "a": {
+        "s": "跑步",
+        "load": 96,
+        "linked": true
+      }
+    },
+    "9": {
+      "p": {
+        "t": "抱石力量",
+        "s": "抱石",
+        "load": 72
+      },
+      "a": {
+        "s": "抱石",
+        "load": 70,
+        "linked": true
+      }
+    },
+    "10": {
+      "a": {
+        "s": "跑步",
+        "load": 32,
+        "linked": false
+      }
+    },
+    "11": {
+      "p": {
+        "t": "主动恢复",
+        "s": "徒步",
+        "load": 28
+      },
+      "a": {
+        "s": "徒步",
+        "load": 28,
+        "linked": true
+      }
+    },
+    "12": {
+      "p": {
+        "t": "难度耐力",
+        "s": "难度",
+        "load": 54
+      },
+      "a": {
+        "s": "难度",
+        "load": 54,
+        "linked": true
+      }
+    },
+    "13": {
+      "p": {
+        "t": "长距离爬升",
+        "s": "登山",
+        "load": 128
+      },
+      "a": {
+        "s": "登山",
+        "load": 130,
+        "linked": true
+      }
+    },
+    "15": {
+      "p": {
+        "t": "阈值间歇 6×1km",
+        "s": "跑步",
+        "load": 96
+      },
+      "a": {
+        "s": "跑步",
+        "load": 96,
+        "linked": true
+      }
+    },
+    "16": {
+      "p": {
+        "t": "抱石极限尝试",
+        "s": "抱石",
+        "load": 78
+      },
+      "a": {
+        "s": "抱石",
+        "load": 74,
+        "linked": true
+      }
+    },
+    "17": {
+      "p": {
+        "t": "轻松有氧 Z2",
+        "s": "跑步",
+        "load": 44
+      },
+      "a": {
+        "s": "跑步",
+        "load": 42,
+        "linked": true
+      }
+    },
+    "18": {
+      "p": {
+        "t": "主动恢复 + 柔韧",
+        "s": "徒步",
+        "load": 28
+      },
+      "today": true
+    },
+    "19": {
+      "p": {
+        "t": "难度耐力路线",
+        "s": "难度",
+        "load": 56
+      }
+    },
+    "20": {
+      "p": {
+        "t": "长距离爬升",
+        "s": "登山",
+        "load": 132
+      },
+      "adapted": true
+    }
+  },
+  "unlinked": [
+    {
+      "id": "u1",
+      "name": "晨间恢复跑",
+      "sport": "跑步",
+      "icon": "footprints",
+      "date": "06-10 · 07:05",
+      "dist": "6.2 km",
+      "dur": "34:10",
+      "load": 32,
+      "source": "Garmin"
+    },
+    {
+      "id": "u2",
+      "name": "抱石自由练习",
+      "sport": "抱石",
+      "icon": "grip",
+      "date": "06-17 · 20:30",
+      "dist": "—",
+      "dur": "1:05",
+      "load": 46,
+      "source": "8a.nu"
+    }
+  ],
+  "linkTargets": [
+    {
+      "id": "lt1",
+      "label": "06-10 · 恢复跑 (计划)",
+      "sport": "跑步"
+    },
+    {
+      "id": "lt2",
+      "label": "06-10 · 轻松有氧 Z2 (计划)",
+      "sport": "跑步"
+    },
+    {
+      "id": "lt3",
+      "label": "仅记为自由训练 · 不关联计划",
+      "sport": "其他"
+    }
+  ]
+}
