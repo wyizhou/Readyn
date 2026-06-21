@@ -342,11 +342,15 @@ function ChatTab({ data, seed, body }: { data: ApexData; seed: Props['seed']; bo
   }
 
   useEffect(() => {
+    // Seed a question routed in from elsewhere (e.g. dashboard 向AI追问).
+    // The nonce ref guards against re-seeding the same question — and we
+    // append directly (mirroring send()) rather than via a cancellable
+    // timeout, so React StrictMode's mount/cleanup/mount cycle can't drop it.
     if (!seed || seed.nonce === lastSeed.current) return
-    lastSeed.current = seed.nonce
     const q = seed.q.trim()
     if (!q) return
-    const t0 = setTimeout(() => {
+    lastSeed.current = seed.nonce
+    setTimeout(() => {
       setMsgs((m) => [...m, { role: 'user', text: q }])
       setInput('')
       setTyping(true)
@@ -355,7 +359,6 @@ function ChatTab({ data, seed, body }: { data: ApexData; seed: Props['seed']; bo
         setMsgs((m) => [...m, { role: 'ai', ...expertReply(q) }])
       }, 850)
     }, 0)
-    return () => clearTimeout(t0)
   }, [seed])
 
   useEffect(() => {
