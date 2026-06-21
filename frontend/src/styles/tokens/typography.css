@@ -1,0 +1,49 @@
+/* ============================================================
+   APEX · TYPOGRAPHY
+   ============================================================ */
+
+:root {
+  --font-display: 'Archivo Expanded', 'Archivo', system-ui, sans-serif;
+  --font-sans: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Weights */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-black: 900;
+
+  /* Type scale (px in rem, 16px base) */
+  --fs-display-2xl: 4.5rem;   /* 72 — hero metric */
+  --fs-display-xl: 3.5rem;    /* 56 */
+  --fs-display-lg: 2.5rem;    /* 40 */
+  --fs-h1: 2rem;              /* 32 */
+  --fs-h2: 1.5rem;            /* 24 */
+  --fs-h3: 1.25rem;           /* 20 */
+  --fs-lg: 1.125rem;          /* 18 */
+  --fs-body: 1rem;            /* 16 */
+  --fs-sm: 0.875rem;          /* 14 */
+  --fs-xs: 0.75rem;           /* 12 */
+  --fs-2xs: 0.6875rem;        /* 11 — micro labels */
+
+  /* Line heights */
+  --lh-tight: 1.05;
+  --lh-snug: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.65;
+
+  /* Letter spacing */
+  --ls-tight: -0.02em;
+  --ls-normal: 0;
+  --ls-wide: 0.04em;
+  --ls-label: 0.08em;
+
+  /* ---- Semantic text roles ---- */
+  --text-hero: var(--fw-black) var(--fs-display-2xl)/var(--lh-tight) var(--font-display);
+  --text-title: var(--fw-bold) var(--fs-h1)/var(--lh-snug) var(--font-display);
+  --text-heading: var(--fw-semibold) var(--fs-h3)/var(--lh-snug) var(--font-sans);
+  --text-default: var(--fw-regular) var(--fs-body)/var(--lh-normal) var(--font-sans);
+  --text-label: var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans);
+  --text-metric: var(--fw-semibold) var(--fs-h2)/1 var(--font-mono);
+}

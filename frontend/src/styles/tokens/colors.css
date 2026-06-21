@@ -1,0 +1,88 @@
+/* ============================================================
+   APEX · COLORS
+   Dark, high-performance palette. Electric blue primary,
+   violet secondary, with a precise data-viz + semantic set.
+   ============================================================ */
+
+:root {
+  /* ---- Brand ---- */
+  --blue-300: #8AA2FF;
+  --blue-400: #5C78FF;
+  --blue-500: #3B5BFF;   /* primary */
+  --blue-600: #2A45E0;
+  --blue-700: #1E32B0;
+
+  --violet-300: #B69BFF;
+  --violet-400: #9670FF;
+  --violet-500: #7C4DFF;  /* secondary */
+  --violet-600: #6638E6;
+  --violet-700: #4E27B8;
+
+  /* ---- Ink / neutrals (cool, near-black surfaces) ---- */
+  --ink-950: #07080B;   /* app background, deepest */
+  --ink-900: #0B0E13;   /* base surface */
+  --ink-850: #10131A;   /* raised surface / cards */
+  --ink-800: #161A23;   /* hover surface */
+  --ink-700: #1F2531;   /* borders strong / inputs */
+  --ink-600: #2A3140;   /* borders */
+  --ink-500: #3B4453;   /* hairlines on dark */
+  --ink-400: #5A6475;   /* disabled text */
+  --ink-300: #828DA0;   /* muted text */
+  --ink-200: #AEB7C7;   /* secondary text */
+  --ink-100: #D6DCE7;   /* primary-ish text */
+  --ink-050: #EEF1F6;   /* near-white text */
+  --white:    #FFFFFF;
+
+  /* ---- Data-viz + semantic ---- */
+  --green-500: #18C98C;   /* positive / in-zone */
+  --green-400: #2DE6A4;
+  --amber-500: #FFB020;   /* caution / moderate load */
+  --amber-400: #FFC24D;
+  --red-500:   #FF4D5E;   /* alert / overreach */
+  --red-400:   #FF6F7D;
+  --cyan-500:  #1FD6E0;   /* secondary chart series */
+  --magenta-500: #FF5CA8; /* tertiary chart series */
+
+  /* Chart series order */
+  --chart-1: var(--blue-500);
+  --chart-2: var(--violet-500);
+  --chart-3: var(--cyan-500);
+  --chart-4: var(--green-500);
+  --chart-5: var(--amber-500);
+  --chart-6: var(--magenta-500);
+
+  /* ---- Gradients ---- */
+  --grad-brand: linear-gradient(135deg, var(--blue-500) 0%, var(--violet-500) 100%);
+  --grad-surface: linear-gradient(180deg, var(--ink-850) 0%, var(--ink-900) 100%);
+
+  /* =========================================================
+     SEMANTIC ALIASES
+     ========================================================= */
+  --bg-app:        var(--ink-950);
+  --surface-base:  var(--ink-900);
+  --surface-card:  var(--ink-850);
+  --surface-raised:var(--ink-800);
+  --surface-hover: var(--ink-800);
+  --surface-inset: var(--ink-950);
+
+  --border-subtle: var(--ink-700);
+  --border-strong: var(--ink-600);
+  --hairline:      rgba(255,255,255,0.06);
+
+  --text-strong:   var(--ink-050);
+  --text-body:     var(--ink-100);
+  --text-muted:    var(--ink-300);
+  --text-faint:    var(--ink-400);
+  --text-on-accent:var(--white);
+
+  --accent:        var(--blue-500);
+  --accent-hover:  var(--blue-400);
+  --accent-press:  var(--blue-600);
+  --accent-2:      var(--violet-500);
+
+  --focus-ring:    rgba(59,91,255,0.55);
+
+  --positive:      var(--green-500);
+  --caution:       var(--amber-500);
+  --critical:      var(--red-500);
+}
