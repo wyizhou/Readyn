@@ -1954,7 +1954,7 @@
   "connectors": [
     {
       "id": "garmin",
-      "name": "Garmin Connect",
+      "name": "Garmin Connect · 国际区",
       "cat": "可穿戴",
       "status": "connected",
       "icon": "watch",
@@ -1967,6 +1967,23 @@
         "心率"
       ],
       "records": "4,812"
+    },
+    {
+      "id": "garmin-cn",
+      "name": "佳明 · 中国区",
+      "cat": "可穿戴",
+      "status": "available",
+      "icon": "watch",
+      "color": "#0B7DBF",
+      "sync": "—",
+      "metrics": [
+        "跑步",
+        "登山",
+        "HRV",
+        "睡眠",
+        "心率"
+      ],
+      "records": "—"
     },
     {
       "id": "coros",

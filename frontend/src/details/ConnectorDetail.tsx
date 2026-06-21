@@ -68,9 +68,11 @@ interface SyncLogEntry {
 
 export interface ConnectorDetailProps {
   src: Connector
+  onSync: () => void
+  onDisconnect: () => void
 }
 
-export function ConnectorDetail({ src }: ConnectorDetailProps) {
+export function ConnectorDetail({ src, onSync, onDisconnect }: ConnectorDetailProps) {
   const rows: [string, string, boolean][] = src.metrics.map((m) => [
     m === '全部' ? 'all_fields' : m === '跑步' ? 'activity_running' : `field_${m}`,
     CANON[m] || `ext.${m}`,
@@ -106,7 +108,7 @@ export function ConnectorDetail({ src }: ConnectorDetailProps) {
             ))}
           </div>
         </div>
-        <Button variant="primary" iconLeft={<Icon name="refresh-cw" size={15} />}>立即同步</Button>
+        <Button variant="primary" iconLeft={<Icon name="refresh-cw" size={15} />} onClick={onSync}>立即同步</Button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16, marginBottom: 16 }}>
@@ -179,7 +181,7 @@ export function ConnectorDetail({ src }: ConnectorDetailProps) {
               <div style={{ font: 'var(--fw-bold) var(--fs-sm)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>断开连接</div>
               <div style={{ font: 'var(--fw-regular) var(--fs-xs)/1.4 var(--font-sans)', color: 'var(--text-faint)', marginTop: 3 }}>停止同步并撤销授权，已导入数据保留</div>
             </div>
-            <button style={{ height: 36, padding: '0 14px', borderRadius: 'var(--r-md)', border: '1px solid var(--red-500)', background: 'transparent', color: 'var(--red-400)', cursor: 'pointer', font: 'var(--fw-semibold) var(--fs-xs)/1 var(--font-sans)' }}>断开</button>
+            <button onClick={onDisconnect} style={{ height: 36, padding: '0 14px', borderRadius: 'var(--r-md)', border: '1px solid var(--red-500)', background: 'transparent', color: 'var(--red-400)', cursor: 'pointer', font: 'var(--fw-semibold) var(--fs-xs)/1 var(--font-sans)' }}>断开</button>
           </div>
         </div>
       </div>

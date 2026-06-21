@@ -31,7 +31,7 @@ function MapRow({ from, to, on, top }: { from: string; to: string; on: boolean; 
   )
 }
 
-function ConnectModal({ src, onClose }: { src: Connector; onClose: () => void }) {
+function ConnectModal({ src, onClose, onDone }: { src: Connector; onClose: () => void; onDone: () => void }) {
   const [step, setStep] = useState(0)
   const steps = ['授权账户', '字段映射', '完成']
   const mapRows: [string, string, boolean][] = [
@@ -98,7 +98,7 @@ function ConnectModal({ src, onClose }: { src: Connector; onClose: () => void })
               <span style={{ width: 64, height: 64, borderRadius: 16, background: 'rgba(24,201,140,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="check" size={30} color="var(--green-500)" /></span>
               <div style={{ font: 'var(--fw-bold) var(--fs-h3)/1.2 var(--font-display)', color: 'var(--text-strong)' }}>{src.name} 已连接</div>
               <p style={{ margin: 0, maxWidth: 360, font: 'var(--fw-regular) var(--fs-sm)/1.5 var(--font-sans)', color: 'var(--text-muted)' }}>历史数据正在后台导入，约需几分钟。完成后看板与训练模块会自动纳入这些数据。</p>
-              <Button variant="primary" fullWidth onClick={onClose}>完成</Button>
+              <Button variant="primary" fullWidth onClick={onDone}>完成</Button>
             </div>
           )}
         </div>
@@ -172,6 +172,7 @@ export interface ConnectorsProps {
   tab: string
   setTab: (t: string) => void
   onOpenConnector: (src: Connector) => void
+  onConnect: (id: string) => void
 }
 
 interface StatTuple {
@@ -181,7 +182,7 @@ interface StatTuple {
   c: string
 }
 
-export function Connectors({ data, tab, setTab, onOpenConnector }: ConnectorsProps) {
+export function Connectors({ data, tab, setTab, onOpenConnector, onConnect }: ConnectorsProps) {
   const [modal, setModal] = useState<Connector | null>(null)
   const connected = data.connectors.filter((c) => c.status !== 'available')
   const available = data.connectors.filter((c) => c.status === 'available')
@@ -246,7 +247,16 @@ export function Connectors({ data, tab, setTab, onOpenConnector }: ConnectorsPro
         </div>
       )}
 
-      {modal && <ConnectModal src={modal} onClose={() => setModal(null)} />}
+      {modal && (
+        <ConnectModal
+          src={modal}
+          onClose={() => setModal(null)}
+          onDone={() => {
+            onConnect(modal.id)
+            setModal(null)
+          }}
+        />
+      )}
     </div>
   )
 }

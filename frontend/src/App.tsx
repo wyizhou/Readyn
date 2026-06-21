@@ -21,6 +21,8 @@ import { PlanDetail } from './details/PlanDetail'
 import { ConnectorDetail } from './details/ConnectorDetail'
 import { mockData } from './lib/mockData'
 import { api } from './lib/api'
+import { planFromLibrary, planFromDays } from './lib/applyPlan'
+import type { DayInput } from './lib/applyPlan'
 import { defaultSettings } from './lib/defaultSettings'
 import { bmi as calcBmi } from './lib/format'
 import type {
@@ -95,6 +97,7 @@ export default function App() {
   const [detail, setDetail] = useState<Detail | null>(null)
   const [spec, setSpec] = useState(false)
   const [settings, setSettings] = useState<SettingsDoc>(defaultSettings)
+  const [flash, setFlash] = useState<string | null>(null)
 
   const [syncing, setSyncing] = useState(false)
 
@@ -180,6 +183,63 @@ export default function App() {
     setDetail({ type: 'settings' })
   }
   const back = () => setDetail(null)
+
+  // Transient toast (auto-clears). Used to confirm side-effectful actions.
+  const flashMsg = (m: string) => {
+    setFlash(m)
+    window.setTimeout(() => setFlash((cur) => (cur === m ? null : cur)), 2600)
+  }
+
+  // Apply a plan to the Training calendar — actually rewrites plan + today's
+  // workout, then routes to Training so the linkage is visible.
+  const applyPlan = (week: import('./lib/applyPlan').AppliedPlan, msg: string) => {
+    setData((d) => ({ ...d, plan: week.plan, workout: week.workout }))
+    setDetail(null)
+    setView('training')
+    flashMsg(msg)
+  }
+  const onApplyLibraryPlan = (plan: LibraryPlan) => applyPlan(planFromLibrary(plan), `已应用计划「${plan.name}」到训练日历`)
+  const onApplyDraft = (name: string, focus: string, days: DayInput[]) =>
+    applyPlan(planFromDays(name, focus, days), `已应用 AI 计划「${name}」到训练日历`)
+
+  // Connector linkage: connecting a source flips it to connected and feeds a
+  // freshly-synced (unlinked) activity into Training so the data shows up.
+  const connectSource = (id: string) => {
+    setData((d) => {
+      const src = d.connectors.find((c) => c.id === id)
+      if (!src) return d
+      const connectors = d.connectors.map((c) =>
+        c.id === id ? { ...c, status: 'connected' as const, sync: '刚刚', records: c.records === '—' ? '128' : c.records } : c,
+      )
+      const newAct = {
+        id: `sync-${id}`,
+        name: '晨间有氧跑 (设备同步)',
+        sport: '跑步',
+        icon: 'footprints',
+        date: '今天 07:12',
+        dist: '8.2 km',
+        dur: '42:30',
+        load: 58,
+        source: src.name,
+      }
+      const unlinked = d.unlinked.some((u) => u.id === newAct.id) ? d.unlinked : [newAct, ...d.unlinked]
+      return { ...d, connectors, unlinked }
+    })
+    flashMsg('已连接 · 已同步 1 条新活动到训练页')
+  }
+  const disconnectSource = (id: string) => {
+    setData((d) => ({
+      ...d,
+      connectors: d.connectors.map((c) => (c.id === id ? { ...c, status: 'available' as const, sync: '—' } : c)),
+    }))
+    setDetail(null)
+    setView('connectors')
+    flashMsg('已断开连接')
+  }
+  const syncSource = (id: string) => {
+    setData((d) => ({ ...d, connectors: d.connectors.map((c) => (c.id === id ? { ...c, sync: '刚刚' } : c)) }))
+    flashMsg('已触发同步')
+  }
 
   const titles: Record<ViewId, [string, string]> = {
     dashboard: ['看板', '林越 · 多项目耐力 / 攀岩 · 2026-06-18'],
@@ -288,17 +348,10 @@ export default function App() {
               }}
             />
           )}
-          {detail?.type === 'plan' && (
-            <PlanDetail
-              data={D}
-              plan={detail.plan}
-              onApply={() => {
-                setDetail(null)
-                setView('training')
-              }}
-            />
+          {detail?.type === 'plan' && <PlanDetail data={D} plan={detail.plan} onApply={() => onApplyLibraryPlan(detail.plan)} />}
+          {detail?.type === 'connector' && (
+            <ConnectorDetail src={detail.src} onSync={() => syncSource(detail.src.id)} onDisconnect={() => disconnectSource(detail.src.id)} />
           )}
-          {detail?.type === 'connector' && <ConnectorDetail src={detail.src} />}
           {detail?.type === 'settings' && (
             <SettingsCenter
               profile={profile}
@@ -336,11 +389,13 @@ export default function App() {
               onNewFromAI={openTrain}
               onOpenTemplate={openTemplate}
               onOpenPlan={openPlan}
-              onApplyPlan={() => setView('training')}
+              onApplyPlan={onApplyLibraryPlan}
             />
           )}
           {!detail && view === 'weight' && <WeightModule weightLog={weightLog} profile={profile} onAdd={addWeight} today={TODAY} />}
-          {!detail && view === 'connectors' && <Connectors data={D} tab={connTab} setTab={setConnTab} onOpenConnector={openConnector} />}
+          {!detail && view === 'connectors' && (
+            <Connectors data={D} tab={connTab} setTab={setConnTab} onOpenConnector={openConnector} onConnect={connectSource} />
+          )}
           {!detail && view === 'ai' && (
             <AIModule
               data={D}
@@ -352,10 +407,35 @@ export default function App() {
                 setLibTab('plans')
                 setView('library')
               }}
-              onApply={() => setView('training')}
+              onApply={onApplyDraft}
             />
           )}
         </main>
+        {flash && (
+          <div
+            role="status"
+            style={{
+              position: 'fixed',
+              bottom: 28,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 60,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '12px 18px',
+              background: 'var(--surface-raised)',
+              border: '1px solid var(--border-strong)',
+              borderRadius: 'var(--r-pill)',
+              boxShadow: 'var(--shadow-lg)',
+              font: 'var(--fw-semibold) var(--fs-sm)/1 var(--font-sans)',
+              color: 'var(--text-strong)',
+            }}
+          >
+            <Icon name="check-circle-2" size={16} color="var(--green-500)" />
+            {flash}
+          </div>
+        )}
         {profileOpen && (
           <ProfileModal
             profile={profile}

@@ -89,21 +89,43 @@ describe('App integration', () => {
     expect(screen.getByRole('button', { name: /已完成 · 取消/ })).toBeInTheDocument()
   })
 
-  it('applies a saved plan from the Library to the training calendar', async () => {
+  it('applies a saved plan and links it into the training calendar', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByText('训练库'))
     await user.click(screen.getByText('我的计划'))
     await user.click(screen.getAllByRole('button', { name: '应用' })[0])
     expect(topHeading()).toContain('训练日历')
+    // Linkage: the applied plan's name now drives the Training plan header.
+    expect(screen.getByText('有氧容量强化 · 4 周')).toBeInTheDocument()
+    expect(screen.getByText(/已应用计划/)).toBeInTheDocument()
   })
 
-  it('applies the AI-drafted plan to the calendar', async () => {
+  it('applies the AI-drafted plan and links it into the calendar', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
     await user.click(screen.getByRole('button', { name: '应用到日历' }))
     expect(topHeading()).toContain('训练日历')
+    // The drafted plan name appears as the calendar's week header.
+    expect(screen.getByText('有氧容量强化 · 第 7 周')).toBeInTheDocument()
+  })
+
+  it('connects 佳明 · 中国区 and the synced activity shows in Training', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
+    await user.click(screen.getByText('数据源市场'))
+    // Scope to the Garmin-CN card, then run the connect wizard.
+    let card: HTMLElement | null = screen.getByText('佳明 · 中国区')
+    while (card && !within(card).queryByRole('button', { name: '连接' })) card = card.parentElement
+    await user.click(within(card as HTMLElement).getByRole('button', { name: '连接' }))
+    await user.click(screen.getByRole('button', { name: /授权/ }))
+    await user.click(screen.getByRole('button', { name: '确认映射并同步' }))
+    await user.click(screen.getByRole('button', { name: '完成' }))
+    // Linkage: a freshly-synced unlinked activity now appears in Training.
+    await user.click(within(screen.getByRole('navigation')).getByText('训练日历'))
+    expect(screen.getByText('晨间有氧跑 (设备同步)')).toBeInTheDocument()
   })
 
   it('records a new weight entry that shows in the log', async () => {

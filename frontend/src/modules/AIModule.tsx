@@ -664,7 +664,11 @@ function TrainTab({ onSaved, onApply }: { onSaved: Props['onSaved']; onApply: Pr
                 >
                   保存到训练库
                 </Button>
-                <Button variant="secondary" iconLeft={<Icon name="calendar-check" size={15} />} onClick={onApply}>
+                <Button
+                  variant="secondary"
+                  iconLeft={<Icon name="calendar-check" size={15} />}
+                  onClick={() => onApply(draft.name, draft.goal, draft.days.map((x) => ({ t: x.t, sport: x.s, load: x.load })))}
+                >
                   应用到日历
                 </Button>
               </Fragment>
@@ -683,7 +687,7 @@ export interface Props {
   seed: { q: string; nonce: number } | null
   body: { weight: number; bmi: number }
   onSaved: () => void
-  onApply: () => void
+  onApply: (name: string, focus: string, days: { t: string; sport: string; load: number }[]) => void
 }
 
 export function AIModule({ data, tab, setTab, seed, body, onSaved, onApply }: Props) {
