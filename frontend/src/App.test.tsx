@@ -79,4 +79,24 @@ describe('App integration', () => {
     await user.click(screen.getByRole('button', { name: /林 越/ }))
     expect(await screen.findByText('退出登录')).toBeInTheDocument()
   })
+
+  it('opens the settings center and toggles a notification preference', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    // Profile modal → settings center.
+    await user.click(screen.getByRole('button', { name: /林 越/ }))
+    await user.click(await screen.findByRole('button', { name: /设置中心/ }))
+    expect(topHeading()).toContain('设置中心')
+
+    // Go to the notifications section.
+    await user.click(screen.getByRole('button', { name: '通知与提醒' }))
+
+    // Walk up from the label to the row that owns the switch (default off → on).
+    let el: HTMLElement | null = screen.getByText('每周总结')
+    while (el && !within(el).queryByRole('switch')) el = el.parentElement
+    const sw = within(el as HTMLElement).getByRole('switch')
+    expect(sw).toHaveAttribute('aria-checked', 'false')
+    await user.click(sw)
+    expect(sw).toHaveAttribute('aria-checked', 'true')
+  })
 })

@@ -42,8 +42,73 @@ def bootstrap(db: Session) -> dict[str, Any]:
         "connectors": get_connectors(db),
     }
     for row in db.scalars(select(Dataset)).all():
+        if row.key == SETTINGS_KEY:
+            continue  # user settings are served via /api/settings, not in ApexData
         data[row.key] = row.value
     return data
+
+
+# --- user settings (README §8) — persisted as a single JSON doc in datasets ---
+
+SETTINGS_KEY = "settings"
+
+# Mirror of frontend src/lib/defaultSettings.ts; used when nothing is saved yet.
+DEFAULT_SETTINGS: dict[str, Any] = {
+    "units": {
+        "distance": "公里 (km)",
+        "weight": "公斤 (kg)",
+        "temp": "摄氏 (℃)",
+        "pace": "min/km",
+        "elevation": "米 (m)",
+    },
+    "hr": {"method": "% 最大心率"},
+    "notifications": {
+        "todayWorkout": True,
+        "loadAlert": True,
+        "aiInsight": True,
+        "weeklySummary": False,
+        "planChange": True,
+        "sendMilestone": True,
+    },
+    "privacy": {
+        "visibility": "私密",
+        "aiHealth": True,
+        "anonResearch": False,
+        "grants": {"Strava": True, "第三方分析平台": False},
+    },
+    "theme": {"mode": "dark", "density": "标准", "fontScale": "标准"},
+}
+
+
+def _deep_merge(base: dict[str, Any], patch: dict[str, Any]) -> dict[str, Any]:
+    """Recursively merge ``patch`` onto a copy of ``base`` (dicts merge, others replace)."""
+    out = dict(base)
+    for key, value in patch.items():
+        if isinstance(value, dict) and isinstance(out.get(key), dict):
+            out[key] = _deep_merge(out[key], value)
+        else:
+            out[key] = value
+    return out
+
+
+def get_settings(db: Session) -> dict[str, Any]:
+    """Return the saved settings doc merged over defaults (defaults if unsaved)."""
+    row = db.get(Dataset, SETTINGS_KEY)
+    saved = row.value if row is not None else {}
+    return _deep_merge(DEFAULT_SETTINGS, saved if isinstance(saved, dict) else {})
+
+
+def save_settings(db: Session, payload: dict[str, Any]) -> dict[str, Any]:
+    """Merge ``payload`` into the stored settings doc and persist it."""
+    current = get_settings(db)
+    merged = _deep_merge(current, payload)
+    row = db.get(Dataset, SETTINGS_KEY)
+    if row is None:
+        db.add(Dataset(key=SETTINGS_KEY, value=merged))
+    else:
+        row.value = merged
+    db.commit()
+    return merged
 
 
 # --- AI (canned responses; swap for a real model per README §10) ---

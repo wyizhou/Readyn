@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { Card, Badge, Button, Switch } from '../design-system'
 import { Icon } from '../components/Icon'
 import { SpecPin } from '../components/spec/Spec'
-import type { Profile } from '../lib/types'
+import type { Profile, SettingsDoc } from '../lib/types'
 
 interface NavItem {
   id: string
@@ -91,11 +91,20 @@ function Divider() {
   return <div style={{ borderTop: '1px solid var(--hairline)' }} />
 }
 
-function ToggleRow({ label, desc, on }: { label: ReactNode; desc?: ReactNode; on: boolean }) {
-  const [v, setV] = useState(on)
+function ToggleRow({
+  label,
+  desc,
+  on,
+  onChange,
+}: {
+  label: ReactNode
+  desc?: ReactNode
+  on: boolean
+  onChange: (v: boolean) => void
+}) {
   return (
     <Row label={label} desc={desc}>
-      <Switch checked={v} onChange={setV} />
+      <Switch checked={on} onChange={onChange} />
     </Row>
   )
 }
@@ -132,12 +141,14 @@ function SectionHead({ title, pin, desc }: { title: ReactNode; pin?: ReactNode; 
 }
 
 // ---- sections ----
-function Units() {
-  const [dist, setDist] = useState('公里 (km)')
-  const [wt, setWt] = useState('公斤 (kg)')
-  const [temp, setTemp] = useState('摄氏 (℃)')
-  const [pace, setPace] = useState('min/km')
-  const [elev, setElev] = useState('米 (m)')
+type SectionProps = {
+  settings: SettingsDoc
+  onChange: (patch: Partial<SettingsDoc>) => void
+}
+
+function Units({ settings, onChange }: SectionProps) {
+  const u = settings.units
+  const set = (patch: Partial<SettingsDoc['units']>) => onChange({ units: { ...u, ...patch } })
   return (
     <div>
       <SectionHead
@@ -150,29 +161,29 @@ function Units() {
             field="settings.units {distance,weight,temp,pace,elevation}"
             state="持久化 · 全局格式化"
             event="切换即存并重渲染"
-            api="PUT /api/settings/units"
+            api="PUT /api/settings"
           />
         }
       />
       <Card>
         <Row label="距离">
-          <Seg value={dist} setValue={setDist} options={['公里 (km)', '英里 (mi)']} />
+          <Seg value={u.distance} setValue={(distance) => set({ distance })} options={['公里 (km)', '英里 (mi)']} />
         </Row>
         <Divider />
         <Row label="体重">
-          <Seg value={wt} setValue={setWt} options={['公斤 (kg)', '磅 (lb)']} />
+          <Seg value={u.weight} setValue={(weight) => set({ weight })} options={['公斤 (kg)', '磅 (lb)']} />
         </Row>
         <Divider />
         <Row label="温度">
-          <Seg value={temp} setValue={setTemp} options={['摄氏 (℃)', '华氏 (℉)']} />
+          <Seg value={u.temp} setValue={(temp) => set({ temp })} options={['摄氏 (℃)', '华氏 (℉)']} />
         </Row>
         <Divider />
         <Row label="配速">
-          <Seg value={pace} setValue={setPace} options={['min/km', 'min/mi']} />
+          <Seg value={u.pace} setValue={(pace) => set({ pace })} options={['min/km', 'min/mi']} />
         </Row>
         <Divider />
         <Row label="海拔">
-          <Seg value={elev} setValue={setElev} options={['米 (m)', '英尺 (ft)']} />
+          <Seg value={u.elevation} setValue={(elevation) => set({ elevation })} options={['米 (m)', '英尺 (ft)']} />
         </Row>
       </Card>
     </div>
@@ -186,9 +197,10 @@ interface HRZone {
   color: string
 }
 
-function HRZones({ profile }: { profile: Profile }) {
-  const max = profile.maxHR || 189
-  const [method, setMethod] = useState('% 最大心率')
+function HRZones({ profile, settings, onChange }: SectionProps & { profile: Profile }) {
+  const max = settings.hr.maxHR || profile.maxHR || 189
+  const method = settings.hr.method
+  const setHr = (patch: Partial<SettingsDoc['hr']>) => onChange({ hr: { ...settings.hr, ...patch } })
   const zones: HRZone[] = [
     { z: 'Z1', name: '恢复', lo: 50, color: 'var(--ink-500)' },
     { z: 'Z2', name: '有氧', lo: 60, color: 'var(--blue-500)' },
@@ -208,7 +220,7 @@ function HRZones({ profile }: { profile: Profile }) {
             field="settings.hrZones[] {zone, lowPct, lowBpm}"
             state="派生自 maxHR · 可手动覆盖"
             event="编辑阈值 → 重算历史区间"
-            api="PUT /api/settings/hr-zones"
+            api="PUT /api/settings"
           />
         }
       />
@@ -216,7 +228,12 @@ function HRZones({ profile }: { profile: Profile }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <Row label="最大心率">
             <input
-              defaultValue={max}
+              type="number"
+              value={max}
+              onChange={(e) => {
+                const n = Number(e.target.value)
+                if (Number.isFinite(n) && n > 0) setHr({ maxHR: n })
+              }}
               style={{
                 width: 90,
                 height: 38,
@@ -232,7 +249,7 @@ function HRZones({ profile }: { profile: Profile }) {
             />
           </Row>
           <Row label="计算方法">
-            <Seg value={method} setValue={setMethod} options={['% 最大心率', '储备心率']} />
+            <Seg value={method} setValue={(m) => setHr({ method: m })} options={['% 最大心率', '储备心率']} />
           </Row>
         </div>
       </Card>
@@ -299,7 +316,17 @@ function HRZones({ profile }: { profile: Profile }) {
   )
 }
 
-function Notify() {
+function Notify({ settings, onChange }: SectionProps) {
+  const n = settings.notifications
+  const set = (patch: Partial<SettingsDoc['notifications']>) => onChange({ notifications: { ...n, ...patch } })
+  const rows: [keyof SettingsDoc['notifications'], string, string][] = [
+    ['todayWorkout', '今日训练提醒', '每天提醒当日计划课程'],
+    ['loadAlert', '恢复 / 负荷预警', 'ACWR 偏高、HRV 骤降时提醒'],
+    ['aiInsight', 'AI 洞察推送', '有新的自动洞察时通知'],
+    ['weeklySummary', '每周总结', '每周一推送上周训练回顾'],
+    ['planChange', '计划变更提醒', 'AI 调整计划时通知'],
+    ['sendMilestone', '完攀里程碑', '突破新难度时祝贺'],
+  ]
   return (
     <div>
       <SectionHead
@@ -312,34 +339,30 @@ function Notify() {
             field="settings.notifications{}"
             state="按渠道持久化"
             event="开关 → 订阅/退订"
-            api="PUT /api/settings/notifications"
+            api="PUT /api/settings"
           />
         }
       />
       <Card>
-        <ToggleRow label="今日训练提醒" desc="每天提醒当日计划课程" on={true} />
-        <Divider />
-        <ToggleRow label="恢复 / 负荷预警" desc="ACWR 偏高、HRV 骤降时提醒" on={true} />
-        <Divider />
-        <ToggleRow label="AI 洞察推送" desc="有新的自动洞察时通知" on={true} />
-        <Divider />
-        <ToggleRow label="每周总结" desc="每周一推送上周训练回顾" on={false} />
-        <Divider />
-        <ToggleRow label="计划变更提醒" desc="AI 调整计划时通知" on={true} />
-        <Divider />
-        <ToggleRow label="完攀里程碑" desc="突破新难度时祝贺" on={true} />
+        {rows.map(([key, label, desc], i) => (
+          <Fragment key={key}>
+            {i ? <Divider /> : null}
+            <ToggleRow label={label} desc={desc} on={n[key]} onChange={(v) => set({ [key]: v })} />
+          </Fragment>
+        ))}
       </Card>
     </div>
   )
 }
 
-type GrantedApp = [name: string, desc: string, on: boolean]
+const GRANT_DESCS: Record<string, string> = {
+  Strava: '分享活动到社区',
+  第三方分析平台: '导出训练数据',
+}
 
-function Privacy() {
-  const apps: GrantedApp[] = [
-    ['Strava', '分享活动到社区', true],
-    ['第三方分析平台', '导出训练数据', false],
-  ]
+function Privacy({ settings, onChange }: SectionProps) {
+  const p = settings.privacy
+  const set = (patch: Partial<SettingsDoc['privacy']>) => onChange({ privacy: { ...p, ...patch } })
   return (
     <div>
       <SectionHead
@@ -352,24 +375,39 @@ function Privacy() {
             field="settings.privacy{} · grants[]"
             state="—"
             event="可单项撤销授权"
-            api="PUT /api/settings/privacy"
+            api="PUT /api/settings"
           />
         }
       />
       <Card style={{ marginBottom: 16 }}>
         <Row label="资料可见性" desc="谁可以看到你的训练数据">
-          <Seg value="私密" setValue={() => {}} options={['私密', '教练可见', '公开']} />
+          <Seg value={p.visibility} setValue={(visibility) => set({ visibility })} options={['私密', '教练可见', '公开']} />
         </Row>
         <Divider />
-        <ToggleRow label="健康数据用于 AI 分析" desc="允许 AI 读取生理数据以提供个性化建议" on={true} />
+        <ToggleRow
+          label="健康数据用于 AI 分析"
+          desc="允许 AI 读取生理数据以提供个性化建议"
+          on={p.aiHealth}
+          onChange={(aiHealth) => set({ aiHealth })}
+        />
         <Divider />
-        <ToggleRow label="匿名贡献研究" desc="去标识化数据用于运动科学研究" on={false} />
+        <ToggleRow
+          label="匿名贡献研究"
+          desc="去标识化数据用于运动科学研究"
+          on={p.anonResearch}
+          onChange={(anonResearch) => set({ anonResearch })}
+        />
       </Card>
       <Card title="已授权应用">
-        {apps.map(([n, desc, on], i) => (
-          <Fragment key={n}>
+        {Object.entries(p.grants).map(([name, on], i) => (
+          <Fragment key={name}>
             {i ? <Divider /> : null}
-            <ToggleRow label={n} desc={desc} on={on} />
+            <ToggleRow
+              label={name}
+              desc={GRANT_DESCS[name] ?? '第三方授权'}
+              on={on}
+              onChange={(v) => set({ grants: { ...p.grants, [name]: v } })}
+            />
           </Fragment>
         ))}
       </Card>
@@ -464,9 +502,11 @@ function DataAccount({ onLogout }: { onLogout: () => void }) {
   )
 }
 
-function Theme() {
-  const [density, setDensity] = useState('标准')
-  const [size, setSize] = useState('标准')
+function Theme({ settings, onChange }: SectionProps) {
+  const t = settings.theme
+  const density = t.density
+  const size = t.fontScale
+  const set = (patch: Partial<SettingsDoc['theme']>) => onChange({ theme: { ...t, ...patch } })
   return (
     <div>
       <SectionHead
@@ -479,7 +519,7 @@ function Theme() {
             field="settings.theme {mode, accent, density, fontScale}"
             state="mode 暂锁定 dark"
             event="切换密度/字号即时生效"
-            api="PUT /api/settings/theme"
+            api="PUT /api/settings"
           />
         }
       />
@@ -551,11 +591,11 @@ function Theme() {
         </Row>
         <Divider />
         <Row label="界面密度">
-          <Seg value={density} setValue={setDensity} options={['紧凑', '标准', '宽松']} />
+          <Seg value={density} setValue={(d) => set({ density: d })} options={['紧凑', '标准', '宽松']} />
         </Row>
         <Divider />
         <Row label="字号">
-          <Seg value={size} setValue={setSize} options={['小', '标准', '大']} />
+          <Seg value={size} setValue={(s) => set({ fontScale: s })} options={['小', '标准', '大']} />
         </Row>
       </Card>
     </div>
@@ -564,10 +604,12 @@ function Theme() {
 
 export interface SettingsCenterProps {
   profile: Profile
+  settings: SettingsDoc
+  onChange: (patch: Partial<SettingsDoc>) => void
   onLogout: () => void
 }
 
-export function SettingsCenter({ profile, onLogout }: SettingsCenterProps) {
+export function SettingsCenter({ profile, settings, onChange, onLogout }: SettingsCenterProps) {
   const [sec, setSec] = useState('units')
   return (
     <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
@@ -620,12 +662,12 @@ export function SettingsCenter({ profile, onLogout }: SettingsCenterProps) {
       {/* content */}
       <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
         <div style={{ maxWidth: 720 }}>
-          {sec === 'units' && <Units />}
-          {sec === 'hr' && <HRZones profile={profile} />}
-          {sec === 'notify' && <Notify />}
-          {sec === 'privacy' && <Privacy />}
+          {sec === 'units' && <Units settings={settings} onChange={onChange} />}
+          {sec === 'hr' && <HRZones profile={profile} settings={settings} onChange={onChange} />}
+          {sec === 'notify' && <Notify settings={settings} onChange={onChange} />}
+          {sec === 'privacy' && <Privacy settings={settings} onChange={onChange} />}
           {sec === 'data' && <DataAccount onLogout={onLogout} />}
-          {sec === 'theme' && <Theme />}
+          {sec === 'theme' && <Theme settings={settings} onChange={onChange} />}
         </div>
       </div>
     </div>

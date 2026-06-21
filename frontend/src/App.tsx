@@ -21,8 +21,20 @@ import { PlanDetail } from './details/PlanDetail'
 import { ConnectorDetail } from './details/ConnectorDetail'
 import { mockData } from './lib/mockData'
 import { api } from './lib/api'
+import { defaultSettings } from './lib/defaultSettings'
 import { bmi as calcBmi } from './lib/format'
-import type { Activity, ApexData, Connector, Insight, LibraryPlan, MetricId, Profile, Template, WeightEntry } from './lib/types'
+import type {
+  Activity,
+  ApexData,
+  Connector,
+  Insight,
+  LibraryPlan,
+  MetricId,
+  Profile,
+  SettingsDoc,
+  Template,
+  WeightEntry,
+} from './lib/types'
 
 type Detail =
   | { type: 'activity'; act: Activity }
@@ -82,6 +94,7 @@ export default function App() {
   const [profileOpen, setProfileOpen] = useState(false)
   const [detail, setDetail] = useState<Detail | null>(null)
   const [spec, setSpec] = useState(false)
+  const [settings, setSettings] = useState<SettingsDoc>(defaultSettings)
 
   const [syncing, setSyncing] = useState(false)
 
@@ -112,10 +125,25 @@ export default function App() {
         if (active) applyData(d)
       })
       .catch(() => {})
+    api
+      .getSettings()
+      .then((s) => {
+        if (active) setSettings(s)
+      })
+      .catch(() => {})
     return () => {
       active = false
     }
   }, [applyData])
+
+  // Settings: optimistic local merge, then persist the patch (best-effort).
+  const patchSettings = (patch: Partial<SettingsDoc>) => {
+    setSettings((prev) => ({ ...prev, ...patch }))
+    api
+      .saveSettings(patch)
+      .then(setSettings)
+      .catch(() => {})
+  }
 
   const currentWeight = weightLog[0] ? weightLog[0].kg : profile.targetWeight
   const bmi = calcBmi(currentWeight, profile.height)
@@ -274,6 +302,8 @@ export default function App() {
           {detail?.type === 'settings' && (
             <SettingsCenter
               profile={profile}
+              settings={settings}
+              onChange={patchSettings}
               onLogout={() => {
                 window.location.href = '/login.html'
               }}

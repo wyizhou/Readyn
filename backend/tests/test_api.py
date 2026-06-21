@@ -122,6 +122,31 @@ def test_schema(client: TestClient) -> None:
     assert any(r["canonical"] == "activity.load" for r in rows)
 
 
+def test_settings_defaults_get(client: TestClient) -> None:
+    s = client.get("/api/settings").json()
+    assert s["units"]["distance"] == "公里 (km)"
+    assert s["notifications"]["weeklySummary"] is False
+    assert s["theme"]["mode"] == "dark"
+
+
+def test_settings_partial_update_merges_and_persists(client: TestClient) -> None:
+    # partial update only touches one nested field; the rest must survive
+    r = client.put("/api/settings", json={"notifications": {"weeklySummary": True}})
+    assert r.status_code == 200
+    saved = r.json()
+    assert saved["notifications"]["weeklySummary"] is True
+    assert saved["notifications"]["todayWorkout"] is True  # untouched default kept
+    assert saved["units"]["distance"] == "公里 (km)"  # untouched section kept
+    # persisted across requests
+    assert client.get("/api/settings").json()["notifications"]["weeklySummary"] is True
+
+
+def test_settings_not_in_bootstrap(client: TestClient) -> None:
+    # saving settings must not leak the "settings" key into the ApexData payload
+    client.put("/api/settings", json={"theme": {"density": "紧凑"}})
+    assert set(client.get("/api/bootstrap").json().keys()) == BOOTSTRAP_KEYS
+
+
 def test_ai_endpoints(client: TestClient) -> None:
     body = {"messages": [{"role": "user", "content": "今天练什么"}]}
     chat = client.post("/api/ai/chat", json=body)

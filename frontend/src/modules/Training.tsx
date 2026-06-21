@@ -60,12 +60,22 @@ function DayCol({ day }: { day: PlanDay }) {
         position: 'relative',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ font: 'var(--fw-bold) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-strong)' }}>{day.d}</span>
-          <span style={{ font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-mono)', color: 'var(--text-faint)' }}>{day.date}</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flexShrink: 1 }}>
+          <span style={{ font: 'var(--fw-bold) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-strong)', whiteSpace: 'nowrap' }}>{day.d}</span>
+          <span
+            style={{
+              font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-mono)',
+              color: 'var(--text-faint)',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {day.date}
+          </span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
           {day.adapted && (
             <span
               title="AI 已调整"
@@ -84,13 +94,14 @@ function DayCol({ day }: { day: PlanDay }) {
               AI
             </span>
           )}
-          {day.status === 'done' && <Icon name="check-circle-2" size={15} color="var(--green-500)" />}
+          {day.status === 'done' && <Icon name="check-circle-2" size={14} color="var(--green-500)" />}
           <span
             style={{
               font: 'var(--fw-semibold) 10px/1 var(--font-sans)',
               letterSpacing: 'var(--ls-wide)',
               textTransform: 'uppercase',
               color: st.c,
+              whiteSpace: 'nowrap',
             }}
           >
             {st.label}
