@@ -190,9 +190,10 @@ export interface PlanDetailProps {
   data: ApexData
   plan: LibraryPlan
   onApply: () => void
+  onToast: (msg: string) => void
 }
 
-export function PlanDetail({ plan, onApply }: PlanDetailProps) {
+export function PlanDetail({ plan, onApply, onToast }: PlanDetailProps) {
   const weeks = useMemo(() => buildWeeks(plan), [plan])
   const [wk, setWk] = useState(0)
   const week = weeks[wk]
@@ -328,7 +329,7 @@ export function PlanDetail({ plan, onApply }: PlanDetailProps) {
             ))}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <Button variant="secondary" size="sm" iconLeft={<Icon name="copy" size={14} />}>
+            <Button variant="secondary" size="sm" iconLeft={<Icon name="copy" size={14} />} onClick={() => onToast(`已复制「${plan.name}」到我的计划`)}>
               复制
             </Button>
             <Button variant="gradient" size="sm" iconLeft={<Icon name="calendar-check" size={14} />} onClick={onApply}>

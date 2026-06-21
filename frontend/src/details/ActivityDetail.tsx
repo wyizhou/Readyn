@@ -441,9 +441,10 @@ export interface ActivityDetailProps {
   data: ApexData
   act: Activity
   spec: boolean
+  onToast: (msg: string) => void
 }
 
-export function ActivityDetail({ data, act }: ActivityDetailProps) {
+export function ActivityDetail({ data, act, onToast }: ActivityDetailProps) {
   const detail: Partial<ActivityDetailData> = data.activityDetails[act.id] ?? {}
   const climb = isClimb(act.sport)
   const c = sportColor(act.sport)
@@ -560,10 +561,10 @@ export function ActivityDetail({ data, act }: ActivityDetailProps) {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          <Button variant="secondary" size="sm" iconLeft={<Icon name="git-compare" size={14} />}>
+          <Button variant="secondary" size="sm" iconLeft={<Icon name="git-compare" size={14} />} onClick={() => onToast('已加入对比')}>
             对比
           </Button>
-          <Button variant="secondary" size="sm" iconLeft={<Icon name="share-2" size={14} />}>
+          <Button variant="secondary" size="sm" iconLeft={<Icon name="share-2" size={14} />} onClick={() => onToast(`已导出「${act.name}」`)}>
             导出
           </Button>
         </div>

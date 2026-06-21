@@ -280,7 +280,17 @@ function MonthCalendar({ data }: { data: ApexData }) {
 }
 
 // ---------- Link unmatched activity to a planned workout ----------
-function LinkModal({ act, targets, onClose }: { act: UnlinkedActivity; targets: LinkTarget[]; onClose: () => void }) {
+function LinkModal({
+  act,
+  targets,
+  onClose,
+  onConfirm,
+}: {
+  act: UnlinkedActivity
+  targets: LinkTarget[]
+  onClose: () => void
+  onConfirm: (targetId: string) => void
+}) {
   const [pick, setPick] = useState(targets[0].id)
   const [done, setDone] = useState(false)
   return (
@@ -389,7 +399,15 @@ function LinkModal({ act, targets, onClose }: { act: UnlinkedActivity; targets: 
                 <Button variant="secondary" onClick={onClose}>
                   取消
                 </Button>
-                <Button variant="primary" fullWidth iconLeft={<Icon name="link" size={15} />} onClick={() => setDone(true)}>
+                <Button
+                  variant="primary"
+                  fullWidth
+                  iconLeft={<Icon name="link" size={15} />}
+                  onClick={() => {
+                    onConfirm(pick)
+                    setDone(true)
+                  }}
+                >
                   确认关联
                 </Button>
               </div>
@@ -508,9 +526,11 @@ export interface Props {
   onOpenAITrain: () => void
   onOpenAIChat: () => void
   onOpenActivity: (a: Activity) => void
+  onLinkActivity: (a: UnlinkedActivity, targetId: string) => void
+  onCompleteToday: (done: boolean) => void
 }
 
-export function Training({ data, onOpenAITrain, onOpenAIChat }: Props) {
+export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, onCompleteToday }: Props) {
   const [linkAct, setLinkAct] = useState<UnlinkedActivity | null>(null)
   const [markedDone, setMarkedDone] = useState(false)
   const plan = data.plan
@@ -715,7 +735,12 @@ export function Training({ data, onOpenAITrain, onOpenAIChat }: Props) {
             <Button
               variant={markedDone ? 'secondary' : 'primary'}
               iconLeft={<Icon name={markedDone ? 'check-circle-2' : 'check'} size={15} />}
-              onClick={() => setMarkedDone((v) => !v)}
+              onClick={() =>
+                setMarkedDone((v) => {
+                  onCompleteToday(!v)
+                  return !v
+                })
+              }
             >
               {markedDone ? '已完成 · 取消' : '标记完成'}
             </Button>
@@ -826,7 +851,14 @@ export function Training({ data, onOpenAITrain, onOpenAIChat }: Props) {
       {/* Month calendar board */}
       <MonthCalendar data={data} />
 
-      {linkAct && <LinkModal act={linkAct} targets={data.linkTargets} onClose={() => setLinkAct(null)} />}
+      {linkAct && (
+        <LinkModal
+          act={linkAct}
+          targets={data.linkTargets}
+          onClose={() => setLinkAct(null)}
+          onConfirm={(targetId) => onLinkActivity(linkAct, targetId)}
+        />
+      )}
     </div>
   )
 }

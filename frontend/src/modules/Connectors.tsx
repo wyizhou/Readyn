@@ -173,6 +173,7 @@ export interface ConnectorsProps {
   setTab: (t: string) => void
   onOpenConnector: (src: Connector) => void
   onConnect: (id: string) => void
+  onToast: (msg: string) => void
 }
 
 interface StatTuple {
@@ -182,7 +183,7 @@ interface StatTuple {
   c: string
 }
 
-export function Connectors({ data, tab, setTab, onOpenConnector, onConnect }: ConnectorsProps) {
+export function Connectors({ data, tab, setTab, onOpenConnector, onConnect, onToast }: ConnectorsProps) {
   const [modal, setModal] = useState<Connector | null>(null)
   const connected = data.connectors.filter((c) => c.status !== 'available')
   const available = data.connectors.filter((c) => c.status === 'available')
@@ -233,7 +234,7 @@ export function Connectors({ data, tab, setTab, onOpenConnector, onConnect }: Co
               <div style={{ font: 'var(--fw-bold) var(--fs-sm)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>没有你的设备？</div>
               <div style={{ font: 'var(--fw-regular) var(--fs-xs)/1.4 var(--font-sans)', color: 'var(--text-muted)', marginTop: 3 }}>任何遵循统一规范的数据源都能通过开放 API / Webhook 自助接入。</div>
             </div>
-            <Button variant="secondary" iconLeft={<Icon name="book-open" size={15} />}>查看接入文档</Button>
+            <Button variant="secondary" iconLeft={<Icon name="book-open" size={15} />} onClick={() => onToast('接入文档已在新窗口打开')}>查看接入文档</Button>
           </div>
         </>
       )}

@@ -175,9 +175,10 @@ export interface TemplateDetailProps {
   tpl: Template
   sport: string
   onAddToPlan: () => void
+  onToast: (msg: string) => void
 }
 
-export function TemplateDetail({ data, tpl, sport, onAddToPlan }: TemplateDetailProps) {
+export function TemplateDetail({ data, tpl, sport, onAddToPlan, onToast }: TemplateDetailProps) {
   const m = meta[sport] || meta.running
   const det = data.templateDetails[tpl.id] || fallback(tpl, sport)
   const climb = sport === 'climbing'
@@ -294,7 +295,7 @@ export function TemplateDetail({ data, tpl, sport, onAddToPlan }: TemplateDetail
             ))}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <Button variant="secondary" size="sm" iconLeft={<Icon name="pencil" size={14} />}>
+            <Button variant="secondary" size="sm" iconLeft={<Icon name="pencil" size={14} />} onClick={() => onToast('已进入模板编辑')}>
               编辑
             </Button>
             <Button variant="gradient" size="sm" iconLeft={<Icon name="calendar-plus" size={14} />} onClick={onAddToPlan}>

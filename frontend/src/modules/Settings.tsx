@@ -419,6 +419,8 @@ function DataAccount({ onLogout }: { onLogout: () => void }) {
   const [fmt, setFmt] = useState('CSV')
   const [range, setRange] = useState('全部')
   const [requested, setRequested] = useState(false)
+  const [pwdSent, setPwdSent] = useState(false)
+  const [signedOut, setSignedOut] = useState(false)
   return (
     <div>
       <SectionHead
@@ -466,15 +468,36 @@ function DataAccount({ onLogout }: { onLogout: () => void }) {
           </span>
         </Row>
         <Divider />
-        <Row label="密码">
-          <Button variant="secondary" size="sm">
-            修改密码
+        <Row label="密码" desc={pwdSent ? '重置链接已发送至邮箱 · 有效期 30 分钟' : undefined}>
+          <Button
+            variant={pwdSent ? 'ghost' : 'secondary'}
+            size="sm"
+            iconLeft={pwdSent ? <Icon name="check" size={14} color="var(--green-500)" /> : undefined}
+            disabled={pwdSent}
+            onClick={() => {
+              setPwdSent(true)
+              setTimeout(() => setPwdSent(false), 2400)
+            }}
+          >
+            {pwdSent ? '已发送链接' : '修改密码'}
           </Button>
         </Row>
         <Divider />
-        <Row label="登录设备" desc="iPhone 15 Pro · MacBook · Garmin 等 3 台">
-          <Button variant="ghost" size="sm">
-            退出其他设备
+        <Row
+          label="登录设备"
+          desc={signedOut ? '其他设备已登出 · 仅当前设备保持登录' : 'iPhone 15 Pro · MacBook · Garmin 等 3 台'}
+        >
+          <Button
+            variant="ghost"
+            size="sm"
+            iconLeft={signedOut ? <Icon name="check" size={14} color="var(--green-500)" /> : undefined}
+            disabled={signedOut}
+            onClick={() => {
+              setSignedOut(true)
+              setTimeout(() => setSignedOut(false), 2400)
+            }}
+          >
+            {signedOut ? '已退出' : '退出其他设备'}
           </Button>
         </Row>
       </Card>

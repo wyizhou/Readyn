@@ -35,6 +35,7 @@ import type {
   Profile,
   SettingsDoc,
   Template,
+  UnlinkedActivity,
   WeightEntry,
 } from './lib/types'
 
@@ -241,6 +242,29 @@ export default function App() {
     flashMsg('已触发同步')
   }
 
+  // Link a device-synced activity to a planned workout: drop it from the
+  // "未关联" list and flip the matching calendar day to linked so the month
+  // board reflects the change. (mock linkage — date → day-of-month.)
+  const linkActivity = (a: UnlinkedActivity) => {
+    setData((d) => {
+      const unlinked = d.unlinked.filter((u) => u.id !== a.id)
+      const dayNum = parseInt(a.date.slice(3, 5), 10)
+      const ev = d.calendarEvents[dayNum]
+      const calendarEvents =
+        ev && ev.a && !ev.a.linked
+          ? { ...d.calendarEvents, [dayNum]: { ...ev, a: { ...ev.a, linked: true } } }
+          : d.calendarEvents
+      return { ...d, unlinked, calendarEvents }
+    })
+    flashMsg(`已关联「${a.name}」到计划课程`)
+  }
+
+  // Mark / unmark today's workout done. The week grid's today cell already
+  // carries the live "today" highlight; here we just confirm the action.
+  const completeToday = (done: boolean) => {
+    flashMsg(done ? '今日训练已标记完成' : '已取消今日完成标记')
+  }
+
   const titles: Record<ViewId, [string, string]> = {
     dashboard: ['看板', '林越 · 多项目耐力 / 攀岩 · 2026-06-18'],
     training: ['训练日历', `${D.plan.week} · 焦点 ${D.plan.focus}`],
@@ -334,13 +358,14 @@ export default function App() {
             onBack={detail ? back : undefined}
           />
           <SpecBanner on={spec} />
-          {detail?.type === 'activity' && <ActivityDetail data={D} act={detail.act} spec={spec} />}
+          {detail?.type === 'activity' && <ActivityDetail data={D} act={detail.act} spec={spec} onToast={flashMsg} />}
           {detail?.type === 'metric' && <MetricDetail data={D} id={detail.id} onOpenMetric={openMetric} />}
           {detail?.type === 'template' && (
             <TemplateDetail
               data={D}
               tpl={detail.tpl}
               sport={detail.sport}
+              onToast={flashMsg}
               onAddToPlan={() => {
                 setDetail(null)
                 setLibTab('plans')
@@ -348,9 +373,16 @@ export default function App() {
               }}
             />
           )}
-          {detail?.type === 'plan' && <PlanDetail data={D} plan={detail.plan} onApply={() => onApplyLibraryPlan(detail.plan)} />}
+          {detail?.type === 'plan' && (
+            <PlanDetail data={D} plan={detail.plan} onApply={() => onApplyLibraryPlan(detail.plan)} onToast={flashMsg} />
+          )}
           {detail?.type === 'connector' && (
-            <ConnectorDetail src={detail.src} onSync={() => syncSource(detail.src.id)} onDisconnect={() => disconnectSource(detail.src.id)} />
+            <ConnectorDetail
+              src={detail.src}
+              onSync={() => syncSource(detail.src.id)}
+              onDisconnect={() => disconnectSource(detail.src.id)}
+              onToast={flashMsg}
+            />
           )}
           {detail?.type === 'settings' && (
             <SettingsCenter
@@ -379,6 +411,8 @@ export default function App() {
               onOpenAITrain={openTrain}
               onOpenAIChat={() => openChat('请解读今日训练的 AI 适配调整')}
               onOpenActivity={openActivity}
+              onLinkActivity={linkActivity}
+              onCompleteToday={completeToday}
             />
           )}
           {!detail && view === 'library' && (
@@ -394,7 +428,7 @@ export default function App() {
           )}
           {!detail && view === 'weight' && <WeightModule weightLog={weightLog} profile={profile} onAdd={addWeight} today={TODAY} />}
           {!detail && view === 'connectors' && (
-            <Connectors data={D} tab={connTab} setTab={setConnTab} onOpenConnector={openConnector} onConnect={connectSource} />
+            <Connectors data={D} tab={connTab} setTab={setConnTab} onOpenConnector={openConnector} onConnect={connectSource} onToast={flashMsg} />
           )}
           {!detail && view === 'ai' && (
             <AIModule
