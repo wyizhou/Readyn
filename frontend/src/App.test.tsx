@@ -62,4 +62,21 @@ describe('App integration', () => {
     await user.click(screen.getByRole('button', { name: /HRV/ }))
     expect(topHeading()).toContain('HRV')
   })
+
+  it('renders the training and AI modules without errors', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    const nav = screen.getByRole('navigation')
+    await user.click(within(nav).getByText('训练日历'))
+    expect(topHeading()).toContain('训练日历')
+    await user.click(within(nav).getByText('AI 模块'))
+    expect(topHeading()).toContain('AI 模块')
+  })
+
+  it('opens the profile modal from the sidebar', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /林 越/ }))
+    expect(await screen.findByText('退出登录')).toBeInTheDocument()
+  })
 })
