@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Tabs } from './design-system'
 import { Icon } from './components/Icon'
 import { Sidebar } from './components/Sidebar'
@@ -20,8 +20,9 @@ import { TemplateDetail } from './details/TemplateDetail'
 import { PlanDetail } from './details/PlanDetail'
 import { ConnectorDetail } from './details/ConnectorDetail'
 import { mockData } from './lib/mockData'
+import { api } from './lib/api'
 import { bmi as calcBmi } from './lib/format'
-import type { Activity, Connector, Insight, LibraryPlan, MetricId, Profile, Template, WeightEntry } from './lib/types'
+import type { Activity, ApexData, Connector, Insight, LibraryPlan, MetricId, Profile, Template, WeightEntry } from './lib/types'
 
 type Detail =
   | { type: 'activity'; act: Activity }
@@ -66,7 +67,10 @@ function AIButton({ onClick }: { onClick: () => void }) {
 const TODAY = '2026-06-18'
 
 export default function App() {
-  const D = mockData
+  // Start from local mock data so the UI renders instantly and works offline;
+  // replace it with the backend payload once /api/bootstrap resolves.
+  const [data, setData] = useState<ApexData>(mockData)
+  const D = data
   const [view, setView] = useState<ViewId>('dashboard')
   const [range, setRange] = useState('28d')
   const [connTab, setConnTab] = useState('connected')
@@ -79,10 +83,39 @@ export default function App() {
   const [detail, setDetail] = useState<Detail | null>(null)
   const [spec, setSpec] = useState(false)
 
+  // Load the real dataset from the backend; silently keep mock data if offline.
+  useEffect(() => {
+    let cancelled = false
+    api
+      .bootstrap()
+      .then((d) => {
+        if (cancelled) return
+        setData(d)
+        setWeightLog(d.weightLog)
+        setProfile({ ...d.profile })
+      })
+      .catch(() => {
+        /* backend unavailable — stay on local mock data */
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   const currentWeight = weightLog[0] ? weightLog[0].kg : profile.targetWeight
   const bmi = calcBmi(currentWeight, profile.height)
-  const addWeight = (e: WeightEntry) =>
+  const addWeight = (e: WeightEntry) => {
+    // Optimistic local update, then persist (best-effort) and adopt the server log.
     setWeightLog((prev) => [e, ...prev.filter((x) => x.date !== e.date)].sort((a, b) => b.date.localeCompare(a.date)))
+    api
+      .addWeight(e)
+      .then((log) => setWeightLog(log))
+      .catch(() => {})
+  }
+  const saveProfile = (p: Profile) => {
+    setProfile(p)
+    api.updateProfile(p).catch(() => {})
+  }
 
   const openChat = (q?: string) => {
     setAiTab('chat')
@@ -267,7 +300,7 @@ export default function App() {
         {profileOpen && (
           <ProfileModal
             profile={profile}
-            setProfile={setProfile}
+            setProfile={saveProfile}
             weightLog={weightLog}
             today={TODAY}
             onAddWeight={addWeight}

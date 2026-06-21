@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
+import { api } from '../lib/api'
 import './login.css'
 
 interface Account {
@@ -36,9 +37,21 @@ export function Login() {
   const doLogin = () => {
     if (!selected || loggingIn) return
     setLoggingIn(true)
-    setTimeout(() => {
+    // Best-effort auth, then enter the app (redirect regardless of backend state).
+    const go = () => {
       window.location.href = APP_URL
-    }, 500)
+    }
+    api
+      .login(selected, pw)
+      .then((res) => {
+        try {
+          localStorage.setItem('readyn.token', res.token)
+        } catch {
+          /* ignore storage errors */
+        }
+      })
+      .catch(() => {})
+      .finally(() => setTimeout(go, 400))
   }
 
   return (
