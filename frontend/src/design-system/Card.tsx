@@ -21,7 +21,9 @@ export function Card({ title, action, padding = 'md', interactive = false, child
   const pad = PAD[padding] ?? 'var(--sp-5)'
   const css: CSSProperties = {
     background: 'var(--surface-card)',
-    border: '1px solid var(--border-subtle)',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'var(--border-subtle)',
     borderRadius: 'var(--r-lg)',
     boxShadow: 'var(--shadow-md), var(--inner-top)',
     transition: 'border-color var(--dur-base), transform var(--dur-base) var(--ease-out)',

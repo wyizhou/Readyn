@@ -421,6 +421,11 @@ function DataAccount({ onLogout }: { onLogout: () => void }) {
   const [requested, setRequested] = useState(false)
   const [pwdSent, setPwdSent] = useState(false)
   const [signedOut, setSignedOut] = useState(false)
+  // Account deletion is a real destructive action we never perform here — the
+  // button arms on first click and, on confirm, shows an honest notice that
+  // deletion requires email confirmation (disabled in this prototype).
+  const [delArmed, setDelArmed] = useState(false)
+  const [delNote, setDelNote] = useState(false)
   return (
     <div>
       <SectionHead
@@ -518,20 +523,35 @@ function DataAccount({ onLogout }: { onLogout: () => void }) {
             退出登录
           </Button>
           <button
+            onClick={() => {
+              if (!delArmed) {
+                setDelArmed(true)
+                setTimeout(() => setDelArmed(false), 3000)
+                return
+              }
+              setDelArmed(false)
+              setDelNote(true)
+              setTimeout(() => setDelNote(false), 3600)
+            }}
             style={{
               height: 34,
               padding: '0 14px',
               borderRadius: 'var(--r-md)',
               border: '1px solid var(--red-500)',
-              background: 'transparent',
-              color: 'var(--red-400)',
+              background: delArmed ? 'var(--red-500)' : 'transparent',
+              color: delArmed ? 'var(--white)' : 'var(--red-400)',
               cursor: 'pointer',
               font: 'var(--fw-semibold) var(--fs-xs)/1 var(--font-sans)',
             }}
           >
-            删除账户
+            {delArmed ? '确认删除？' : '删除账户'}
           </button>
         </div>
+        {delNote && (
+          <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1.4 var(--font-sans)', color: 'var(--amber-400)' }}>
+            账户删除需通过邮箱二次确认完成（原型环境未启用真实删除）。
+          </span>
+        )}
       </div>
     </div>
   )

@@ -735,12 +735,11 @@ export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, on
             <Button
               variant={markedDone ? 'secondary' : 'primary'}
               iconLeft={<Icon name={markedDone ? 'check-circle-2' : 'check'} size={15} />}
-              onClick={() =>
-                setMarkedDone((v) => {
-                  onCompleteToday(!v)
-                  return !v
-                })
-              }
+              onClick={() => {
+                const next = !markedDone
+                setMarkedDone(next)
+                onCompleteToday(next)
+              }}
             >
               {markedDone ? '已完成 · 取消' : '标记完成'}
             </Button>

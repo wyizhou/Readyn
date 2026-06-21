@@ -49,7 +49,11 @@ export function Button({
     font: `var(--fw-semibold) ${s.font}/1 var(--font-sans)`,
     letterSpacing: '0.01em',
     borderRadius: 'var(--r-md)',
-    border: '1px solid transparent',
+    // Non-shorthand so a variant can override borderColor alone without React
+    // warning about mixing `border` shorthand with `borderColor`.
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'transparent',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.45 : 1,
     transition:
