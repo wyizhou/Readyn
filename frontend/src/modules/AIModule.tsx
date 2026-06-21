@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, Fragment } from 'react'
 import { Button } from '../design-system'
 import { Icon } from '../components/Icon'
-import type { ApexData } from '../lib/types'
+import type { ApexData, LibraryPlan } from '../lib/types'
 
 // ---------- local types ----------
 type MsgRole = 'user' | 'ai'
@@ -448,6 +448,24 @@ const baseDraft: Draft = {
 }
 const draftLoad = (d: Draft): number => d.days.reduce((s, x) => s + x.load, 0)
 
+// Turn the AI draft into a saveable LibraryPlan so 保存到训练库 actually adds it
+// to 我的计划 (and can then be one-click applied to the calendar).
+const planFromDraft = (d: Draft): LibraryPlan => {
+  const active = d.days.filter((x) => x.s !== '休息' && x.load > 0)
+  const sports = Array.from(new Set(active.map((x) => x.s)))
+  return {
+    id: `ai-${Date.now()}`,
+    name: d.name,
+    goal: d.goal,
+    weeks: d.weeks,
+    load: draftLoad(d) * d.weeks,
+    sessions: active.length * d.weeks,
+    sports,
+    updated: '刚刚',
+    source: 'AI',
+  }
+}
+
 function planReply(q: string, setDraft: (fn: (d: Draft) => Draft) => void): ExpertReply {
   if (q.includes('周末') || q.includes('低') || q.includes('减') || q.includes('轻')) {
     setDraft((d) => ({ ...d, acwr: 0.98, days: d.days.map((x) => (x.d === '周六' ? { ...x, t: '中距离爬升', load: 100 } : x)) }))
@@ -659,7 +677,7 @@ function TrainTab({ onSaved, onApply }: { onSaved: Props['onSaved']; onApply: Pr
                   iconLeft={<Icon name="bookmark" size={16} />}
                   onClick={() => {
                     setSaved(true)
-                    setTimeout(() => onSaved && onSaved(), 900)
+                    setTimeout(() => onSaved && onSaved(planFromDraft(draft)), 900)
                   }}
                 >
                   保存到训练库
@@ -686,7 +704,7 @@ export interface Props {
   setTab: (t: string) => void
   seed: { q: string; nonce: number } | null
   body: { weight: number; bmi: number }
-  onSaved: () => void
+  onSaved: (plan: LibraryPlan) => void
   onApply: (name: string, focus: string, days: { t: string; sport: string; load: number }[]) => void
 }
 

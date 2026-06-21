@@ -437,9 +437,16 @@ export default function App() {
               setTab={setAiTab}
               seed={seed}
               body={{ weight: currentWeight, bmi }}
-              onSaved={() => {
+              onSaved={(plan) => {
+                // Actually persist the AI draft into 我的计划 (replace any
+                // same-name plan), then route to the library so it's visible.
+                setData((d) => ({
+                  ...d,
+                  library: { ...d.library, plans: [plan, ...d.library.plans.filter((p) => p.name !== plan.name)] },
+                }))
                 setLibTab('plans')
                 setView('library')
+                flashMsg(`已保存计划「${plan.name}」到训练库`)
               }}
               onApply={onApplyDraft}
             />
