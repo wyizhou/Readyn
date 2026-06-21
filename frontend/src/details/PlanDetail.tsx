@@ -454,7 +454,7 @@ export function PlanDetail({ plan, onApply }: PlanDetailProps) {
           本周负荷 <b style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-strong)' }}>{week.load} AU</b>
         </span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 10, marginBottom: 22 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 10, marginBottom: 22 }}>
         {week.days.map((d, i) => (
           <DayCell key={i} d={d} />
         ))}

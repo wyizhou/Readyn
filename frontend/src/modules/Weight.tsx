@@ -195,7 +195,7 @@ export function WeightModule({ weightLog, profile, onAdd, today }: WeightModuleP
 
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 18 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 16, marginBottom: 18 }}>
         {tiles.map((tile) => (
           <div
             key={tile.l}

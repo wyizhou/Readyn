@@ -255,7 +255,7 @@ function MonthCalendar({ data }: { data: ApexData }) {
   )
   return (
     <Card title="2026 年 6 月 · 训练日历" action={legend}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, marginBottom: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 6, marginBottom: 8 }}>
         {wd.map((w, i) => (
           <span
             key={w}
@@ -270,7 +270,7 @@ function MonthCalendar({ data }: { data: ApexData }) {
           </span>
         ))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 6 }}>
         {data.calendar.map((d, i) => (
           <MonthCell key={i} day={d} ev={data.calendarEvents} />
         ))}
@@ -592,7 +592,7 @@ export function Training({ data, onOpenAITrain, onOpenAIChat }: Props) {
           本周安排
         </h3>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 12, marginBottom: 24 }}>
         {plan.days.map((d) => (
           <DayCol key={d.d} day={d} />
         ))}

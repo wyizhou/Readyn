@@ -188,7 +188,7 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
           </div>
         </div>
         <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--hairline)' }} />
-        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 20 }}>
+        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 20 }}>
           {hero.map((s) => (
             <button
               key={s.l}
@@ -228,7 +228,7 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
       <SectionTitle icon="sparkles" note="基于近 14 天数据自动生成">
         AI 洞察
       </SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 26 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16, marginBottom: 26 }}>
         {data.insights.map((ins) => (
           <InsightCard key={ins.id} ins={ins} onAsk={onAskAI} />
         ))}
@@ -238,7 +238,7 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
       <SectionTitle icon="activity" note="CTL 体能 · ATL 疲劳 · TSB 状态">
         体能趋势
       </SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.85fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)', gap: 16, marginBottom: 16 }}>
         <Card
           title="近 6 周 · 体能 / 疲劳 / 状态"
           action={
@@ -276,7 +276,7 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
         >
           <PMCChart data={data.pmc} />
         </Card>
-        <div style={{ display: 'grid', gridTemplateRows: 'repeat(3, 1fr)', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateRows: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
           <StatCard label="本周负荷" value={t.weekLoad} unit="AU" delta={`+${t.weekLoadDelta}%`} trend="up">
             <Sparkline data={data.pmc.slice(-7).map((d) => d.load)} />
           </StatCard>
@@ -298,7 +298,7 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
       </div>
 
       {/* Recovery: HRV + sleep + HR zones */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 26 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16, marginBottom: 26 }}>
         <Card title="HRV 趋势 (RMSSD)" action={<Badge tone="positive" dot>基线抬升</Badge>}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
             <span
@@ -352,7 +352,7 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
       <SectionTitle icon="layers" note="跑步 · 登山 · 徒步 · 抱石 · 难度">
         多项目结构
       </SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr)', gap: 16, marginBottom: 16 }}>
         <Card title="负荷构成">
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             <div style={{ position: 'relative', flex: 'none' }}>

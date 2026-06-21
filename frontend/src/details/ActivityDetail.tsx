@@ -573,7 +573,7 @@ export function ActivityDetail({ data, act }: ActivityDetailProps) {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(6, 1fr)',
+          gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
           gap: 16,
           padding: 22,
           marginBottom: 22,

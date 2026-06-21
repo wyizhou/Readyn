@@ -73,7 +73,16 @@ export function Topbar({ title, subtitle, right, onBack }: TopbarProps) {
           {title}
         </h1>
         {subtitle && (
-          <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-mono)', color: 'var(--text-faint)', whiteSpace: 'nowrap' }}>
+          <span
+            style={{
+              font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-mono)',
+              color: 'var(--text-faint)',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: 520,
+            }}
+          >
             {subtitle}
           </span>
         )}

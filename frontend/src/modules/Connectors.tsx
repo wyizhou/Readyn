@@ -196,7 +196,7 @@ export function Connectors({ data, tab, setTab, onOpenConnector }: ConnectorsPro
 
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 22 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 16, marginBottom: 22 }}>
         {stats.map(({ l, v, ic, c }) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 18, background: 'var(--surface-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--inner-top)' }}>
             <span style={{ width: 38, height: 38, borderRadius: 10, background: 'var(--surface-inset)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><Icon name={ic} size={18} color={c} /></span>
@@ -217,13 +217,13 @@ export function Connectors({ data, tab, setTab, onOpenConnector }: ConnectorsPro
       </div>
 
       {tab === 'connected' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
           {connected.map((s) => <SourceCard key={s.id} src={s} onConnect={setModal} onConfig={onOpenConnector} />)}
         </div>
       )}
       {tab === 'market' && (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
             {available.map((s) => <SourceCard key={s.id} src={s} onConnect={setModal} onConfig={setModal} />)}
           </div>
           <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 14, padding: 20, border: '1px dashed var(--border-strong)', borderRadius: 'var(--r-lg)' }}>

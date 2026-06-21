@@ -150,7 +150,7 @@ export function HRZoneBar({ zones }: { zones: HrZone[] }) {
           <div key={z.z} title={`${z.label} ${z.pct}%`} style={{ width: `${z.pct}%`, background: z.color }} />
         ))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 8 }}>
         {zones.map((z) => (
           <div key={z.z} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span

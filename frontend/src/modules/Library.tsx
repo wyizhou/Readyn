@@ -337,7 +337,7 @@ export function Library({ data, tab, setTab, onNewFromAI, onOpenTemplate, onOpen
                 : '攀岩训练模板 — 抱石力量、指力、耐力与爆发力，兼顾难度与抱石。'}
             </span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
             {templates.map((t) => (
               <TemplateCard key={t.id} tpl={t} meta={sportMeta[sportTab]} onOpen={() => onOpenTemplate(t, sportTab)} />
             ))}
