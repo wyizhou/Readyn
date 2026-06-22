@@ -63,6 +63,25 @@ describe('App integration', () => {
     expect(topHeading()).toContain('HRV')
   })
 
+  it('jumps between metrics via the related-metric chips', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    // Hero HRV → HRV deep-dive, then follow a related-metric chip to ACWR.
+    await user.click(screen.getByRole('button', { name: /HRV/ }))
+    expect(topHeading()).toContain('HRV')
+    await user.click(screen.getByRole('button', { name: /ACWR/ }))
+    expect(topHeading()).toContain('ACWR')
+  })
+
+  it('routes a dashboard insight into the AI chat (向AI追问)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    // First insight is "ACWR 接近高位"; 向AI追问 seeds a question into the chat.
+    await user.click(screen.getAllByRole('button', { name: /向 AI 追问/ })[0])
+    expect(topHeading()).toContain('AI')
+    expect(await screen.findByText('关于「ACWR 接近高位」，我该怎么做？')).toBeInTheDocument()
+  })
+
   it('renders the training and AI modules without errors', async () => {
     const user = userEvent.setup()
     render(<App />)
