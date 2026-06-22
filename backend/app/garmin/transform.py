@@ -140,18 +140,38 @@ def sleep_to_night(raw: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+_GENDER = {"MALE": "男", "FEMALE": "女"}
+
+
 def social_to_profile(social: dict[str, Any], personal: dict[str, Any]) -> dict[str, Any]:
-    """Merge social + personal-information payloads → ApexData ``Profile`` core."""
+    """Merge social + personal-information payloads → ApexData ``Profile`` core.
+
+    Note: ``restingHR`` is *not* set here — Garmin keeps it in the daily summary,
+    so :mod:`app.garmin.sync` fills it from there. Max HR is not stored in the
+    profile either; we use the age-based estimate (220 − age).
+    """
     bio = personal.get("biometricProfile") or {}
     user_info = personal.get("userInfo") or {}
+    age = user_info.get("age")
+    gender = (user_info.get("genderType") or "").upper()
     return {
         "name": social.get("fullName") or social.get("displayName") or "",
         "handle": social.get("userName") or "",
-        "location": (user_info.get("location") or social.get("location") or ""),
+        "location": social.get("location") or "",
         "height": _round(bio.get("height")),
-        "restingHR": _round((personal.get("sleep") or {}).get("restingHeartRate")),
-        "maxHR": _round(bio.get("maxHr")),
+        "sex": _GENDER.get(gender, ""),
+        "birth": user_info.get("birthDate") or "",
+        "maxHR": _round(220 - age) if age else 0,
     }
+
+
+def readiness_from_payload(payload: Any) -> int:
+    """Garmin Training Readiness payload → today's readiness score (0–100)."""
+    if isinstance(payload, list) and payload:
+        return _round(payload[0].get("score"))
+    if isinstance(payload, dict):
+        return _round(payload.get("score"))
+    return 0
 
 
 # --- training-load model (CTL/ATL/TSB) -----------------------------------
@@ -228,6 +248,7 @@ def build_today(
     hrv_points: list[dict[str, Any]],
     sleep_nights: list[dict[str, Any]],
     resting_hr: int,
+    readiness: int = 0,
 ) -> dict[str, Any]:
     """Assemble the dashboard ``Today`` block from already-transformed pieces."""
     hrv = hrv_points[-1]["v"] if hrv_points else 0
@@ -245,7 +266,7 @@ def build_today(
     tsb = fitness.get("tsb", 0)
     state = "fresh" if tsb > 5 else "strained" if tsb < -15 else "balanced"
     return {
-        "readiness": 0,  # composite readiness needs a vendor score; left 0 until modelled
+        "readiness": readiness,  # Garmin Training Readiness score (0 if unavailable)
         "hrv": hrv,
         "hrvDelta": _round(hrv - hrv_base),
         "rhr": resting_hr,

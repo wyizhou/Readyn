@@ -115,3 +115,6 @@ class GarminCNClient:
     def fetch_weight(self, start: str, end: str) -> dict[str, Any]:
         path = f"/weight-service/weight/dateRange?startDate={start}&endDate={end}"
         return self._g.connectapi(path) or {}
+
+    def fetch_training_readiness(self, day: str) -> Any:
+        return self._g.connectapi(f"/metrics-service/metrics/trainingreadiness/{day}") or []

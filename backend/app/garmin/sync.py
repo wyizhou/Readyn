@@ -19,7 +19,8 @@ from . import transform
 from .client import GarminCNClient
 
 # Profile fields Garmin owns; everything else on the row is user-editable and kept.
-_GARMIN_PROFILE_FIELDS = ("name", "handle", "location", "height", "restingHR", "maxHR")
+# (restingHR is set separately from the daily summary, see sync_account.)
+_GARMIN_PROFILE_FIELDS = ("name", "handle", "location", "height", "maxHR", "sex", "birth")
 
 
 def _persist_dataset(db: Session, key: str, value: Any) -> None:
@@ -69,6 +70,13 @@ def sync_account(
     personal = client.fetch_personal_info()
     profile_core = transform.social_to_profile(social, personal)
     _persist_profile(db, profile_core)
+    # Resting HR lives in the daily summary, not personal-info.
+    summary = client.fetch_daily_summary(today.isoformat())
+    resting_hr = transform._round(summary.get("restingHeartRate")) if summary else 0
+    if resting_hr:
+        profile = db.get(Profile, 1)
+        if profile is not None:
+            profile.restingHR = resting_hr
 
     # Weight ------------------------------------------------------------------
     weight_raw = client.fetch_weight(window_asc[0].isoformat(), today.isoformat())
@@ -104,14 +112,15 @@ def sync_account(
             sleep_nights.append(night)
     _persist_dataset(db, "sleep", sleep_nights)
 
-    # Today's resting HR ------------------------------------------------------
-    summary = client.fetch_daily_summary(today.isoformat())
-    resting_hr = transform._round(summary.get("restingHeartRate")) if summary else 0
+    # Training readiness (Garmin's own composite score) -----------------------
+    readiness = transform.readiness_from_payload(
+        client.fetch_training_readiness(today.isoformat())
+    )
 
     # Derived: PMC + Today ----------------------------------------------------
     pmc, fitness = transform.training_load_series(activities, days=days)
     _persist_dataset(db, "pmc", pmc)
-    today_block = transform.build_today(fitness, hrv_points, sleep_nights, resting_hr)
+    today_block = transform.build_today(fitness, hrv_points, sleep_nights, resting_hr, readiness)
     _persist_dataset(db, "today", today_block)
 
     # Session bookkeeping -----------------------------------------------------

@@ -139,8 +139,17 @@ def test_garmin_status_disconnected(client: TestClient) -> None:
     assert "configured" in s
 
 
-def test_garmin_connect_requires_credentials(client: TestClient) -> None:
-    # No .env creds in the test env and an empty body → 400 with a clear message.
+def test_garmin_connect_requires_credentials(client: TestClient, monkeypatch) -> None:
+    # Force "no credentials" regardless of any local backend/.env so the test is
+    # hermetic and never attempts a real network login.
+    import types
+
+    import app.routers.garmin as gr
+
+    empty = types.SimpleNamespace(
+        garmin_cn_email="", garmin_cn_password="", garmin_domain="garmin.cn"
+    )
+    monkeypatch.setattr(gr, "get_settings", lambda: empty)
     r = client.post("/api/garmin/connect", json={})
     assert r.status_code == 400
     assert "凭证" in r.json()["detail"]

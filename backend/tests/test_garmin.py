@@ -24,10 +24,10 @@ ACTIVITY = {
 }
 SOCIAL = {"displayName": "linyue", "fullName": "林越", "userName": "linyue", "location": "成都"}
 PERSONAL = {
-    "biometricProfile": {"height": 178, "maxHr": 190},
-    "userInfo": {"location": "成都"},
-    "sleep": {"restingHeartRate": 48},
+    "biometricProfile": {"height": 178, "vo2Max": 50},
+    "userInfo": {"age": 33, "genderType": "MALE", "birthDate": "1993-01-01"},
 }
+READINESS = [{"calendarDate": "2026-06-20", "score": 58, "level": "MODERATE"}]
 WEIGHT = {"dateWeightList": [{"calendarDate": "2026-06-20", "weight": 66000, "bodyFat": 12.5}]}
 HRV_DAY = {"hrvSummary": {"lastNightAvg": 70, "baseline": {"balancedLow": 60, "balancedUpper": 80}}}
 SLEEP_DAY = {
@@ -71,6 +71,19 @@ def test_hrv_and_sleep_transforms() -> None:
     assert night is not None
     assert night["deep"] == 1.5 and night["score"] == 82
     assert transform.sleep_to_night({}) is None  # no sleep → skipped
+
+
+def test_profile_and_readiness_transforms() -> None:
+    p = transform.social_to_profile(SOCIAL, PERSONAL)
+    assert p["name"] == "林越"
+    assert p["height"] == 178
+    assert p["maxHR"] == 187  # 220 − 33
+    assert p["sex"] == "男"
+    assert p["birth"] == "1993-01-01"
+    assert "restingHR" not in p  # filled from the daily summary, not here
+    assert transform.readiness_from_payload(READINESS) == 58
+    assert transform.readiness_from_payload([]) == 0
+    assert transform.readiness_from_payload({"score": 70}) == 70
 
 
 def test_training_load_series_and_today() -> None:
@@ -123,6 +136,9 @@ class FakeClient:
     def fetch_daily_summary(self, day: str) -> dict[str, Any]:
         return SUMMARY
 
+    def fetch_training_readiness(self, day: str) -> Any:
+        return READINESS if day == "2026-06-20" else []
+
     def dump(self) -> str:
         return "fake-token"
 
@@ -164,7 +180,11 @@ def test_sync_account_persists_real_data() -> None:
     assert data["activities"][0]["sport"] == "跑步"
     assert data["weightLog"][0]["kg"] == 66.0
     assert data["today"]["rhr"] == 48
+    assert data["today"]["readiness"] == 58  # Garmin Training Readiness score
     assert data["profile"]["name"] == "林越"  # Garmin overwrote the empty name
+    assert data["profile"]["restingHR"] == 48  # from the daily summary
+    assert data["profile"]["maxHR"] == 187  # 220 − age(33)
+    assert data["profile"]["sex"] == "男"
     db.close()
 
 
