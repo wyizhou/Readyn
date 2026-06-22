@@ -3,48 +3,42 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
+// The mock data is gone: with no backend reachable in jsdom, the app renders the
+// empty skeleton. These tests cover that honest empty-state reality plus the
+// behaviours that survive without seeded data (navigation, spec layer, local
+// weight entry, and the real Garmin connect modal).
+
 function topHeading(): string {
   return screen.getAllByRole('heading', { level: 1 })[0].textContent ?? ''
 }
 
-describe('App integration', () => {
-  it('renders the dashboard by default', () => {
+describe('App integration (empty-state / real-data)', () => {
+  it('renders the dashboard with empty states and no crash', () => {
     render(<App />)
     expect(topHeading()).toContain('看板')
-    expect(screen.getByText('AI 洞察')).toBeInTheDocument()
     expect(screen.getByText('就绪度')).toBeInTheDocument()
-    // readiness value from mock data
-    expect(screen.getByText('78')).toBeInTheDocument()
+    expect(screen.getByText('AI 洞察')).toBeInTheDocument()
+    // Charts with no data render the shared placeholder instead of crashing.
+    expect(screen.getAllByText('暂无数据').length).toBeGreaterThan(0)
   })
 
   it('navigates between modules via the sidebar', async () => {
     const user = userEvent.setup()
     render(<App />)
-
     const nav = screen.getByRole('navigation')
+
     await user.click(within(nav).getByText('连接器'))
     expect(topHeading()).toContain('连接器')
-
     await user.click(within(nav).getByText('训练库'))
     expect(topHeading()).toContain('训练库')
-
+    // Training calendar + AI modules must render on empty data without crashing.
+    await user.click(within(nav).getByText('训练日历'))
+    expect(topHeading()).toContain('训练日历')
+    await user.click(within(nav).getByText('AI 模块'))
+    expect(topHeading()).toContain('AI')
     await user.click(within(nav).getByText('体重记录'))
     expect(topHeading()).toContain('体重记录')
-
     await user.click(within(nav).getByText('看板'))
-    expect(topHeading()).toContain('看板')
-  })
-
-  it('opens an activity detail and returns via the back button', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-
-    // Click the first recent-activity row (the threshold-interval run).
-    await user.click(screen.getByText('阈值间歇 6×1km'))
-    const back = await screen.findByRole('button', { name: /返回/ })
-    expect(back).toBeInTheDocument()
-
-    await user.click(back)
     expect(topHeading()).toContain('看板')
   })
 
@@ -55,159 +49,7 @@ describe('App integration', () => {
     expect(screen.getByText(/实现批注已开启/)).toBeInTheDocument()
   })
 
-  it('opens a metric deep-dive from a hero stat', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    // The HRV hero tile is a button; clicking opens the metric detail.
-    await user.click(screen.getByRole('button', { name: /HRV/ }))
-    expect(topHeading()).toContain('HRV')
-  })
-
-  it('jumps between metrics via the related-metric chips', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    // Hero HRV → HRV deep-dive, then follow a related-metric chip to ACWR.
-    await user.click(screen.getByRole('button', { name: /HRV/ }))
-    expect(topHeading()).toContain('HRV')
-    await user.click(screen.getByRole('button', { name: /ACWR/ }))
-    expect(topHeading()).toContain('ACWR')
-  })
-
-  it('routes a dashboard insight into the AI chat (向AI追问)', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    // First insight is "ACWR 接近高位"; 向AI追问 seeds a question into the chat.
-    await user.click(screen.getAllByRole('button', { name: /向 AI 追问/ })[0])
-    expect(topHeading()).toContain('AI')
-    expect(await screen.findByText('关于「ACWR 接近高位」，我该怎么做？')).toBeInTheDocument()
-  })
-
-  it('renders the training and AI modules without errors', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    const nav = screen.getByRole('navigation')
-    await user.click(within(nav).getByText('训练日历'))
-    expect(topHeading()).toContain('训练日历')
-    await user.click(within(nav).getByText('AI 模块'))
-    expect(topHeading()).toContain('AI 模块')
-  })
-
-  it('re-renders dashboard data when the time range is switched', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    // Default range is 28 天.
-    expect(screen.getByText('近 28 天 · 体能 / 疲劳 / 状态')).toBeInTheDocument()
-    expect(screen.getByText('近 28 天负荷')).toBeInTheDocument()
-
-    // Switching to 7 天 must drive the chart card + load aggregate to recompute.
-    await user.click(screen.getByText('7 天'))
-    expect(screen.getByText('近 7 天 · 体能 / 疲劳 / 状态')).toBeInTheDocument()
-    expect(screen.getByText('近 7 天负荷')).toBeInTheDocument()
-
-    // Switching to 赛季 selects the full series.
-    await user.click(screen.getByText('赛季'))
-    expect(screen.getByText('赛季 · 体能 / 疲劳 / 状态')).toBeInTheDocument()
-    expect(screen.getByText('赛季负荷')).toBeInTheDocument()
-  })
-
-  it('opens the profile modal from the sidebar', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(screen.getByRole('button', { name: /林 越/ }))
-    expect(await screen.findByText('退出登录')).toBeInTheDocument()
-  })
-
-  it('replaces today’s course and syncs detail + calendar', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('训练日历'))
-    // Default scheduled session is shown (detail card + week grid + month cell).
-    expect(screen.getAllByText('主动恢复 + 柔韧').length).toBeGreaterThan(0)
-
-    // Open the replace picker, choose an alternative, confirm.
-    await user.click(screen.getByRole('button', { name: /替换课程/ }))
-    await user.click(await screen.findByText('轻松有氧跑'))
-    await user.click(screen.getByRole('button', { name: '确认替换' }))
-
-    // The replacement now appears everywhere today's course is shown, and the
-    // original title is fully gone (detail, 本周安排 grid, month calendar).
-    expect(screen.getAllByText('轻松有氧跑').length).toBeGreaterThan(0)
-    expect(screen.queryByText('主动恢复 + 柔韧')).not.toBeInTheDocument()
-  })
-
-  it('cancelling the replace picker keeps the original course', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('训练日历'))
-    await user.click(screen.getByRole('button', { name: /替换课程/ }))
-    await user.click(await screen.findByRole('button', { name: '取消' }))
-    expect(screen.getAllByText('主动恢复 + 柔韧').length).toBeGreaterThan(0)
-    expect(screen.queryByText('轻松有氧跑')).not.toBeInTheDocument()
-  })
-
-  it('marks today’s workout done and back in Training', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('训练日历'))
-    const mark = screen.getByRole('button', { name: '标记完成' })
-    await user.click(mark)
-    expect(screen.getByRole('button', { name: /已完成 · 取消/ })).toBeInTheDocument()
-  })
-
-  it('today completion persists across navigation', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    const nav = screen.getByRole('navigation')
-    await user.click(within(nav).getByText('训练日历'))
-    await user.click(screen.getByRole('button', { name: '标记完成' }))
-    expect(screen.getByRole('button', { name: /已完成 · 取消/ })).toBeInTheDocument()
-
-    // Navigate away and back — the completion must survive (state lives in App).
-    await user.click(within(nav).getByText('看板'))
-    await user.click(within(nav).getByText('训练日历'))
-    expect(screen.getByRole('button', { name: /已完成 · 取消/ })).toBeInTheDocument()
-  })
-
-  it('applies a saved plan and links it into the training calendar', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('训练库'))
-    await user.click(screen.getByText('我的计划'))
-    await user.click(screen.getAllByRole('button', { name: '应用' })[0])
-    expect(topHeading()).toContain('训练日历')
-    // Linkage: the applied plan's name now drives the Training plan header.
-    expect(screen.getByText('有氧容量强化 · 4 周')).toBeInTheDocument()
-    expect(screen.getByText(/已应用计划/)).toBeInTheDocument()
-  })
-
-  it('applies the AI-drafted plan and links it into the calendar', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
-    await user.click(screen.getByRole('button', { name: '应用到日历' }))
-    expect(topHeading()).toContain('训练日历')
-    // The drafted plan name appears as the calendar's week header.
-    expect(screen.getByText('有氧容量强化 · 第 7 周')).toBeInTheDocument()
-  })
-
-  it('connects 佳明 · 中国区 and the synced activity shows in Training', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
-    await user.click(screen.getByText('数据源市场'))
-    // Scope to the Garmin-CN card, then run the connect wizard.
-    let card: HTMLElement | null = screen.getByText('佳明 · 中国区')
-    while (card && !within(card).queryByRole('button', { name: '连接' })) card = card.parentElement
-    await user.click(within(card as HTMLElement).getByRole('button', { name: '连接' }))
-    await user.click(screen.getByRole('button', { name: /授权/ }))
-    await user.click(screen.getByRole('button', { name: '确认映射并同步' }))
-    await user.click(screen.getByRole('button', { name: '完成' }))
-    // Linkage: a freshly-synced unlinked activity now appears in Training.
-    await user.click(within(screen.getByRole('navigation')).getByText('训练日历'))
-    expect(screen.getByText('晨间有氧跑 (设备同步)')).toBeInTheDocument()
-  })
-
-  it('records a new weight entry that shows in the log', async () => {
+  it('records a new weight entry that shows in the log (optimistic, offline)', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByText('体重记录'))
@@ -216,33 +58,28 @@ describe('App integration', () => {
     expect(screen.getAllByText('70.3').length).toBeGreaterThan(0)
   })
 
-  it('opens a training-library template detail and returns', async () => {
+  it('shows 佳明 · 中国区 in the market and opens the real credential login modal', async () => {
     const user = userEvent.setup()
     render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('训练库'))
-    await user.click(screen.getByText('节奏跑 8km'))
-    expect(topHeading()).toContain('节奏跑 8km')
-    await user.click(await screen.findByRole('button', { name: /返回/ }))
-    expect(topHeading()).toContain('训练库')
+    await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
+    await user.click(screen.getByText('数据源市场'))
+
+    // Scope to the Garmin-CN card and start the connect flow.
+    let card: HTMLElement | null = screen.getByText('佳明 · 中国区')
+    while (card && !within(card).queryByRole('button', { name: '连接' })) card = card.parentElement
+    await user.click(within(card as HTMLElement).getByRole('button', { name: '连接' }))
+
+    // The modal now collects real account credentials (not a mock OAuth wizard).
+    expect(await screen.findByText('佳明账号 (邮箱/手机)')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /登录并同步/ })).toBeInTheDocument()
   })
 
-  it('opens the settings center and toggles a notification preference', async () => {
+  it('renders the connectors schema tab empty without crashing', async () => {
     const user = userEvent.setup()
     render(<App />)
-    // Profile modal → settings center.
-    await user.click(screen.getByRole('button', { name: /林 越/ }))
-    await user.click(await screen.findByRole('button', { name: /设置中心/ }))
-    expect(topHeading()).toContain('设置中心')
-
-    // Go to the notifications section.
-    await user.click(screen.getByRole('button', { name: '通知与提醒' }))
-
-    // Walk up from the label to the row that owns the switch (default off → on).
-    let el: HTMLElement | null = screen.getByText('每周总结')
-    while (el && !within(el).queryByRole('switch')) el = el.parentElement
-    const sw = within(el as HTMLElement).getByRole('switch')
-    expect(sw).toHaveAttribute('aria-checked', 'false')
-    await user.click(sw)
-    expect(sw).toHaveAttribute('aria-checked', 'true')
+    await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
+    await user.click(screen.getByText('统一规范'))
+    // No fabricated schema rows; the canonical-model explainer still renders.
+    expect(screen.getByText(/统一数据模型/)).toBeInTheDocument()
   })
 })

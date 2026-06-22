@@ -157,7 +157,7 @@ function DayCol({ day, done = false }: { day: PlanDay; done?: boolean }) {
           </span>
         </div>
       </div>
-      {day.status === 'rest' ? (
+      {day.status === 'rest' || !it ? (
         <div
           style={{
             flex: 1,
@@ -170,7 +170,7 @@ function DayCol({ day, done = false }: { day: PlanDay; done?: boolean }) {
           }}
         >
           <Icon name="moon" size={20} color="var(--ink-400)" />
-          <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-sans)' }}>完全休息</span>
+          <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-sans)' }}>{day.status === 'rest' ? '完全休息' : '暂无课程'}</span>
         </div>
       ) : (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -340,7 +340,7 @@ function LinkModal({
   onClose: () => void
   onConfirm: (targetId: string) => void
 }) {
-  const [pick, setPick] = useState(targets[0].id)
+  const [pick, setPick] = useState(targets[0]?.id ?? '')
   const [done, setDone] = useState(false)
   return (
     <div

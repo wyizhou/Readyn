@@ -33,6 +33,34 @@ export interface TestConnectionRequest {
   key?: string
 }
 
+export interface GarminStatus {
+  connectorId: string
+  connected: boolean
+  account: string | null
+  lastSync: string | null
+  lastError: string | null
+  configured: boolean
+}
+
+export interface GarminConnectResult {
+  needsMfa: boolean
+  mfaToken?: string
+  connected?: boolean
+  activities?: number
+  hrv?: number
+  sleep?: number
+  weight?: number
+  lastSync?: string
+}
+
+export interface GarminSyncResult {
+  activities: number
+  hrv: number
+  sleep: number
+  weight: number
+  lastSync: string
+}
+
 export interface TestConnectionResult {
   ok: boolean
   message: string
@@ -54,4 +82,11 @@ export const api = {
   saveSettings: (settings: Partial<SettingsDoc>) => sendJSON<SettingsDoc>('PUT', '/settings', settings),
   testConnection: (req: TestConnectionRequest) =>
     sendJSON<TestConnectionResult>('POST', '/ai/test-connection', req),
+  // Garmin China (connect.garmin.cn) — real account login + sync.
+  garminStatus: () => getJSON<GarminStatus>('/garmin/status'),
+  garminConnect: (email?: string, password?: string) =>
+    sendJSON<GarminConnectResult>('POST', '/garmin/connect', { email, password }),
+  garminMfa: (mfaToken: string, code: string) =>
+    sendJSON<GarminConnectResult>('POST', '/garmin/mfa', { mfaToken, code }),
+  garminSync: () => sendJSON<GarminSyncResult>('POST', '/garmin/sync', {}),
 }

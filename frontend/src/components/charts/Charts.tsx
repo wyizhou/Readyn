@@ -1,6 +1,25 @@
 import { useId } from 'react'
 import type { BalanceAxis, HrvPoint, HrZone, PmcPoint, PyramidRow, SleepNight } from '../../lib/types'
 
+// Shared empty-state placeholder — shown when a chart has no data yet (e.g.
+// before a Garmin sync). Keeps charts from indexing into empty arrays.
+function ChartEmpty({ height = 150, label = '暂无数据' }: { height?: number | string; label?: string }) {
+  return (
+    <div
+      style={{
+        height,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'var(--text-faint)',
+        font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-sans)',
+      }}
+    >
+      {label}
+    </div>
+  )
+}
+
 // Performance Management Chart — CTL (fitness) area, ATL (fatigue) line, TSB (form) baseline
 export interface PMCChartProps {
   data: PmcPoint[]
@@ -9,19 +28,22 @@ export interface PMCChartProps {
 }
 export function PMCChart({ data, width = 760, height = 240 }: PMCChartProps) {
   const g = 'pmc' + useId().replace(/:/g, '')
+  if (data.length === 0) return <ChartEmpty height={height} />
+  // Single point → duplicate it so the line/area math has two coordinates.
+  const pts = data.length === 1 ? [data[0], data[0]] : data
   const pad = { t: 16, r: 10, b: 24, l: 10 }
   const w = width - pad.l - pad.r
   const h = height - pad.t - pad.b
-  const vals = data.flatMap((d) => [d.ctl, d.atl])
+  const vals = pts.flatMap((d) => [d.ctl, d.atl])
   const max = Math.max(...vals) * 1.12
-  const min = Math.min(0, ...data.map((d) => d.tsb)) * 1.2
+  const min = Math.min(0, ...pts.map((d) => d.tsb)) * 1.2
   const range = max - min
-  const x = (i: number) => pad.l + (i / (data.length - 1)) * w
+  const x = (i: number) => pad.l + (i / (pts.length - 1)) * w
   const y = (v: number) => pad.t + h - ((v - min) / range) * h
   const zeroY = y(0)
   const path = (key: 'ctl' | 'atl' | 'tsb') =>
-    data.map((d, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(d[key]).toFixed(1)}`).join(' ')
-  const ctlArea = `${path('ctl')} L${x(data.length - 1)},${zeroY} L${x(0)},${zeroY} Z`
+    pts.map((d, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(d[key]).toFixed(1)}`).join(' ')
+  const ctlArea = `${path('ctl')} L${x(pts.length - 1)},${zeroY} L${x(0)},${zeroY} Z`
   return (
     <svg width="100%" viewBox={`0 0 ${width} ${height}`} style={{ display: 'block' }}>
       <defs>
@@ -47,8 +69,8 @@ export function PMCChart({ data, width = 760, height = 240 }: PMCChartProps) {
       <path d={path('atl')} fill="none" stroke="var(--violet-500)" strokeWidth="2" strokeDasharray="5 3" strokeLinejoin="round" />
       <path d={path('tsb')} fill="none" stroke="var(--green-500)" strokeWidth="2" strokeLinejoin="round" />
       <circle
-        cx={x(data.length - 1)}
-        cy={y(data[data.length - 1].ctl)}
+        cx={x(pts.length - 1)}
+        cy={y(pts[pts.length - 1].ctl)}
         r="3.5"
         fill="var(--blue-500)"
         stroke="var(--ink-900)"
@@ -65,6 +87,7 @@ export interface HRVChartProps {
   height?: number
 }
 export function HRVChart({ data, width = 360, height = 150 }: HRVChartProps) {
+  if (data.length === 0) return <ChartEmpty height={height} />
   const pad = { t: 12, r: 6, b: 8, l: 6 }
   const w = width - pad.l - pad.r
   const h = height - pad.t - pad.b
@@ -109,6 +132,7 @@ export interface SleepBarsProps {
   height?: number
 }
 export function SleepBars({ nights, height = 150 }: SleepBarsProps) {
+  if (nights.length === 0) return <ChartEmpty height={height} />
   const max = Math.max(...nights.map((n) => n.deep + n.rem + n.light + n.awake)) * 1.05
   return (
     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, height }}>
@@ -143,6 +167,7 @@ export function SleepBars({ nights, height = 150 }: SleepBarsProps) {
 
 // Horizontal stacked HR-zone bar + legend grid
 export function HRZoneBar({ zones }: { zones: HrZone[] }) {
+  if (zones.length === 0) return <ChartEmpty />
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ display: 'flex', height: 18, borderRadius: 'var(--r-pill)', overflow: 'hidden', gap: 2 }}>
@@ -177,6 +202,7 @@ export function HRZoneBar({ zones }: { zones: HrZone[] }) {
 
 // Training balance radar
 export function Radar({ data, size = 240 }: { data: BalanceAxis[]; size?: number }) {
+  if (data.length === 0) return <ChartEmpty height={size} />
   const cx = size / 2
   const cy = size / 2
   const r = size / 2 - 34
@@ -235,6 +261,7 @@ export function Radar({ data, size = 240 }: { data: BalanceAxis[]; size?: number
 
 // Climbing grade pyramid (horizontal bars)
 export function GradePyramid({ rows }: { rows: PyramidRow[] }) {
+  if (rows.length === 0) return <ChartEmpty />
   const max = Math.max(...rows.map((r) => r.sends))
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -259,6 +286,7 @@ export interface DonutDatum {
   color: string
 }
 export function Donut({ data, size = 160, thickness = 22 }: { data: DonutDatum[]; size?: number; thickness?: number }) {
+  if (data.length === 0) return <ChartEmpty height={size} />
   const r = (size - thickness) / 2
   const c = 2 * Math.PI * r
   // Precompute each segment's length and cumulative offset (no render-time mutation).
