@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from 'react'
 import { Card, StatCard, Badge, ProgressRing, Sparkline } from '../design-system'
 import { Icon } from '../components/Icon'
-import { PMCChart, HRVChart, SleepBars, HRZoneBar, Radar, Heatmap, GradePyramid, Donut } from '../components/charts/Charts'
+import { PMCChart, HRVChart, SleepBars, HRZoneBar, Radar, GradePyramid, Donut } from '../components/charts/Charts'
 import type { Activity, ApexData, Insight, MetricId } from '../lib/types'
 
 function Label({ children }: { children: ReactNode }) {
@@ -433,15 +433,6 @@ export function Dashboard({ data, range, onAskAI, onOpenActivity, onOpenMetric }
           </div>
         </Card>
       </div>
-
-      {/* Activity heatmap */}
-      <Card
-        title="活动热力图"
-        action={<span style={{ font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-sans)', color: 'var(--text-faint)' }}>近 13 周 · 训练负荷强度</span>}
-        style={{ marginBottom: 26 }}
-      >
-        <Heatmap data={data.heatmap} />
-      </Card>
 
       {/* Recent activities */}
       <SectionTitle icon="route" note="全项目">

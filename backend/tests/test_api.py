@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 BOOTSTRAP_KEYS = {
     "profile", "weightLog", "today", "pmc", "templateDetails", "metrics",
     "activityDetails", "hrv", "sleep", "hrZones", "disciplineSplit", "balance",
-    "boulderPyramid", "heatmap", "activities", "insights", "plan", "workout",
+    "boulderPyramid", "activities", "insights", "plan", "workout",
     "connectors", "schema", "library", "calendar", "calendarEvents",
     "unlinked", "linkTargets",
 }
@@ -36,7 +36,6 @@ def test_bootstrap_has_all_keys(client: TestClient) -> None:
     assert data["profile"]["handle"] == "@linyue"
     assert len(data["pmc"]) == 42
     assert len(data["hrv"]) == 28
-    assert len(data["heatmap"]) == 91
     # weight log is newest-first
     dates = [w["date"] for w in data["weightLog"]]
     assert dates == sorted(dates, reverse=True)

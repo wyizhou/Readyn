@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import type { BalanceAxis, HeatCell, HrvPoint, HrZone, PmcPoint, PyramidRow, SleepNight } from '../../lib/types'
+import type { BalanceAxis, HrvPoint, HrZone, PmcPoint, PyramidRow, SleepNight } from '../../lib/types'
 
 // Performance Management Chart — CTL (fitness) area, ATL (fatigue) line, TSB (form) baseline
 export interface PMCChartProps {
@@ -230,27 +230,6 @@ export function Radar({ data, size = 240 }: { data: BalanceAxis[]; size?: number
         )
       })}
     </svg>
-  )
-}
-
-// 13-week activity heatmap (7 rows × 13 cols)
-const HEAT_SHADES = [
-  'var(--ink-800)',
-  'rgba(59,91,255,0.28)',
-  'rgba(59,91,255,0.5)',
-  'rgba(59,91,255,0.74)',
-  'var(--blue-400)',
-]
-export function Heatmap({ data, cols = 13 }: { data: HeatCell[]; cols?: number }) {
-  const rows = 7
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gridAutoRows: '1fr', gap: 4 }}>
-      {Array.from({ length: rows * cols }, (_, idx) => {
-        const d = data[idx % data.length]
-        const v = Math.min(4, d.v)
-        return <div key={idx} title={`负荷 ${v}`} style={{ aspectRatio: '1', borderRadius: 3, background: HEAT_SHADES[v] }} />
-      })}
-    </div>
   )
 }
 
