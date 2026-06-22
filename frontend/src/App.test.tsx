@@ -226,6 +226,26 @@ describe('App integration', () => {
     expect(topHeading()).toContain('训练库')
   })
 
+  it('switches training-library sport tabs and the content follows', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('训练库'))
+    // Default 跑步 tab.
+    expect(screen.getByText('节奏跑 8km')).toBeInTheDocument()
+    // Switch to 攀岩 — climbing templates replace running ones.
+    await user.click(screen.getByText('攀岩'))
+    expect(screen.getByText('抱石极限尝试')).toBeInTheDocument()
+    expect(screen.queryByText('节奏跑 8km')).not.toBeInTheDocument()
+  })
+
+  it('AI 生成计划 from the library routes to the AI module', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('训练库'))
+    await user.click(screen.getByRole('button', { name: 'AI 生成计划' }))
+    expect(topHeading()).toContain('AI')
+  })
+
   it('opens the settings center and toggles a notification preference', async () => {
     const user = userEvent.setup()
     render(<App />)
