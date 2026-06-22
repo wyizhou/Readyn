@@ -94,4 +94,6 @@ cp backend/.env.example backend/.env        # 填入 GARMIN_CN_EMAIL / GARMIN_CN
 ## 状态
 
 - 前端：TypeScript 严格模式、ESLint、Vitest（12 测试）、生产构建 —— 全部通过。
-- 后端：ruff、pytest（24 测试）—— 全部通过。
+- 后端：ruff、pytest（25 测试）—— 全部通过。
+- 已对真实佳明账号验证：登录 + MFA + 同步（活动 / HRV / 睡眠 / 心率 / 体重 /
+  就绪度），令牌缓存后续同步免再验证。
