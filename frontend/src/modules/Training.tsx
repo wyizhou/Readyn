@@ -10,7 +10,55 @@ import type {
   CalendarEvents,
   UnlinkedActivity,
   LinkTarget,
+  Workout,
+  Plan,
 } from '../lib/types'
+
+// Alternative sessions offered by the "替换课程" picker. Keeping these in the
+// module (rather than the API mock) makes the swap deterministic for tests.
+const REPLACEMENT_OPTIONS: Workout[] = [
+  {
+    title: '轻松有氧跑',
+    sport: '跑步',
+    when: '今天 · 建议 18:00 前',
+    target: 'Z2 · 心率 < 145 bpm',
+    load: 42,
+    duration: '40 min',
+    rationale: '以轻松有氧替换，维持有氧刺激同时控制疲劳。',
+    steps: [
+      { t: '热身慢跑', d: '8 min', z: 'Z1' },
+      { t: '匀速有氧', d: '27 min', z: 'Z2', note: '鼻吸鼻呼' },
+      { t: '放松走', d: '5 min', z: 'Z1' },
+    ],
+  },
+  {
+    title: '力量 + 核心',
+    sport: '其他',
+    when: '今天 · 建议 19:00 前',
+    target: 'RPE 6–7',
+    load: 35,
+    duration: '45 min',
+    rationale: '用力量训练替换，提升结构耐受，避免连续有氧负荷。',
+    steps: [
+      { t: '动态热身', d: '8 min', z: 'Z1' },
+      { t: '下肢力量 3 组', d: '25 min', z: 'Z2', note: '深蹲 / 硬拉' },
+      { t: '核心稳定', d: '12 min', z: 'Z1' },
+    ],
+  },
+  {
+    title: '完全休息',
+    sport: '休息',
+    when: '今天 · 全天',
+    target: '主动恢复',
+    load: 0,
+    duration: '—',
+    rationale: '改为完全休息日，让 HRV 回升、为周末长距离储备。',
+    steps: [
+      { t: '拉伸放松', d: '15 min', z: 'Z1' },
+      { t: '早睡', d: '—', z: 'Z1', note: '保证 8h 睡眠' },
+    ],
+  },
+]
 
 const sportColor = (s: string): string =>
   ({
@@ -226,7 +274,7 @@ function MonthCell({ day, ev }: { day: number | null; ev: CalendarEvents }) {
   )
 }
 
-function MonthCalendar({ data }: { data: ApexData }) {
+function MonthCalendar({ calendar, events }: { calendar: (number | null)[]; events: CalendarEvents }) {
   const wd = ['一', '二', '三', '四', '五', '六', '日']
   const legend = (
     <div style={{ display: 'flex', gap: 14 }}>
@@ -271,8 +319,8 @@ function MonthCalendar({ data }: { data: ApexData }) {
         ))}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 6 }}>
-        {data.calendar.map((d, i) => (
-          <MonthCell key={i} day={d} ev={data.calendarEvents} />
+        {calendar.map((d, i) => (
+          <MonthCell key={i} day={d} ev={events} />
         ))}
       </div>
     </Card>
@@ -521,6 +569,137 @@ function UnlinkedActivities({ data, onLink }: { data: ApexData; onLink: (a: Unli
   )
 }
 
+function ReplaceModal({
+  current,
+  options,
+  onClose,
+  onReplace,
+}: {
+  current: Workout
+  options: Workout[]
+  onClose: () => void
+  onReplace: (w: Workout) => void
+}) {
+  // Offer every option except the one already scheduled.
+  const choices = options.filter((o) => o.title !== current.title)
+  const [pick, setPick] = useState(choices[0]?.title ?? '')
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 40,
+        background: 'rgba(7,8,11,0.74)',
+        backdropFilter: 'blur(6px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 24,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: 460,
+          background: 'var(--surface-card)',
+          border: '1px solid var(--border-strong)',
+          borderRadius: 'var(--r-xl)',
+          boxShadow: 'var(--shadow-lg), var(--inner-top)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '20px 22px', borderBottom: '1px solid var(--hairline)' }}>
+          <span
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              background: 'rgba(59,91,255,0.14)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Icon name="repeat" size={18} color="var(--blue-400)" />
+          </span>
+          <div style={{ flex: 1 }}>
+            <div style={{ font: 'var(--fw-bold) var(--fs-lg)/1.1 var(--font-display)', color: 'var(--text-strong)' }}>替换今日课程</div>
+            <div style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-mono)', color: 'var(--text-faint)', marginTop: 4 }}>
+              当前：{current.title}
+            </div>
+          </div>
+          <IconButton label="关闭" variant="ghost" onClick={onClose}>
+            <Icon name="x" size={18} />
+          </IconButton>
+        </div>
+        <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <p style={{ margin: 0, font: 'var(--fw-regular) var(--fs-sm)/1.5 var(--font-sans)', color: 'var(--text-muted)' }}>
+            选择一节课程替换今日安排，确认后将立即更新「今日训练 · 详情」。
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {choices.map((o) => {
+              const on = pick === o.title
+              return (
+                <button
+                  key={o.title}
+                  onClick={() => setPick(o.title)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '12px 14px',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    background: on ? 'rgba(59,91,255,0.10)' : 'var(--surface-inset)',
+                    border: `1px solid ${on ? 'var(--accent)' : 'transparent'}`,
+                    borderRadius: 'var(--r-md)',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      border: `2px solid ${on ? 'var(--accent)' : 'var(--border-strong)'}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flex: 'none',
+                    }}
+                  >
+                    {on && <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)' }} />}
+                  </span>
+                  <Icon name={sportIcon(o.sport)} size={15} color={sportColor(o.sport)} />
+                  <span style={{ flex: 1, font: 'var(--fw-medium) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-body)' }}>{o.title}</span>
+                  <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-mono)', color: 'var(--text-faint)' }}>
+                    {o.load} AU · {o.duration}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <Button variant="secondary" onClick={onClose}>
+              取消
+            </Button>
+            <Button
+              variant="primary"
+              fullWidth
+              disabled={!pick}
+              onClick={() => {
+                const chosen = choices.find((o) => o.title === pick)
+                if (chosen) onReplace(chosen)
+              }}
+            >
+              确认替换
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export interface Props {
   data: ApexData
   onOpenAITrain: () => void
@@ -533,8 +712,33 @@ export interface Props {
 export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, onCompleteToday }: Props) {
   const [linkAct, setLinkAct] = useState<UnlinkedActivity | null>(null)
   const [markedDone, setMarkedDone] = useState(false)
-  const plan = data.plan
-  const w = data.workout
+  const [replacing, setReplacing] = useState(false)
+  const [workout, setWorkout] = useState<Workout>(data.workout)
+  const [plan, setPlan] = useState<Plan>(data.plan)
+  const [events, setEvents] = useState<CalendarEvents>(data.calendarEvents)
+  const w = workout
+
+  // Replace today's session everywhere it is shown: the detail card (workout),
+  // the "本周安排" week grid (plan), and the month calendar (events).
+  const replaceToday = (nw: Workout) => {
+    setWorkout(nw)
+    setPlan((p) => ({
+      ...p,
+      days: p.days.map((d) =>
+        d.status === 'today' && d.items.length
+          ? { ...d, items: [{ ...d.items[0], t: nw.title, sport: nw.sport, load: nw.load, dur: nw.duration }, ...d.items.slice(1)] }
+          : d,
+      ),
+    }))
+    setEvents((ev) => {
+      const next: CalendarEvents = { ...ev }
+      for (const [day, e] of Object.entries(next)) {
+        if (e.today && e.p) next[Number(day)] = { ...e, p: { ...e.p, t: nw.title, s: nw.sport, load: nw.load } }
+      }
+      return next
+    })
+    setReplacing(false)
+  }
 
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
@@ -743,7 +947,7 @@ export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, on
             >
               {markedDone ? '已完成 · 取消' : '标记完成'}
             </Button>
-            <Button variant="secondary" iconLeft={<Icon name="repeat" size={15} />} onClick={onOpenAITrain}>
+            <Button variant="secondary" iconLeft={<Icon name="repeat" size={15} />} onClick={() => setReplacing(true)}>
               替换课程
             </Button>
             <span
@@ -848,7 +1052,7 @@ export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, on
       </div>
 
       {/* Month calendar board */}
-      <MonthCalendar data={data} />
+      <MonthCalendar calendar={data.calendar} events={events} />
 
       {linkAct && (
         <LinkModal
@@ -856,6 +1060,15 @@ export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, on
           targets={data.linkTargets}
           onClose={() => setLinkAct(null)}
           onConfirm={(targetId) => onLinkActivity(linkAct, targetId)}
+        />
+      )}
+
+      {replacing && (
+        <ReplaceModal
+          current={w}
+          options={REPLACEMENT_OPTIONS}
+          onClose={() => setReplacing(false)}
+          onReplace={replaceToday}
         />
       )}
     </div>

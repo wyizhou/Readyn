@@ -98,6 +98,34 @@ describe('App integration', () => {
     expect(await screen.findByText('退出登录')).toBeInTheDocument()
   })
 
+  it('replaces today’s course and syncs detail + calendar', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('训练日历'))
+    // Default scheduled session is shown (detail card + week grid + month cell).
+    expect(screen.getAllByText('主动恢复 + 柔韧').length).toBeGreaterThan(0)
+
+    // Open the replace picker, choose an alternative, confirm.
+    await user.click(screen.getByRole('button', { name: /替换课程/ }))
+    await user.click(await screen.findByText('轻松有氧跑'))
+    await user.click(screen.getByRole('button', { name: '确认替换' }))
+
+    // The replacement now appears everywhere today's course is shown, and the
+    // original title is fully gone (detail, 本周安排 grid, month calendar).
+    expect(screen.getAllByText('轻松有氧跑').length).toBeGreaterThan(0)
+    expect(screen.queryByText('主动恢复 + 柔韧')).not.toBeInTheDocument()
+  })
+
+  it('cancelling the replace picker keeps the original course', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('训练日历'))
+    await user.click(screen.getByRole('button', { name: /替换课程/ }))
+    await user.click(await screen.findByRole('button', { name: '取消' }))
+    expect(screen.getAllByText('主动恢复 + 柔韧').length).toBeGreaterThan(0)
+    expect(screen.queryByText('轻松有氧跑')).not.toBeInTheDocument()
+  })
+
   it('marks today’s workout done and back in Training', async () => {
     const user = userEvent.setup()
     render(<App />)
