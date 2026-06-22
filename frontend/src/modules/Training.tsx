@@ -89,10 +89,11 @@ const STATUS: Record<PlanDayStatus, { label: string; c: string }> = {
   rest: { label: '休息', c: 'var(--ink-400)' },
 }
 
-function DayCol({ day }: { day: PlanDay }) {
+function DayCol({ day, done = false }: { day: PlanDay; done?: boolean }) {
   const st = STATUS[day.status]
   const it = day.items[0]
   const isToday = day.status === 'today'
+  const showDone = day.status === 'done' || done
   return (
     <div
       style={{
@@ -142,7 +143,7 @@ function DayCol({ day }: { day: PlanDay }) {
               AI
             </span>
           )}
-          {day.status === 'done' && <Icon name="check-circle-2" size={14} color="var(--green-500)" />}
+          {showDone && <Icon name="check-circle-2" size={14} color="var(--green-500)" />}
           <span
             style={{
               font: 'var(--fw-semibold) 10px/1 var(--font-sans)',
@@ -707,11 +708,12 @@ export interface Props {
   onOpenActivity: (a: Activity) => void
   onLinkActivity: (a: UnlinkedActivity, targetId: string) => void
   onCompleteToday: (done: boolean) => void
+  // Today's completion lives in App so it survives navigating away and back.
+  markedDone: boolean
 }
 
-export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, onCompleteToday }: Props) {
+export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, onCompleteToday, markedDone }: Props) {
   const [linkAct, setLinkAct] = useState<UnlinkedActivity | null>(null)
-  const [markedDone, setMarkedDone] = useState(false)
   const [replacing, setReplacing] = useState(false)
   const [workout, setWorkout] = useState<Workout>(data.workout)
   const [plan, setPlan] = useState<Plan>(data.plan)
@@ -818,7 +820,7 @@ export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, on
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 12, marginBottom: 24 }}>
         {plan.days.map((d) => (
-          <DayCol key={d.d} day={d} />
+          <DayCol key={d.d} day={d} done={d.status === 'today' && markedDone} />
         ))}
       </div>
 
@@ -939,11 +941,7 @@ export function Training({ data, onOpenAITrain, onOpenAIChat, onLinkActivity, on
             <Button
               variant={markedDone ? 'secondary' : 'primary'}
               iconLeft={<Icon name={markedDone ? 'check-circle-2' : 'check'} size={15} />}
-              onClick={() => {
-                const next = !markedDone
-                setMarkedDone(next)
-                onCompleteToday(next)
-              }}
+              onClick={() => onCompleteToday(!markedDone)}
             >
               {markedDone ? '已完成 · 取消' : '标记完成'}
             </Button>

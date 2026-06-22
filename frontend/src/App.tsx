@@ -101,6 +101,7 @@ export default function App() {
   const [flash, setFlash] = useState<string | null>(null)
 
   const [syncing, setSyncing] = useState(false)
+  const [todayDone, setTodayDone] = useState(false)
 
   const applyData = useCallback((d: ApexData) => {
     setData(d)
@@ -259,9 +260,11 @@ export default function App() {
     flashMsg(`已关联「${a.name}」到计划课程`)
   }
 
-  // Mark / unmark today's workout done. The week grid's today cell already
-  // carries the live "today" highlight; here we just confirm the action.
+  // Mark / unmark today's workout done. Held here (not in Training) so the
+  // completion survives navigating away and back; the week grid's today cell
+  // reflects it via the markedDone prop.
   const completeToday = (done: boolean) => {
+    setTodayDone(done)
     flashMsg(done ? '今日训练已标记完成' : '已取消今日完成标记')
   }
 
@@ -413,6 +416,7 @@ export default function App() {
               onOpenActivity={openActivity}
               onLinkActivity={linkActivity}
               onCompleteToday={completeToday}
+              markedDone={todayDone}
             />
           )}
           {!detail && view === 'library' && (
