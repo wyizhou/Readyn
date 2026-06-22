@@ -2,7 +2,7 @@
 // Faithful port of the prototype's window.APEX_DATA (README §7).
 // NOTE: series that used Math.random in the prototype (hrv, heatmap) are made
 // deterministic here so builds, snapshots and tests are stable.
-import type { ApexData, HrvPoint, HeatCell, PmcPoint } from './types'
+import type { ApexData, HrvPoint, PmcPoint } from './types'
 
 const seq = <T>(n: number, fn: (i: number) => T): T[] => Array.from({ length: n }, (_, i) => fn(i))
 
@@ -25,12 +25,6 @@ const hrv: HrvPoint[] = seq(28, (i): HrvPoint => {
   const jitter = Math.sin(i * 1.7) * 3
   return { i, v: Math.round(base + jitter), base: Math.round(base) }
 })
-
-// 91-day activity heatmap (load intensity 0-4) — deterministic
-const heatmap: HeatCell[] = seq(91, (i): HeatCell => ({
-  i,
-  v: Math.max(0, Math.min(4, Math.round((Math.sin(i / 4) + 1) * 1.6 + Math.sin(i * 2.3)))),
-}))
 
 const calendar: (number | null)[] = (() => {
   const cells: (number | null)[] = []
@@ -409,8 +403,6 @@ export const mockData: ApexData = {
     { grade: 'V5', sends: 17, color: 'var(--blue-500)' },
     { grade: 'V4', sends: 29, color: 'var(--violet-500)' },
   ],
-
-  heatmap,
 
   activities: [
     { id: 'a1', name: '阈值间歇 6×1km', sport: '跑步', icon: 'footprints', date: '今天 · 06:40', dist: '12.4 km', dur: '58:12', load: 96, hr: 162, flag: 'high', note: '配速达标，HR 漂移 4%' },

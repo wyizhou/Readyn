@@ -220,11 +220,6 @@ export interface PyramidRow {
   color: string
 }
 
-export interface HeatCell {
-  i: number
-  v: number
-}
-
 export type ActivityFlag = 'high' | 'ok'
 
 export interface Activity {
@@ -437,7 +432,6 @@ export interface ApexData {
   disciplineSplit: DisciplineSplit[]
   balance: BalanceAxis[]
   boulderPyramid: PyramidRow[]
-  heatmap: HeatCell[]
   activities: Activity[]
   insights: Insight[]
   plan: Plan

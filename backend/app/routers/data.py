@@ -34,7 +34,6 @@ def dashboard(db: Session = Depends(get_db)) -> dict[str, Any]:
         "disciplineSplit": _dataset(db, "disciplineSplit"),
         "balance": _dataset(db, "balance"),
         "boulderPyramid": _dataset(db, "boulderPyramid"),
-        "heatmap": _dataset(db, "heatmap"),
         "insights": _dataset(db, "insights"),
         "activities": _dataset(db, "activities"),
     }
