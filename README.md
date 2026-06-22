@@ -20,12 +20,12 @@ Readyn/
 │       ├── modules/          # 看板/训练日历/训练库/体重/连接器/AI/设置/资料
 │       ├── details/          # 活动/指标/模板/计划/连接器 详情页
 │       ├── login/            # 独立登录页（第二个 Vite 入口）
-│       ├── lib/              # 类型 · mock 数据 · API 客户端 · 格式化
+│       ├── lib/              # 类型 · 空骨架(emptyData) · API 客户端 · 格式化
 │       └── App.tsx           # view/detail 路由状态模型（README §5/§6）
 └── backend/         # FastAPI + SQLAlchemy + SQLite（ruff + pytest）
     └── app/
         ├── models.py routers/ schemas.py services.py seed.py
-        └── seed_data.json    # 从前端 mockData 生成，前后端同源同形
+        └── garmin/          # 佳明中国区集成：client(garth) · transform · sync
 ```
 
 五大模块 + 支撑层：看板 (Dashboard)、训练日历 (Training)、训练库 (Library)、
@@ -55,18 +55,43 @@ python -m venv .venv
 
 脚本：`.venv/Scripts/python -m pytest` · `.venv/Scripts/python -m ruff check .`
 
-> 前端在后端不可用时自动回退到本地 mock 数据，因此可独立运行；接入后端后
-> 数据来自 `/api/bootstrap`，体重录入与资料修改会持久化。
+> 后端不可用时前端渲染**空状态**（不再回退到假数据）；接入后端后数据来自
+> `/api/bootstrap`，连接佳明并同步后填入真实数据，体重录入与资料修改会持久化。
+
+### 数据来源 · 佳明中国区（connect.garmin.cn）
+
+Readyn 已移除全部 mock 数据，改为对接佳明中国区真实数据（活动 / HRV / 睡眠 /
+心率 / 体重，并据活动负荷推导 CTL/ATL/TSB）。集成基于 `garth` 账号登录（佳明中国区
+无开放 OAuth）。
+
+```bash
+cp backend/.env.example backend/.env        # 填入 GARMIN_CN_EMAIL / GARMIN_CN_PASSWORD
+```
+
+`.env` 已被 `.gitignore` 忽略，不会提交。在应用「连接器 → 数据源市场 → 佳明·中国区」
+中登录即可（也可在弹窗内临时输入账号）；支持两步验证。首次登录后缓存 OAuth 令牌，
+后续 `POST /api/garmin/sync` 无需密码。
+
+> 注意：`garth` 上游已标记弃用，属逆向接口、未来可能失效；connect.garmin.cn 为中国区
+> 服务，需网络可达。
 
 ## 技术说明
 
 - **设计令牌**：APEX 颜色/字体/间距/动效全部以 CSS 变量落地（深色主题，数字等宽）。
 - **图标**：lucide-react，按用到的字形显式注册以便 tree-shaking。
-- **数据契约**：`frontend/src/lib/types.ts` 与后端 §7 形状一致；seed 数据由前端
-  mockData 经 esbuild 生成，保证前后端同源。
-- **AI 集成点**（README §10）：后端 4 处接口目前返回预置文案，接入真实模型后替换。
+- **数据契约**：`frontend/src/lib/types.ts` 与后端 §7 形状一致；空库初始化为一份
+  结构完整但为空的 ApexData 骨架（`app/garmin/transform.py:empty_apexdata`，前端镜像
+  `lib/emptyData.ts`），同步后由佳明真实数据填充。
+- **AI 集成点**（README §10）：后端接口在未配置真实模型时返回「未配置」提示（不再
+  伪造分析），接入真实服务商后替换。
+
+## 已知遗留（后续迭代）
+
+- 多账户登录页仍为开发态脚手架（dev-token，README §12 真实 OAuth 待接）。
+- AI 洞察 / 训练计划 / 训练库 / 抱石(8a.nu) 等佳明无法提供的数据暂为空状态，待接各自
+  真实来源。
 
 ## 状态
 
-- 前端：TypeScript 严格模式、ESLint、Vitest（13 测试）、生产构建 —— 全部通过。
-- 后端：ruff、pytest（13 测试）—— 全部通过。
+- 前端：TypeScript 严格模式、ESLint、Vitest（12 测试）、生产构建 —— 全部通过。
+- 后端：ruff、pytest（24 测试）—— 全部通过。
