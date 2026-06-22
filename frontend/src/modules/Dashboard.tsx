@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { Card, StatCard, Badge, ProgressRing, Sparkline } from '../design-system'
 import { Icon } from '../components/Icon'
 import { PMCChart, HRVChart, SleepBars, HRZoneBar, Radar, Heatmap, GradePyramid, Donut } from '../components/charts/Charts'
@@ -142,8 +142,25 @@ interface HeroStat {
   mid: MetricId
 }
 
-export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: DashboardProps) {
+// Number of trailing days each range selects. `season` means the full series.
+const RANGE_DAYS: Record<string, number> = { '7d': 7, '28d': 28, season: Infinity }
+const RANGE_LABEL: Record<string, string> = { '7d': '近 7 天', '28d': '近 28 天', season: '赛季' }
+
+export function Dashboard({ data, range, onAskAI, onOpenActivity, onOpenMetric }: DashboardProps) {
   const t = data.today
+  // Window the time-series by the selected range so switching 7天/28天/赛季 actually
+  // re-renders the charts and recomputes the range-load aggregate.
+  const view = useMemo(() => {
+    const days = RANGE_DAYS[range] ?? RANGE_DAYS['28d']
+    const tail = <T,>(arr: T[]) => (days === Infinity ? arr : arr.slice(-days))
+    const pmc = tail(data.pmc)
+    return {
+      pmc,
+      hrv: tail(data.hrv),
+      load: pmc.reduce((sum, p) => sum + p.load, 0),
+    }
+  }, [data.pmc, data.hrv, range])
+  const rangeLabel = RANGE_LABEL[range] ?? RANGE_LABEL['28d']
   const rColor = t.readiness >= 75 ? 'var(--green-500)' : t.readiness >= 50 ? 'var(--amber-500)' : 'var(--red-500)'
   const hero: HeroStat[] = [
     { l: 'HRV', v: t.hrv, u: 'ms', d: `${t.hrvDelta > 0 ? '+' : ''}${t.hrvDelta}`, dc: t.hrvDelta >= 0 ? 'var(--green-400)' : 'var(--red-400)', mid: 'hrv' },
@@ -240,7 +257,7 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
       </SectionTitle>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)', gap: 16, marginBottom: 16 }}>
         <Card
-          title="近 6 周 · 体能 / 疲劳 / 状态"
+          title={`${rangeLabel} · 体能 / 疲劳 / 状态`}
           action={
             <div style={{ display: 'flex', gap: 16 }}>
               {(
@@ -274,11 +291,11 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
             </div>
           }
         >
-          <PMCChart data={data.pmc} />
+          <PMCChart data={view.pmc} />
         </Card>
         <div style={{ display: 'grid', gridTemplateRows: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-          <StatCard label="本周负荷" value={t.weekLoad} unit="AU" delta={`+${t.weekLoadDelta}%`} trend="up">
-            <Sparkline data={data.pmc.slice(-7).map((d) => d.load)} />
+          <StatCard label={`${rangeLabel}负荷`} value={view.load} unit="AU" delta={`+${t.weekLoadDelta}%`} trend="up">
+            <Sparkline data={view.pmc.map((d) => d.load)} />
           </StatCard>
           <StatCard
             label="疲劳 ATL"
@@ -315,7 +332,7 @@ export function Dashboard({ data, onAskAI, onOpenActivity, onOpenMetric }: Dashb
               ▲ {t.hrvDelta} vs 基线
             </span>
           </div>
-          <HRVChart data={data.hrv} />
+          <HRVChart data={view.hrv} />
         </Card>
         <Card title="睡眠结构" action={<span style={{ font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-sans)', color: 'var(--text-faint)' }}>近 7 晚</span>}>
           <SleepBars nights={data.sleep} />

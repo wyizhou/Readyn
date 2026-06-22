@@ -73,6 +73,24 @@ describe('App integration', () => {
     expect(topHeading()).toContain('AI 模块')
   })
 
+  it('re-renders dashboard data when the time range is switched', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    // Default range is 28 天.
+    expect(screen.getByText('近 28 天 · 体能 / 疲劳 / 状态')).toBeInTheDocument()
+    expect(screen.getByText('近 28 天负荷')).toBeInTheDocument()
+
+    // Switching to 7 天 must drive the chart card + load aggregate to recompute.
+    await user.click(screen.getByText('7 天'))
+    expect(screen.getByText('近 7 天 · 体能 / 疲劳 / 状态')).toBeInTheDocument()
+    expect(screen.getByText('近 7 天负荷')).toBeInTheDocument()
+
+    // Switching to 赛季 selects the full series.
+    await user.click(screen.getByText('赛季'))
+    expect(screen.getByText('赛季 · 体能 / 疲劳 / 状态')).toBeInTheDocument()
+    expect(screen.getByText('赛季负荷')).toBeInTheDocument()
+  })
+
   it('opens the profile modal from the sidebar', async () => {
     const user = userEvent.setup()
     render(<App />)
