@@ -135,6 +135,20 @@ describe('App integration', () => {
     expect(screen.getByRole('button', { name: /已完成 · 取消/ })).toBeInTheDocument()
   })
 
+  it('today completion persists across navigation', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    const nav = screen.getByRole('navigation')
+    await user.click(within(nav).getByText('训练日历'))
+    await user.click(screen.getByRole('button', { name: '标记完成' }))
+    expect(screen.getByRole('button', { name: /已完成 · 取消/ })).toBeInTheDocument()
+
+    // Navigate away and back — the completion must survive (state lives in App).
+    await user.click(within(nav).getByText('看板'))
+    await user.click(within(nav).getByText('训练日历'))
+    expect(screen.getByRole('button', { name: /已完成 · 取消/ })).toBeInTheDocument()
+  })
+
   it('applies a saved plan and links it into the training calendar', async () => {
     const user = userEvent.setup()
     render(<App />)
