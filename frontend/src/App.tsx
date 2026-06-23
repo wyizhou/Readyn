@@ -461,6 +461,7 @@ export default function App() {
               setTab={setAiTab}
               seed={seed}
               body={{ weight: currentWeight, bmi }}
+              profile={profile}
               onSaved={(plan) => {
                 // Actually persist the AI draft into 我的计划 (replace any
                 // same-name plan), then route to the library so it's visible.

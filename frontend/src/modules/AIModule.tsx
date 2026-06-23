@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, Fragment } from 'react'
 import { Button } from '../design-system'
 import { Icon } from '../components/Icon'
-import type { ApexData, LibraryPlan } from '../lib/types'
+import { aiChat, aiConfigFrom, expertSystemPrompt } from '../lib/ai'
+import type { ChatMessage } from '../lib/ai'
+import type { ApexData, LibraryPlan, Profile } from '../lib/types'
 
 // ---------- local types ----------
 type MsgRole = 'user' | 'ai'
@@ -312,7 +314,7 @@ function expertReply(q: string): ExpertReply {
   }
 }
 
-function ChatTab({ data, seed, body }: { data: ApexData; seed: Props['seed']; body: Props['body'] }) {
+function ChatTab({ data, seed, body, profile }: { data: ApexData; seed: Props['seed']; body: Props['body']; profile: Profile }) {
   const t = data.today
   const [msgs, setMsgs] = useState<Message[]>([
     {
@@ -329,36 +331,47 @@ function ChatTab({ data, seed, body }: { data: ApexData; seed: Props['seed']; bo
   const bodyRef = useRef<HTMLDivElement>(null)
   const lastSeed = useRef<number | null>(null)
 
+  // Real model when the user has configured an AI endpoint+key (used directly
+  // from the browser; key never reaches our backend); otherwise built-in replies.
+  const cfg = aiConfigFrom(profile)
+
   const send = (text?: string) => {
     const q = (text ?? input).trim()
     if (!q) return
+    const history = msgs
     setMsgs((m) => [...m, { role: 'user', text: q }])
     setInput('')
     setTyping(true)
-    setTimeout(() => {
-      setTyping(false)
-      setMsgs((m) => [...m, { role: 'ai', ...expertReply(q) }])
-    }, 850)
-  }
-
-  useEffect(() => {
-    // Seed a question routed in from elsewhere (e.g. dashboard 向AI追问).
-    // The nonce ref guards against re-seeding the same question — and we
-    // append directly (mirroring send()) rather than via a cancellable
-    // timeout, so React StrictMode's mount/cleanup/mount cycle can't drop it.
-    if (!seed || seed.nonce === lastSeed.current) return
-    const q = seed.q.trim()
-    if (!q) return
-    lastSeed.current = seed.nonce
-    setTimeout(() => {
-      setMsgs((m) => [...m, { role: 'user', text: q }])
-      setInput('')
-      setTyping(true)
+    if (cfg) {
+      const chat: ChatMessage[] = [
+        { role: 'system', content: expertSystemPrompt(data, body ?? { weight: 0, bmi: 0 }) },
+        ...history.map((mm) => ({ role: (mm.role === 'ai' ? 'assistant' : 'user') as 'assistant' | 'user', content: mm.text })),
+        { role: 'user', content: q },
+      ]
+      aiChat(cfg, chat)
+        .then((txt) => setMsgs((m) => [...m, { role: 'ai', text: txt || '（模型未返回内容）' }]))
+        .catch(() => {
+          const r = expertReply(q)
+          setMsgs((m) => [...m, { role: 'ai', text: `调用 AI 模型失败（密钥 / 网络 / CORS 限制）。已切换内置解读：\n\n${r.text}`, chips: r.chips }])
+        })
+        .finally(() => setTyping(false))
+    } else {
       setTimeout(() => {
         setTyping(false)
         setMsgs((m) => [...m, { role: 'ai', ...expertReply(q) }])
       }, 850)
-    }, 0)
+    }
+  }
+
+  useEffect(() => {
+    // Seed a question routed in from elsewhere (e.g. dashboard 向AI追问).
+    // The nonce ref guards against re-seeding the same question.
+    if (!seed || seed.nonce === lastSeed.current) return
+    const q = seed.q.trim()
+    if (!q) return
+    lastSeed.current = seed.nonce
+    setTimeout(() => send(q), 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seed])
 
   useEffect(() => {
@@ -707,15 +720,27 @@ export interface Props {
   setTab: (t: string) => void
   seed: { q: string; nonce: number } | null
   body: { weight: number; bmi: number }
+  profile: Profile
   onSaved: (plan: LibraryPlan) => void
   onApply: (name: string, focus: string, days: { t: string; sport: string; load: number }[]) => void
 }
 
-export function AIModule({ data, tab, setTab, seed, body, onSaved, onApply }: Props) {
+// AI 训练 (course-generation) is temporarily offline (depends on the training
+// library). The TrainTab code is kept but not rendered; the module is AI 对话.
+const SHOW_TRAIN = false
+
+export function AIModule({ data, tab, setTab, seed, body, profile, onSaved, onApply }: Props) {
   const tabs = [
     { id: 'train', label: 'AI 训练', sub: '对话生成课表', icon: 'wand-2' },
     { id: 'chat', label: 'AI 对话', sub: '运动专家解读', icon: 'message-square-text' },
   ]
+  if (!SHOW_TRAIN) {
+    return (
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 28, minHeight: 0 }}>
+        <ChatTab data={data} seed={seed} body={body} profile={profile} />
+      </div>
+    )
+  }
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: 28, minHeight: 0 }}>
       <div style={{ display: 'flex', gap: 10, marginBottom: 20, flex: 'none' }}>
@@ -768,7 +793,7 @@ export function AIModule({ data, tab, setTab, seed, body, onSaved, onApply }: Pr
           )
         })}
       </div>
-      {tab === 'train' ? <TrainTab onSaved={onSaved} onApply={onApply} /> : <ChatTab data={data} seed={seed} body={body} />}
+      {tab === 'train' ? <TrainTab onSaved={onSaved} onApply={onApply} /> : <ChatTab data={data} seed={seed} body={body} profile={profile} />}
     </div>
   )
 }
