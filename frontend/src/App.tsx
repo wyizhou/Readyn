@@ -448,7 +448,7 @@ export default function App() {
           )}
           {!detail && view === 'weight' && <WeightModule weightLog={weightLog} profile={profile} onAdd={addWeight} today={TODAY} />}
           {!detail && view === 'connectors' && (
-            <Connectors data={D} tab={connTab} setTab={setConnTab} onOpenConnector={openConnector} onConnect={connectSource} onToast={flashMsg} />
+            <Connectors data={D} tab={connTab} setTab={setConnTab} connected={connected} onOpenConnector={openConnector} onConnect={connectSource} onToast={flashMsg} />
           )}
           {!detail && view === 'ai' && (
             <AIModule
