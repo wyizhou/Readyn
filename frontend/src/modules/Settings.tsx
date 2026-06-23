@@ -581,13 +581,14 @@ function Theme({ settings, onChange }: SectionProps) {
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 14 }}>
           <div
+            aria-current="true"
             style={{
               flex: 1,
               padding: 16,
               borderRadius: 'var(--r-md)',
               border: '2px solid var(--accent)',
               background: 'var(--bg-app)',
-              cursor: 'pointer',
+              cursor: 'default',
             }}
           >
             <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
@@ -607,6 +608,8 @@ function Theme({ settings, onChange }: SectionProps) {
             </div>
           </div>
           <div
+            aria-disabled="true"
+            title="浅色主题即将推出，当前已禁用"
             style={{
               flex: 1,
               padding: 16,
@@ -614,6 +617,7 @@ function Theme({ settings, onChange }: SectionProps) {
               border: '1px solid var(--border-subtle)',
               background: 'var(--surface-card)',
               opacity: 0.5,
+              cursor: 'not-allowed',
             }}
           >
             <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
