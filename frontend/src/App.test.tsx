@@ -85,29 +85,25 @@ describe('App integration (empty-state / real-data)', () => {
     expect(within(block).getByText(/70\.3/)).toBeInTheDocument()
   })
 
-  it('shows 佳明 · 中国区 in the market and opens the real credential login modal', async () => {
+  it('connectors empty state opens the real Garmin login modal (P3)', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
-    await user.click(screen.getByText('数据源市场'))
-
-    // Scope to the Garmin-CN card and start the connect flow.
-    let card: HTMLElement | null = screen.getByText('佳明 · 中国区')
-    while (card && !within(card).queryByRole('button', { name: '连接' })) card = card.parentElement
-    await user.click(within(card as HTMLElement).getByRole('button', { name: '连接' }))
-
-    // The modal now collects real account credentials (not a mock OAuth wizard).
-    expect(await screen.findByText('佳明账号 (邮箱/手机)')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /登录并同步/ })).toBeInTheDocument()
+    // Offline → not connected → empty state with the Garmin login CTA.
+    expect(screen.getByText('尚未连接任何数据源')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /登录佳明/ }))
+    // Real account login modal (not a mock OAuth wizard).
+    expect(await screen.findByText('佳明账号（邮箱/手机）')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /登录并授权同步/ })).toBeInTheDocument()
   })
 
-  it('renders the connectors schema tab empty without crashing', async () => {
+  it('connectors empty state lists connectable sources (P3)', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
-    await user.click(screen.getByText('统一规范'))
-    // No fabricated schema rows; the canonical-model explainer still renders.
-    expect(screen.getByText(/统一数据模型/)).toBeInTheDocument()
+    expect(screen.getByText('可连接的数据源')).toBeInTheDocument()
+    expect(screen.getByText('佳明 · 中国区')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '登录连接' })).toBeInTheDocument()
   })
 
   // ---- Profile & settings persistence (regression for issue #13) ----

@@ -357,6 +357,10 @@ export interface Connector {
   sync: string
   metrics: string[]
   records: string
+  // 'account' = real session login (Garmin China); 'oauth' = redirect authorize.
+  auth?: 'account' | 'oauth'
+  host?: string
+  account?: string
   config?: ConnectorConfig
 }
 
