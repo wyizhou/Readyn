@@ -218,3 +218,122 @@ def test_connect_endpoint_with_body_creds(monkeypatch: pytest.MonkeyPatch) -> No
     assert client.get("/api/connectors/garmin-cn").json()["status"] == "connected"
     assert client.get("/api/bootstrap").json()["activities"][0]["sport"] == "跑步"
     db.close()
+
+
+# --- garminconnect client boundary (mock the Garmin handle, no network) -------
+
+
+class _FakeInner:
+    """Stand-in for garminconnect's inner HTTP client: token (de)serialise + API."""
+
+    def __init__(self) -> None:
+        self.loaded: str | None = None
+
+    def dumps(self) -> str:
+        return "serialized-token"
+
+    def loads(self, token: str) -> None:
+        if token == "corrupt":
+            raise ValueError("not a valid token blob")
+        self.loaded = token
+
+    def connectapi(self, path: str, **_: Any) -> Any:
+        if "socialProfile" in path:
+            return {"displayName": "linyue", "userName": "linyue"}
+        return {}
+
+
+class FakeGarmin:
+    """Stand-in for garminconnect.Garmin — drives login/MFA/token paths offline."""
+
+    def __init__(
+        self, email=None, password=None, is_cn=False, return_on_mfa=False, **_: Any
+    ) -> None:
+        self.email = email
+        self.password = password
+        self.is_cn = is_cn
+        self.client = _FakeInner()
+
+    def login(self) -> tuple[Any, Any]:
+        if self.email == "bad@x.cn":
+            raise RuntimeError("invalid credentials")
+        if self.email == "mfa@x.cn":
+            return ("needs_mfa", {"resume": 1})
+        return (None, None)
+
+    def resume_login(self, client_state: Any, code: str) -> tuple[Any, Any]:
+        if code != "123456":
+            raise RuntimeError("bad mfa code")
+        return (None, None)
+
+    def connectapi(self, path: str, **kw: Any) -> Any:
+        return self.client.connectapi(path, **kw)
+
+
+@pytest.fixture
+def fake_garmin(monkeypatch: pytest.MonkeyPatch) -> None:
+    import app.garmin.client as gc
+
+    monkeypatch.setattr(gc, "Garmin", FakeGarmin)
+
+
+def test_client_maps_cn_domain_and_clean_login(fake_garmin: None) -> None:
+    from app.garmin.client import GarminCNClient
+
+    c = GarminCNClient(domain="garmin.cn")
+    assert c._is_cn is True
+    c.login("user@x.cn", "pw")  # clean login → no MFA, no raise
+    assert c.account == "linyue"
+    assert c.display_name == "linyue"
+
+
+def test_client_intl_domain_is_not_cn(fake_garmin: None) -> None:
+    from app.garmin.client import GarminCNClient
+
+    assert GarminCNClient(domain="garmin.com")._is_cn is False
+
+
+def test_client_requires_mfa_then_resumes(fake_garmin: None) -> None:
+    from app.garmin.client import GarminCNClient, NeedsMFA
+
+    c = GarminCNClient()
+    with pytest.raises(NeedsMFA) as exc:
+        c.login("mfa@x.cn", "pw")
+    assert exc.value.client_state == {"resume": 1}
+    c.resume_mfa(exc.value.client_state, "123456")  # correct code → no raise
+
+
+def test_client_bad_credentials_raise_auth_error(fake_garmin: None) -> None:
+    from app.garmin.client import GarminAuthError, GarminCNClient
+
+    with pytest.raises(GarminAuthError):
+        GarminCNClient().login("bad@x.cn", "pw")
+
+
+def test_client_bad_mfa_code_raises_auth_error(fake_garmin: None) -> None:
+    from app.garmin.client import GarminAuthError, GarminCNClient, NeedsMFA
+
+    c = GarminCNClient()
+    with pytest.raises(NeedsMFA):
+        c.login("mfa@x.cn", "pw")
+    # resume with a wrong code surfaces a clean auth error
+    with pytest.raises(GarminAuthError):
+        c.resume_mfa({"resume": 1}, "000000")
+
+
+def test_client_token_dump_load_roundtrip(fake_garmin: None) -> None:
+    from app.garmin.client import GarminAuthError, GarminCNClient
+
+    c = GarminCNClient()
+    assert c.dump() == "serialized-token"  # via inner client.dumps()
+    c.load("restored-token")  # valid blob → no raise
+    with pytest.raises(GarminAuthError):
+        c.load("corrupt")  # invalid blob → wrapped as auth error
+
+
+def test_client_fetchers_go_through_connectapi(fake_garmin: None) -> None:
+    from app.garmin.client import GarminCNClient
+
+    c = GarminCNClient()
+    assert c.fetch_social_profile() == {"displayName": "linyue", "userName": "linyue"}
+    assert c.fetch_hrv("2026-06-20") == {}

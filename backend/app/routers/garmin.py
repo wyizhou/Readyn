@@ -2,8 +2,8 @@
 
 Login secrets come from ``backend/.env`` by default (see app.config) so they are
 never sent over the wire; a request body may override them for ad-hoc accounts.
-On success the garth OAuth token is cached in the DB and the password is no
-longer required — ``/sync`` resumes from the token.
+On success the garminconnect auth token is cached in the DB and the password is
+no longer required — ``/sync`` resumes from the token.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/api/garmin", tags=["garmin"])
 CONNECTOR_ID = "garmin-cn"
 
 # In-process store for logins paused on MFA (dev single-process). Maps an opaque
-# handle → (client, garth_state). Cleared once the code is submitted.
+# handle → (client, resume_state). Cleared once the code is submitted.
 _PENDING_MFA: dict[str, tuple[GarminCNClient, Any]] = {}
 
 
