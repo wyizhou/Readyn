@@ -3,6 +3,8 @@ import { Button, Tabs } from './design-system'
 import { Icon } from './components/Icon'
 import { Sidebar } from './components/Sidebar'
 import type { ViewId } from './components/Sidebar'
+import { SportFilter } from './components/SportFilter'
+import { sports } from './lib/taxonomy'
 import { Topbar } from './components/Topbar'
 import { SpecContext } from './components/spec/SpecContext'
 import { SpecToggle, SpecBanner } from './components/spec/Spec'
@@ -88,6 +90,7 @@ export default function App() {
   const D = data
   const [view, setView] = useState<ViewId>('dashboard')
   const [range, setRange] = useState('28d')
+  const [sport, setSport] = useState('all')
   const [connTab, setConnTab] = useState('connected')
   const [libTab, setLibTab] = useState('running')
   const [aiTab, setAiTab] = useState('train')
@@ -300,8 +303,19 @@ export default function App() {
     }
   }
 
+  // A data source is "connected" once a Garmin sync has populated core data.
+  const connected = D.activities.length > 0 || D.pmc.length > 0 || D.today.readiness > 0
+  const goConnect = () => {
+    setDetail(null)
+    setConnTab('market')
+    setView('connectors')
+  }
+
   const right = (
     <>
+      {!detail && view === 'dashboard' && connected && (
+        <SportFilter sports={sports} value={sport} onChange={setSport} compact />
+      )}
       {!detail && view === 'dashboard' && (
         <Tabs
           variant="pill"
@@ -400,6 +414,10 @@ export default function App() {
               data={D}
               range={range}
               setRange={setRange}
+              sport={sport}
+              setSport={setSport}
+              connected={connected}
+              onConnect={goConnect}
               onOpenAI={() => openChat()}
               onAskAI={askAI}
               onOpenActivity={openActivity}
