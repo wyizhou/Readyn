@@ -92,6 +92,23 @@ class GarminCNClient:
         except Exception as exc:
             raise GarminAuthError(f"stored token invalid: {exc}") from exc
 
+    @staticmethod
+    def token_loadable(token: str | None) -> bool:
+        """Offline check that ``token`` is a current (garminconnect) token blob.
+
+        Pre-migration garth tokens — or any empty/corrupt value — fail to parse
+        here *without any network call* (it is pure deserialisation), so callers
+        can tell a stale credential from a live one before attempting a sync and
+        avoid falsely reporting the connector as connected.
+        """
+        if not token:
+            return False
+        try:
+            GarminCNClient().load(token)
+        except GarminAuthError:
+            return False
+        return True
+
     @property
     def display_name(self) -> str:
         if self._display_name is None:

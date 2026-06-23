@@ -145,6 +145,11 @@ class FakeClient:
     def load(self, token: str) -> None:  # pragma: no cover - not used here
         pass
 
+    @staticmethod
+    def token_loadable(token: str | None) -> bool:
+        # In the fake world a stored token is always valid (no real parsing).
+        return bool(token)
+
 
 def _isolated_session():
     """A fresh in-memory DB with its own engine — independent of the app global
@@ -337,3 +342,71 @@ def test_client_fetchers_go_through_connectapi(fake_garmin: None) -> None:
     c = GarminCNClient()
     assert c.fetch_social_profile() == {"displayName": "linyue", "userName": "linyue"}
     assert c.fetch_hrv("2026-06-20") == {}
+
+
+# --- stale (pre-migration garth) token handling (regression for issue #23) ----
+
+
+def test_token_loadable_rejects_empty_and_legacy() -> None:
+    """Real (offline) parse: legacy garth / empty tokens are not loadable."""
+    from app.garmin.client import GarminCNClient
+
+    assert GarminCNClient.token_loadable(None) is False
+    assert GarminCNClient.token_loadable("") is False
+    assert GarminCNClient.token_loadable("legacy-garth-token-blob") is False
+
+
+def _app_on(Session: Any) -> TestClient:
+    from app.database import get_db
+    from app.main import create_app
+
+    app = create_app()
+    app.dependency_overrides[get_db] = lambda: Session()
+    # Constructed without the context manager → no lifespan seeding on the global
+    # engine; the override routes every request to the isolated session instead.
+    return TestClient(app)
+
+
+def test_status_self_heals_stale_legacy_token() -> None:
+    """A pre-migration garth token must not report connected; /status clears it."""
+    from app.models import Connector, GarminSession
+
+    db, Session = _isolated_session()
+    db.add(
+        GarminSession(
+            connector_id="garmin-cn",
+            token="legacy-garth-token-blob",
+            account="linyue",
+            last_sync="刚刚",
+        )
+    )
+    conn = db.get(Connector, "garmin-cn")
+    if conn is not None:
+        conn.status = "connected"
+    db.commit()
+
+    client = _app_on(Session)
+    body = client.get("/api/garmin/status").json()
+    assert body["connected"] is False  # was falsely true before the fix
+    assert body["lastError"]
+    assert client.get("/api/connectors/garmin-cn").json()["status"] != "connected"
+    db.close()
+
+
+def test_sync_with_stale_token_invalidates_instead_of_502() -> None:
+    from app.models import Connector, GarminSession
+
+    db, Session = _isolated_session()
+    db.add(GarminSession(connector_id="garmin-cn", token="legacy-garth-token-blob"))
+    conn = db.get(Connector, "garmin-cn")
+    if conn is not None:
+        conn.status = "connected"
+    db.commit()
+
+    client = _app_on(Session)
+    r = client.post("/api/garmin/sync")
+    assert r.status_code == 409  # "请重新连接", not a raw 502
+    # State is now honest: not connected, connector flipped back.
+    assert client.get("/api/garmin/status").json()["connected"] is False
+    assert client.get("/api/connectors/garmin-cn").json()["status"] != "connected"
+    db.close()
