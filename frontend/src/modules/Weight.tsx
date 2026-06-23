@@ -153,9 +153,10 @@ interface Tile {
 export function WeightModule({ weightLog, profile, onAdd, today }: WeightModuleProps) {
   const cur = weightLog[0]
   const prev = weightLog[1]
-  const delta = prev ? +(cur.kg - prev.kg).toFixed(1) : 0
-  const toGoal = +(cur.kg - profile.targetWeight).toFixed(1)
-  const b = bmiOf(cur.kg, profile.height)
+  const curKg = cur ? cur.kg : 0
+  const delta = prev && cur ? +(cur.kg - prev.kg).toFixed(1) : 0
+  const toGoal = cur ? +(cur.kg - profile.targetWeight).toFixed(1) : 0
+  const b = cur ? bmiOf(curKg, profile.height) : 0
   const cat = bmiCat(b)
   const [date, setDate] = useState(today)
   const [kg, setKg] = useState('')
@@ -171,24 +172,24 @@ export function WeightModule({ weightLog, profile, onAdd, today }: WeightModuleP
   const tiles: Tile[] = [
     {
       l: '当前体重',
-      v: `${cur.kg}`,
+      v: cur ? `${cur.kg}` : '—',
       u: 'kg',
-      d: `${delta > 0 ? '+' : ''}${delta} 较上次`,
+      d: cur ? `${delta > 0 ? '+' : ''}${delta} 较上次` : '暂无记录',
       c: delta <= 0 ? 'var(--green-400)' : 'var(--amber-400)',
     },
-    { l: 'BMI', v: `${b}`, u: cat.label, d: '正常区间 18.5–24', c: cat.c },
+    { l: 'BMI', v: b ? `${b}` : '—', u: cat.label, d: '正常区间 18.5–24', c: cat.c },
     {
       l: '距目标',
       v: `${toGoal > 0 ? toGoal : 0}`,
       u: 'kg',
-      d: toGoal > 0 ? `目标 ${profile.targetWeight}kg` : '已达成',
+      d: !cur ? '设定目标体重' : toGoal > 0 ? `目标 ${profile.targetWeight}kg` : '已达成',
       c: toGoal > 0 ? 'var(--blue-300)' : 'var(--green-400)',
     },
     {
       l: '体脂率',
-      v: cur.fat ? `${cur.fat}` : '—',
+      v: cur?.fat ? `${cur.fat}` : '—',
       u: '%',
-      d: cur.fat ? '最近一次' : '暂无记录',
+      d: cur?.fat ? '最近一次' : '暂无记录',
       c: 'var(--violet-300)',
     },
   ]

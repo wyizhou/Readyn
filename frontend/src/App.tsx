@@ -19,7 +19,7 @@ import { MetricDetail } from './details/MetricDetail'
 import { TemplateDetail } from './details/TemplateDetail'
 import { PlanDetail } from './details/PlanDetail'
 import { ConnectorDetail } from './details/ConnectorDetail'
-import { mockData } from './lib/mockData'
+import { emptyData } from './lib/emptyData'
 import { api } from './lib/api'
 import { planFromLibrary, planFromDays } from './lib/applyPlan'
 import type { DayInput } from './lib/applyPlan'
@@ -82,9 +82,9 @@ function AIButton({ onClick }: { onClick: () => void }) {
 const TODAY = '2026-06-18'
 
 export default function App() {
-  // Start from local mock data so the UI renders instantly and works offline;
-  // replace it with the backend payload once /api/bootstrap resolves.
-  const [data, setData] = useState<ApexData>(mockData)
+  // Start from an empty skeleton so the UI renders honest empty states instantly;
+  // /api/bootstrap fills it with real data (empty until a Garmin sync completes).
+  const [data, setData] = useState<ApexData>(emptyData)
   const D = data
   const [view, setView] = useState<ViewId>('dashboard')
   const [range, setRange] = useState('28d')
@@ -121,7 +121,7 @@ export default function App() {
       .finally(() => setSyncing(false))
   }, [applyData])
 
-  // Initial load from the backend; silently keep mock data if offline.
+  // Initial load from the backend; keep the empty skeleton if offline.
   useEffect(() => {
     let active = true
     api
@@ -206,30 +206,13 @@ export default function App() {
 
   // Connector linkage: connecting a source flips it to connected and feeds a
   // freshly-synced (unlinked) activity into Training so the data shows up.
-  const connectSource = (id: string) => {
-    setData((d) => {
-      const src = d.connectors.find((c) => c.id === id)
-      if (!src) return d
-      const connectors = d.connectors.map((c) =>
-        c.id === id ? { ...c, status: 'connected' as const, sync: '刚刚', records: c.records === '—' ? '128' : c.records } : c,
-      )
-      const newAct = {
-        id: `sync-${id}`,
-        name: '晨间有氧跑 (设备同步)',
-        sport: '跑步',
-        icon: 'footprints',
-        date: '今天 07:12',
-        dist: '8.2 km',
-        dur: '42:30',
-        load: 58,
-        source: src.name,
-      }
-      const unlinked = d.unlinked.some((u) => u.id === newAct.id) ? d.unlinked : [newAct, ...d.unlinked]
-      return { ...d, connectors, unlinked }
-    })
-    flashMsg('已连接 · 已同步 1 条新活动到训练页')
+  const connectSource = () => {
+    // The connect modal already performed the real backend login + sync; pull the
+    // refreshed bootstrap so the synced Garmin data shows up across every module.
+    reload()
   }
   const disconnectSource = (id: string) => {
+    // Local UI flip only — the cached token is cleared server-side on reconnect.
     setData((d) => ({
       ...d,
       connectors: d.connectors.map((c) => (c.id === id ? { ...c, status: 'available' as const, sync: '—' } : c)),
@@ -239,8 +222,14 @@ export default function App() {
     flashMsg('已断开连接')
   }
   const syncSource = (id: string) => {
-    setData((d) => ({ ...d, connectors: d.connectors.map((c) => (c.id === id ? { ...c, sync: '刚刚' } : c)) }))
-    flashMsg('已触发同步')
+    setSyncing(true)
+    api
+      .garminSync()
+      .then(() => reload())
+      .then(() => flashMsg('已同步佳明数据'))
+      .catch(() => flashMsg('同步失败，请重新连接'))
+      .finally(() => setSyncing(false))
+    void id
   }
 
   // Link a device-synced activity to a planned workout: drop it from the

@@ -134,7 +134,8 @@ export function ProfileModal({
   const handleStatus: HandleStatus =
     syncStatus ?? (resolved && resolved.handle === normHandle ? resolved.status : 'checking')
   const cur = weightLog[0]
-  const b = bmiOf(cur.kg, d.height || profile.height)
+  const height = d.height || profile.height
+  const b = cur && height ? bmiOf(cur.kg, height) : 0
   const cat = bmiCat(b)
   const set =
     (k: keyof Profile) =>
@@ -403,7 +404,7 @@ export function ProfileModal({
                   当前体重 · 来自体重记录
                 </span>
                 <span style={{ font: 'var(--fw-bold) var(--fs-h3)/1 var(--font-mono)', color: 'var(--text-strong)' }}>
-                  {cur.kg} <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>kg</span>
+                  {cur ? cur.kg : '—'} <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>kg</span>
                 </span>
               </div>
               <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>

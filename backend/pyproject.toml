@@ -12,6 +12,8 @@ dependencies = [
     "uvicorn[standard]>=0.30",
     "sqlalchemy>=2.0",
     "pydantic>=2.7",
+    "pydantic-settings>=2.4",
+    "garth>=0.5",
 ]
 
 [project.optional-dependencies]

@@ -116,3 +116,28 @@ class Dataset(Base):
 
     key: Mapped[str] = mapped_column(String, primary_key=True)
     value: Mapped[Any] = mapped_column(JSON)
+
+
+class GarminSession(Base):
+    """Cached garth OAuth token blob for a connector, plus last-sync metadata.
+
+    Storing the token (garth ``dumps()`` output) lets us refresh data without the
+    password on every sync. One row per connector id (e.g. ``garmin-cn``).
+    """
+
+    __tablename__ = "garmin_sessions"
+
+    connector_id: Mapped[str] = mapped_column(String, primary_key=True)
+    token: Mapped[str | None] = mapped_column(String, nullable=True)
+    account: Mapped[str | None] = mapped_column(String, nullable=True)
+    last_sync: Mapped[str | None] = mapped_column(String, nullable=True)
+    last_error: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    def as_status(self) -> dict[str, Any]:
+        return {
+            "connectorId": self.connector_id,
+            "connected": bool(self.token),
+            "account": self.account,
+            "lastSync": self.last_sync,
+            "lastError": self.last_error,
+        }

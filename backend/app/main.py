@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import models  # noqa: F401  (ensure models register on Base before create_all)
 from .database import Base, SessionLocal, engine
-from .routers import ai, data, profile, settings, system
+from .routers import ai, data, garmin, profile, settings, system
 from .seed import seed_if_empty
 
 
@@ -48,6 +48,7 @@ def create_app() -> FastAPI:
     app.include_router(system.router)
     app.include_router(profile.router)
     app.include_router(data.router)
+    app.include_router(garmin.router)
     app.include_router(ai.router)
     app.include_router(settings.router)
     return app

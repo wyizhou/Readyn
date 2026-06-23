@@ -111,27 +111,32 @@ def save_settings(db: Session, payload: dict[str, Any]) -> dict[str, Any]:
     return merged
 
 
-# --- AI (canned responses; swap for a real model per README §10) ---
+# --- AI (README §10) ---
+# Honest "not configured" responses rather than fabricated analytics. Wire a real
+# provider (using the profile's aiProvider/aiKey) here to generate genuine
+# insights from the synced Garmin data.
+
+_AI_NOT_CONFIGURED = (
+    "AI 助手尚未接入真实模型。请在「设置 · AI」中配置服务商与 API Key，"
+    "并先连接佳明账号同步真实数据后再使用。"
+)
+
 
 def chat_reply(messages: list[dict[str, Any]]) -> str:
-    last = messages[-1]["content"] if messages else ""
-    return (
-        "结合你近 14 天的数据（就绪度 78、HRV 71ms 高于基线、周负荷 612 AU、ACWR 1.18），"
-        f"关于「{last}」我的建议是：当前身体对有氧块适应良好、可承接强度，但 ACWR 接近 1.3 风险线，"
-        "本周末把长距离爬升控制在 130 AU 内，并保证周四主动恢复质量。"
-    )
+    return _AI_NOT_CONFIGURED
 
 
 def generate_plan(goal: str) -> dict[str, Any]:
     return {
-        "name": f"AI 生成 · {goal}",
+        "name": f"AI 计划 · {goal}",
         "goal": goal,
-        "weeks": 4,
-        "load": 1980,
-        "sessions": 22,
-        "sports": ["跑步", "抱石", "登山"],
-        "updated": "刚刚",
+        "weeks": 0,
+        "load": 0,
+        "sessions": 0,
+        "sports": [],
+        "updated": "—",
         "source": "AI",
+        "note": _AI_NOT_CONFIGURED,
     }
 
 
