@@ -49,6 +49,14 @@ export interface EmptyCopy {
   desc: string
 }
 
+// A row in the settings "数据来源与算法" matrix (algorithm transparency).
+export interface AlgorithmRow {
+  metric: string
+  source: SourceKey
+  family: string
+  params: string
+}
+
 export interface Profile {
   name: string
   handle: string
