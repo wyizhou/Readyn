@@ -13,13 +13,16 @@ function topHeading(): string {
 }
 
 describe('App integration (empty-state / real-data)', () => {
-  it('renders the dashboard with empty states and no crash', () => {
+  it('renders the dashboard empty state when no source is connected', () => {
+    // With no backend reachable in jsdom there is no data, so the redesigned
+    // dashboard (P2) shows the connect empty state + greyed placeholder cards.
     render(<App />)
     expect(topHeading()).toContain('看板')
-    expect(screen.getByText('就绪度')).toBeInTheDocument()
-    expect(screen.getByText('AI 洞察')).toBeInTheDocument()
-    // Charts with no data render the shared placeholder instead of crashing.
-    expect(screen.getAllByText('暂无数据').length).toBeGreaterThan(0)
+    expect(screen.getByText('尚未连接数据源')).toBeInTheDocument()
+    expect(screen.getByText('就绪度')).toBeInTheDocument() // placeholder card label
+    expect(screen.getAllByText('连接后显示').length).toBeGreaterThan(0)
+    // The connect CTA routes to the connectors module.
+    expect(screen.getByRole('button', { name: /连接佳明/ })).toBeInTheDocument()
   })
 
   it('navigates between modules via the sidebar', async () => {

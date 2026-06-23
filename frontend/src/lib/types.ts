@@ -138,6 +138,12 @@ export interface MetricDeepDive {
   factors: MetricFactor[]
   ai: MetricAI
   related: string[]
+  // transparency / multisport metadata (optional; populated for the deep-dive).
+  source?: SourceKey
+  params?: string
+  family?: string
+  scope?: 'global' | 'sport'
+  sportKey?: string
 }
 
 export type MetricId = 'hrv' | 'acwr' | 'ctl' | 'tsb' | 'rhr' | 'sleep'
@@ -244,6 +250,8 @@ export interface HrZone {
 
 export interface DisciplineSplit {
   name: string
+  // sport bucket id; clicking a legend row filters to it ('other' is not clickable).
+  key?: string
   icon: string
   load: number
   pct: number
@@ -269,10 +277,14 @@ export interface Activity {
   name: string
   sport: string
   icon: string
+  // sport bucket id (run/ride/swim/strength/climb/hike) — drives sport filtering.
+  key?: string
   date: string
   dist: string
   dur: string
   load: number
+  // how this load (AU) was normalised — the transparency tag.
+  loadSrc?: string
   hr: number
   flag: ActivityFlag
   note: string
