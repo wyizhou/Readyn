@@ -58,6 +58,30 @@ describe('App integration (empty-state / real-data)', () => {
     expect(screen.getAllByText('70.3').length).toBeGreaterThan(0)
   })
 
+  it('links a recorded weight into the sidebar footer and the profile modal', async () => {
+    // Regression for issue #11: 体重记录 → 侧栏当前体重 / 个人资料体重 联动。
+    const user = userEvent.setup()
+    render(<App />)
+
+    // Empty state: sidebar footer shows the fallback (height 0cm · target 0kg).
+    expect(screen.getByText('0cm · 0kg')).toBeInTheDocument()
+
+    // Record a new weight in the 体重记录 module.
+    await user.click(within(screen.getByRole('navigation')).getByText('体重记录'))
+    await user.type(screen.getByPlaceholderText('例如 65.6'), '70.3')
+    await user.click(screen.getByRole('button', { name: '记录体重' }))
+
+    // Sidebar footer (always mounted) now reflects the new current weight.
+    const footer = screen.getByText('0cm · 70.3kg')
+    expect(footer).toBeInTheDocument()
+
+    // Opening the profile modal from that footer shows the same linked weight.
+    await user.click(footer.closest('button') as HTMLElement)
+    const linkLabel = await screen.findByText('当前体重 · 来自体重记录')
+    const block = linkLabel.parentElement as HTMLElement
+    expect(within(block).getByText(/70\.3/)).toBeInTheDocument()
+  })
+
   it('shows 佳明 · 中国区 in the market and opens the real credential login modal', async () => {
     const user = userEvent.setup()
     render(<App />)
@@ -125,5 +149,61 @@ describe('App integration (empty-state / real-data)', () => {
     expect(screen.getByText('当前')).toBeInTheDocument()
     expect(screen.getByText('浅色')).toBeInTheDocument()
     expect(screen.getByText('即将推出')).toBeInTheDocument()
+  })
+
+  // ---- AI module control linkages (regression for issue #12) ----
+
+  it('updates the AI draft in real time from a suggestion chip', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
+    // The 训练 tab is default and shows the base draft.
+    expect(screen.getByText('有氧容量强化 · 第 7 周')).toBeInTheDocument()
+    // A suggestion chip («改成 4 周周期») must mutate the live draft canvas.
+    await user.click(screen.getByRole('button', { name: '改成 4 周周期' }))
+    expect(await screen.findByText('有氧容量强化 · 4 周周期', {}, { timeout: 4000 })).toBeInTheDocument()
+  })
+
+  it('sends a chat message and gets an expert reply', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
+    await user.click(screen.getByText('AI 对话'))
+    await user.click(screen.getByRole('button', { name: '我的睡眠怎么样？' }))
+    // The user message lands and the AI replies (sleep branch of expertReply).
+    expect(await screen.findByText(/近 7 晚平均 7\.4h/, {}, { timeout: 4000 })).toBeInTheDocument()
+  })
+
+  it('saves the AI draft into 训练库 · 我的计划', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
+    await user.click(screen.getByRole('button', { name: /保存到训练库/ }))
+    // Inline confirmation is immediate; then App routes to the library.
+    expect(screen.getByText('已保存到训练库 · 我的计划')).toBeInTheDocument()
+    expect(await screen.findByText(/已保存计划/, {}, { timeout: 4000 })).toBeInTheDocument()
+    expect(topHeading()).toContain('训练库')
+  })
+
+  it('applies the AI draft to the training calendar with the plan name linked', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
+    await user.click(screen.getByRole('button', { name: /应用到日历/ }))
+    expect(topHeading()).toContain('训练日历')
+    // The applied plan name is linked through to the calendar subtitle.
+    expect(screen.getAllByText(/有氧容量强化 · 第 7 周/).length).toBeGreaterThan(0)
+  })
+
+  it('switches between AI 训练 and AI 对话 tabs', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
+    // 训练 default: draft canvas present.
+    expect(screen.getByText('AI 草拟计划')).toBeInTheDocument()
+    await user.click(screen.getByText('AI 对话'))
+    // 对话: expert chat header present, draft canvas gone.
+    expect(screen.getByText(/运动科学专家 · 已载入/)).toBeInTheDocument()
+    expect(screen.queryByText('AI 草拟计划')).not.toBeInTheDocument()
   })
 })
