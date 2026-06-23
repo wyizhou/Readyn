@@ -119,10 +119,12 @@ class Dataset(Base):
 
 
 class GarminSession(Base):
-    """Cached garth OAuth token blob for a connector, plus last-sync metadata.
+    """Cached garminconnect token blob for a connector, plus last-sync metadata.
 
-    Storing the token (garth ``dumps()`` output) lets us refresh data without the
-    password on every sync. One row per connector id (e.g. ``garmin-cn``).
+    Storing the token (garminconnect ``client.dumps()`` output) lets us refresh
+    data without the password on every sync. One row per connector id (e.g.
+    ``garmin-cn``). Tokens from the old garth client are no longer loadable and
+    are invalidated on use (see app.routers.garmin).
     """
 
     __tablename__ = "garmin_sessions"

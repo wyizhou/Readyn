@@ -60,9 +60,30 @@ def _finalize(client: GarminCNClient, db: Session) -> dict[str, Any]:
     return summary
 
 
+# A stored token may be a pre-migration garth blob the garminconnect client can
+# no longer parse. Surface that as "not connected" instead of pretending.
+_STALE_TOKEN_MSG = "登录凭证已失效（可能是旧版本遗留的令牌），请重新连接佳明账号。"
+
+
+def _invalidate_session(db: Session, session: GarminSession, message: str) -> None:
+    """Drop an unusable token and flip the connector back to not-connected so
+    /status stops falsely reporting 'connected'. Self-heals stale state."""
+    session.token = None
+    session.last_error = message
+    connector = db.get(Connector, CONNECTOR_ID)
+    if connector is not None:
+        connector.status = "available"
+        connector.sync = "—"
+    db.commit()
+
+
 @router.get("/status")
 def status(db: Session = Depends(get_db)) -> dict[str, Any]:
     session = db.get(GarminSession, CONNECTOR_ID)
+    # Don't trust mere token presence — a legacy garth token is unloadable. Verify
+    # it parses (offline, no network) and self-heal the stale state if it doesn't.
+    if session is not None and session.token and not GarminCNClient.token_loadable(session.token):
+        _invalidate_session(db, session, _STALE_TOKEN_MSG)
     base = session.as_status() if session else {
         "connectorId": CONNECTOR_ID, "connected": False,
         "account": None, "lastSync": None, "lastError": None,
@@ -116,11 +137,18 @@ def sync(db: Session = Depends(get_db)) -> dict[str, Any]:
     session = db.get(GarminSession, CONNECTOR_ID)
     if session is None or not session.token:
         raise HTTPException(status_code=409, detail="尚未连接佳明账号，请先 /connect。")
+    # A legacy/unparseable token can never sync — invalidate it (so /status is
+    # honest) and ask the user to reconnect, rather than emitting a raw 502.
+    if not GarminCNClient.token_loadable(session.token):
+        _invalidate_session(db, session, _STALE_TOKEN_MSG)
+        raise HTTPException(status_code=409, detail=_STALE_TOKEN_MSG)
     client = GarminCNClient(domain=get_settings().garmin_domain)
     try:
         client.load(session.token)
         return sync_account(client, db, CONNECTOR_ID)
     except GarminAuthError as exc:
+        # Loadable token but the sync still failed (e.g. expired session or a
+        # network blip). Record it but keep the token — it may be transient.
         _record_error(db, str(exc))
         raise HTTPException(
             status_code=502, detail=f"同步失败（令牌可能已过期，请重新连接）：{exc}"
