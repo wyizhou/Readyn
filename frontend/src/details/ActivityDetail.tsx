@@ -1,10 +1,11 @@
 // Readyn Personal — 活动详情 Activity Detail (full-screen).
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Card, Badge, Button } from '../design-system'
 import { Icon } from '../components/Icon'
 import { SpecPin } from '../components/spec/Spec'
 import { HRZoneBar, GradePyramid } from '../components/charts/Charts'
+import { loadSources } from '../lib/taxonomy'
 import type {
   Activity,
   ActivityDetail as ActivityDetailData,
@@ -437,6 +438,60 @@ function RoutePlaceholder({ pin }: { pin?: ReactNode }) {
 
 type HeaderChip = [string, ReactNode]
 
+// Algorithm transparency at the activity level: which model produced this AU,
+// plus RPE backfill for HR-less sports (climbing / strength). RPE recomputes the
+// session load (sRPE = RPE × minutes), mirroring the server load engine.
+function LoadSourceBar({ act, durSec, seededRpe, onToast }: { act: Activity; durSec: number; seededRpe?: number; onToast: (m: string) => void }) {
+  const src = act.loadSrc ?? 'HR-TRIMP'
+  const meta = loadSources[src] ?? { label: src, icon: 'gauge', desc: '负荷归一来源', color: 'var(--text-faint)' }
+  const rpeBased = src === '主观 RPE' || src === '容量 + RPE'
+  const [rpe, setRpe] = useState(seededRpe ?? 7)
+  const [load, setLoad] = useState(act.load)
+  const submitRpe = () => {
+    const mins = Math.max(1, Math.round(durSec / 60))
+    const next = Math.round(mins * rpe)
+    setLoad(next)
+    onToast(`已按 RPE ${rpe} 补录负荷（${next} AU）`)
+  }
+  return (
+    <div style={{ marginBottom: 22 }}>
+      <Card title="负荷来源">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <span style={{ width: 38, height: 38, borderRadius: 10, background: `${meta.color}1f`, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+            <Icon name={meta.icon} size={18} color={meta.color} />
+          </span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ font: 'var(--fw-bold) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-strong)' }}>{meta.label}</span>
+              <span style={{ font: 'var(--fw-bold) var(--fs-sm)/1 var(--font-mono)', color: meta.color }}>{load} AU</span>
+            </div>
+            <div style={{ font: 'var(--fw-regular) var(--fs-xs)/1.4 var(--font-sans)', color: 'var(--text-faint)', marginTop: 4 }}>{meta.desc}</div>
+          </div>
+        </div>
+        {rpeBased && (
+          <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', gap: 14 }}>
+            <span style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans)', letterSpacing: 'var(--ls-label)', textTransform: 'uppercase', color: 'var(--text-faint)', flex: 'none' }}>补录 RPE</span>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              step={1}
+              value={rpe}
+              aria-label="RPE"
+              onChange={(e) => setRpe(Number(e.target.value))}
+              style={{ flex: 1, accentColor: 'var(--accent)' }}
+            />
+            <span style={{ width: 28, textAlign: 'center', font: 'var(--fw-bold) var(--fs-md)/1 var(--font-mono)', color: 'var(--text-strong)' }}>{rpe}</span>
+            <Button variant="secondary" size="sm" onClick={submitRpe}>
+              补录
+            </Button>
+          </div>
+        )}
+      </Card>
+    </div>
+  )
+}
+
 export interface ActivityDetailProps {
   data: ApexData
   act: Activity
@@ -608,6 +663,14 @@ export function ActivityDetail({ data, act, onToast }: ActivityDetailProps) {
           </Fragment>
         )}
       </div>
+
+      {/* load-source transparency + RPE backfill (HR-less sports) */}
+      <LoadSourceBar
+        act={act}
+        durSec={durToSec(detail.elapsed || act.dur)}
+        seededRpe={(detail as { rpe?: number }).rpe}
+        onToast={onToast}
+      />
 
       {/* plan compare */}
       <div style={{ marginBottom: 22 }}>
