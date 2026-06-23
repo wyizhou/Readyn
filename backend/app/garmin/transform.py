@@ -11,6 +11,8 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from .load import load_src_for
+
 # Garmin activityType.typeKey → (display sport, icon, canonical bucket)
 _SPORT_MAP: dict[str, tuple[str, str]] = {
     "running": ("跑步", "run"),
@@ -76,10 +78,14 @@ def activity_to_summary(raw: dict[str, Any]) -> dict[str, Any]:
         "name": raw.get("activityName") or sport,
         "sport": sport,
         "icon": icon,
+        # bucket key (run/bike/swim/climb/…); the design separates it from `icon`.
+        "key": icon,
         "date": start,
         "dist": _fmt_distance(raw.get("distance")),
         "dur": _fmt_duration(raw.get("duration")),
         "load": load,
+        # how this load was/should be normalised — the transparency tag.
+        "loadSrc": load_src_for(icon),
         "hr": avg_hr,
         "flag": "high" if load >= 130 else "ok",
         "note": "",
