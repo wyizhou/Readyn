@@ -1,7 +1,7 @@
 import { Icon } from './Icon'
 import type { Profile } from '../lib/types'
 
-export type ViewId = 'dashboard' | 'training' | 'library' | 'weight' | 'connectors' | 'ai'
+export type ViewId = 'dashboard' | 'records' | 'training' | 'library' | 'weight' | 'connectors' | 'ai'
 
 interface NavItem {
   id: ViewId
@@ -12,6 +12,7 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   { id: 'dashboard', icon: 'layout-dashboard', label: '看板', sub: '分析 · 趋势 · 状态' },
+  { id: 'records', icon: 'list', label: '运动记录', sub: '全部活动 · 分页' },
   { id: 'training', icon: 'calendar-check', label: '训练日历', sub: '计划 · 执行 · 关联' },
   { id: 'library', icon: 'library-big', label: '训练库', sub: '跑步 · 攀岩 · 模板' },
   { id: 'weight', icon: 'scale', label: '体重记录', sub: '手动录入 · 趋势' },

@@ -491,6 +491,9 @@ export interface ApexData {
   balance: BalanceAxis[]
   boulderPyramid: PyramidRow[]
   activities: Activity[]
+  // Full activity list for the Records module (paginated). Falls back to
+  // `activities` when the backend doesn't serve a separate records feed.
+  records?: Activity[]
   insights: Insight[]
   plan: Plan
   workout: Workout

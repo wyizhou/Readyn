@@ -13,6 +13,7 @@ import { Training } from './modules/Training'
 import { Library } from './modules/Library'
 import { WeightModule } from './modules/Weight'
 import { Connectors } from './modules/Connectors'
+import { Records } from './modules/Records'
 import { AIModule } from './modules/AIModule'
 import { ProfileModal } from './modules/Profile'
 import { SettingsCenter } from './modules/Settings'
@@ -271,6 +272,7 @@ export default function App() {
 
   const titles: Record<ViewId, [string, string]> = {
     dashboard: ['看板', '林越 · 多项目耐力 / 攀岩 · 2026-06-18'],
+    records: ['运动记录', '全部活动 · 按时间倒序'],
     training: ['训练日历', `${D.plan.week} · 焦点 ${D.plan.focus}`],
     library: ['训练库', '跑步 · 攀岩 · 我的计划'],
     weight: ['体重记录', '手动录入与趋势 · 与个人资料联动'],
@@ -445,6 +447,9 @@ export default function App() {
               onOpenPlan={openPlan}
               onApplyPlan={onApplyLibraryPlan}
             />
+          )}
+          {!detail && view === 'records' && (
+            <Records data={D} connected={connected} onConnect={goConnect} onOpenActivity={openActivity} />
           )}
           {!detail && view === 'weight' && <WeightModule weightLog={weightLog} profile={profile} onAdd={addWeight} today={TODAY} />}
           {!detail && view === 'connectors' && (
