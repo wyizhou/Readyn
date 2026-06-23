@@ -25,7 +25,7 @@ Readyn/
 └── backend/         # FastAPI + SQLAlchemy + SQLite（ruff + pytest）
     └── app/
         ├── models.py routers/ schemas.py services.py seed.py
-        └── garmin/          # 佳明中国区集成：client(garth) · transform · sync
+        └── garmin/          # 佳明中国区集成：client(garminconnect) · transform · sync
 ```
 
 五大模块 + 支撑层：看板 (Dashboard)、训练日历 (Training)、训练库 (Library)、
@@ -61,19 +61,20 @@ python -m venv .venv
 ### 数据来源 · 佳明中国区（connect.garmin.cn）
 
 Readyn 已移除全部 mock 数据，改为对接佳明中国区真实数据（活动 / HRV / 睡眠 /
-心率 / 体重，并据活动负荷推导 CTL/ATL/TSB）。集成基于 `garth` 账号登录（佳明中国区
-无开放 OAuth）。
+心率 / 体重，并据活动负荷推导 CTL/ATL/TSB）。集成基于 `garminconnect` 账号登录（佳明
+中国区无开放 OAuth）。
 
 ```bash
 cp backend/.env.example backend/.env        # 填入 GARMIN_CN_EMAIL / GARMIN_CN_PASSWORD
 ```
 
 `.env` 已被 `.gitignore` 忽略，不会提交。在应用「连接器 → 数据源市场 → 佳明·中国区」
-中登录即可（也可在弹窗内临时输入账号）；支持两步验证。首次登录后缓存 OAuth 令牌，
-后续 `POST /api/garmin/sync` 无需密码。
+中登录即可（也可在弹窗内临时输入账号）；支持两步验证。首次登录后缓存 garminconnect
+令牌，后续 `POST /api/garmin/sync` 无需密码。
 
-> 注意：`garth` 上游已标记弃用，属逆向接口、未来可能失效；connect.garmin.cn 为中国区
-> 服务，需网络可达。
+> 注意：`garminconnect` 同属非官方逆向接口、未来可能失效（但相较已弃用的 `garth`
+> 维护更勤、更抗封）；connect.garmin.cn 为中国区服务，需网络可达。从 garth 迁移后，
+> 旧的 garth 令牌格式失效，需重新登录一次（含两步验证）重建令牌；已持久化的业务数据不丢失。
 
 ## 技术说明
 

@@ -1,34 +1,44 @@
-"""garth wrapper for the Garmin China cloud (connect.garmin.cn).
+"""garminconnect wrapper for the Garmin China cloud (connect.garmin.cn).
 
 Everything the rest of the app needs goes through :class:`GarminCNClient`:
 
 * ``login(email, password)``        — SSO login; raises :class:`NeedsMFA` if the
                                       account has 2-step verification enabled.
 * ``resume_mfa(client_state, code)``— finish a login that returned ``NeedsMFA``.
-* ``load(token)`` / ``dump()``      — restore / serialise the OAuth tokens so the
+* ``load(token)`` / ``dump()``      — restore / serialise the auth tokens so the
                                       password is only needed once.
 * ``fetch_*``                       — thin ``connectapi`` calls returning raw
                                       Garmin JSON (kept dumb so transforms/tests
                                       operate on plain dicts).
 
-garth itself is deprecated upstream but remains the pragmatic route to the China
-region, which has no official open Health API. All network access is funnelled
-through this class so the dependency can be swapped without touching callers.
+This used to wrap ``garth``, which upstream self-deprecated and no longer
+maintains (https://github.com/matin/garth/discussions/222). We now wrap
+``garminconnect`` (PyPI ``garminconnect``): it ships its own HTTP layer
+(``curl_cffi`` + ``ua-generator``, impersonating a real browser TLS fingerprint
+to survive Garmin's bot defences), natively supports the China region via
+``is_cn=True``, and is actively maintained.
+
+The raw fetchers deliberately go through ``Garmin.connectapi`` with the exact
+Connect REST paths the old garth client used, rather than garminconnect's named
+helpers (``get_weigh_ins``/``get_user_profile`` hit *different* endpoints with
+*different* response shapes). That keeps the payloads byte-identical to before,
+so :mod:`app.garmin.transform` needs no changes. All network access is funnelled
+through this one class so the dependency can be swapped without touching callers.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-import garth
+from garminconnect import Garmin
 
 
 class GarminAuthError(RuntimeError):
-    """Login failed (bad credentials, region/network block, or garth error)."""
+    """Login failed (bad credentials, region/network block, or library error)."""
 
 
 class NeedsMFA(Exception):
-    """Login needs a 2FA code. Carries garth's opaque resume state."""
+    """Login needs a 2FA code. Carries garminconnect's opaque resume state."""
 
     def __init__(self, client_state: Any) -> None:
         super().__init__("Garmin account requires an MFA code")
@@ -39,20 +49,30 @@ class GarminCNClient:
     """Authenticated handle to one Garmin China account."""
 
     def __init__(self, domain: str = "garmin.cn") -> None:
-        self._g = garth.Client()
-        self._g.configure(domain=domain)
+        # garminconnect selects the China cloud via is_cn rather than a domain
+        # string; keep the ``domain`` argument for call-site compatibility.
+        self._is_cn = "cn" in domain.lower()
+        self._g = Garmin(is_cn=self._is_cn, return_on_mfa=True)
         self._display_name: str | None = None
 
     # --- authentication -------------------------------------------------
 
     def login(self, email: str, password: str) -> None:
         """Username/password SSO login. Raises NeedsMFA or GarminAuthError."""
+        # Credentials are constructor args in garminconnect, so rebuild the
+        # handle with them before logging in.
+        self._g = Garmin(
+            email=email, password=password, is_cn=self._is_cn, return_on_mfa=True
+        )
         try:
-            result = self._g.login(email, password, return_on_mfa=True)
-        except Exception as exc:  # garth raises a grab-bag of exceptions
+            # With return_on_mfa, login() yields (mfa_status, resume_state):
+            # mfa_status is truthy ("needs_mfa") when a 2FA code is required,
+            # otherwise (None, None) on a clean login.
+            mfa_status, client_state = self._g.login()
+        except Exception as exc:  # garminconnect raises a grab-bag of exceptions
             raise GarminAuthError(str(exc)) from exc
-        if isinstance(result, tuple) and result and result[0] == "needs_mfa":
-            raise NeedsMFA(result[1])
+        if mfa_status:
+            raise NeedsMFA(client_state)
 
     def resume_mfa(self, client_state: Any, code: str) -> None:
         """Complete a login that previously raised :class:`NeedsMFA`."""
@@ -62,13 +82,13 @@ class GarminCNClient:
             raise GarminAuthError(str(exc)) from exc
 
     def dump(self) -> str:
-        """Serialise OAuth tokens to an opaque string for storage."""
-        return self._g.dumps()
+        """Serialise auth tokens to an opaque string for storage."""
+        return self._g.client.dumps()
 
     def load(self, token: str) -> None:
-        """Restore OAuth tokens produced by :meth:`dump`."""
+        """Restore auth tokens produced by :meth:`dump`."""
         try:
-            self._g.loads(token)
+            self._g.client.loads(token)
         except Exception as exc:
             raise GarminAuthError(f"stored token invalid: {exc}") from exc
 

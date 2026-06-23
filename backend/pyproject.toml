@@ -13,7 +13,12 @@ dependencies = [
     "sqlalchemy>=2.0",
     "pydantic>=2.7",
     "pydantic-settings>=2.4",
-    "garth>=0.5",
+    # Garmin China integration. garth (the previous client) self-deprecated
+    # upstream; garminconnect ships its own curl_cffi HTTP layer and natively
+    # supports the China region. Pin tightly — the 0.3.x line iterates fast and
+    # its transitive curl_cffi binary can break across releases.
+    "garminconnect==0.3.6",
+    "curl_cffi==0.15.0",
 ]
 
 [project.optional-dependencies]
