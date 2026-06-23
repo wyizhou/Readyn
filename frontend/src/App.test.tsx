@@ -82,4 +82,48 @@ describe('App integration (empty-state / real-data)', () => {
     // No fabricated schema rows; the canonical-model explainer still renders.
     expect(screen.getByText(/统一数据模型/)).toBeInTheDocument()
   })
+
+  // ---- Profile & settings persistence (regression for issue #13) ----
+
+  // Sidebar footer (the only profile entry point) → 个人资料 → 设置中心.
+  async function openSettings(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(screen.getByText('0cm · 0kg').closest('button') as HTMLElement)
+    await user.click(screen.getByRole('button', { name: /设置中心/ }))
+  }
+
+  it('persists a settings toggle across section navigation (lifted state)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openSettings(user)
+    await user.click(screen.getByRole('button', { name: '通知与提醒' }))
+    // 每周总结 defaults OFF (4th notification switch).
+    expect(screen.getAllByRole('switch')[3]).toHaveAttribute('aria-checked', 'false')
+    await user.click(screen.getAllByRole('switch')[3])
+    expect(screen.getAllByRole('switch')[3]).toHaveAttribute('aria-checked', 'true')
+    // Leave the section and come back — the value must survive (App-level state,
+    // not the unmounted section component's local state).
+    await user.click(screen.getByRole('button', { name: '单位' }))
+    await user.click(screen.getByRole('button', { name: '通知与提醒' }))
+    expect(screen.getAllByRole('switch')[3]).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('prompts for a missing API key when testing the AI connection', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByText('0cm · 0kg').closest('button') as HTMLElement)
+    // Click 测试连接 with no key entered — must surface the missing-key prompt.
+    await user.click(screen.getByRole('button', { name: '测试连接' }))
+    expect(await screen.findByText('请先填入 API Key', {}, { timeout: 4000 })).toBeInTheDocument()
+  })
+
+  it('locks appearance to dark and marks 浅色 as disabled / 即将推出', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await openSettings(user)
+    await user.click(screen.getByRole('button', { name: '外观' }))
+    expect(screen.getByText('深色')).toBeInTheDocument()
+    expect(screen.getByText('当前')).toBeInTheDocument()
+    expect(screen.getByText('浅色')).toBeInTheDocument()
+    expect(screen.getByText('即将推出')).toBeInTheDocument()
+  })
 })
