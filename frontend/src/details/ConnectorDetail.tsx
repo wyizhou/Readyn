@@ -69,11 +69,11 @@ interface SyncLogEntry {
 export interface ConnectorDetailProps {
   src: Connector
   onSync: () => void
+  onBackfill: () => void
   onDisconnect: () => void
-  onToast: (msg: string) => void
 }
 
-export function ConnectorDetail({ src, onSync, onDisconnect, onToast }: ConnectorDetailProps) {
+export function ConnectorDetail({ src, onSync, onBackfill, onDisconnect }: ConnectorDetailProps) {
   const rows: [string, string, boolean][] = src.metrics.map((m) => [
     m === '全部' ? 'all_fields' : m === '跑步' ? 'activity_running' : `field_${m}`,
     CANON[m] || `ext.${m}`,
@@ -141,7 +141,7 @@ export function ConnectorDetail({ src, onSync, onDisconnect, onToast }: Connecto
                 <div style={{ font: 'var(--fw-semibold) var(--fs-sm)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>历史回填</div>
                 <div style={{ font: 'var(--fw-regular) var(--fs-xs)/1.4 var(--font-sans)', color: 'var(--text-faint)', marginTop: 4 }}>导入更早的历史活动</div>
               </div>
-              <Button variant="secondary" size="sm" iconLeft={<Icon name="download" size={14} />} onClick={() => onToast('历史回填已开始，完成后通知')}>回填</Button>
+              <Button variant="secondary" size="sm" iconLeft={<Icon name="download" size={14} />} onClick={onBackfill}>回填</Button>
             </div>
           </div>
         </Card>
