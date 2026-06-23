@@ -3,7 +3,9 @@ import type { ReactNode } from 'react'
 import { Card, Badge, Button, Switch } from '../design-system'
 import { Icon } from '../components/Icon'
 import { SpecPin } from '../components/spec/Spec'
-import type { Profile, SettingsDoc } from '../lib/types'
+import { SourceBadge } from '../components/SourceBadge'
+import { algorithmMatrix, sourceMeta } from '../lib/taxonomy'
+import type { Profile, SettingsDoc, SourceKey } from '../lib/types'
 
 interface NavItem {
   id: string
@@ -14,6 +16,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { id: 'units', icon: 'ruler', label: '单位' },
   { id: 'hr', icon: 'heart-pulse', label: '心率区间' },
+  { id: 'sources', icon: 'git-merge', label: '数据来源与算法' },
   { id: 'notify', icon: 'bell', label: '通知与提醒' },
   { id: 'privacy', icon: 'shield', label: '隐私与授权' },
   { id: 'data', icon: 'database', label: '数据与账户' },
@@ -661,6 +664,53 @@ function Theme({ settings, onChange }: SectionProps) {
   )
 }
 
+// 数据来源与算法 — the transparency matrix: every key metric, whether it is
+// Garmin-supplied or Readyn-computed, with its algorithm family and parameters.
+function Sources() {
+  const keys = Object.keys(sourceMeta) as SourceKey[]
+  return (
+    <div>
+      <SectionHead
+        title="数据来源与算法"
+        desc="Readyn 的每个关键数字都可追源。下表列出各指标是「佳明直供」还是「Readyn 自算」，以及所用算法家族与参数。"
+      />
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+        {keys.map((k) => (
+          <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 13px', background: 'var(--surface-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--r-md)', flex: 1, minWidth: 200 }}>
+            <SourceBadge source={k} size="xs" />
+            <span style={{ font: 'var(--fw-regular) var(--fs-2xs)/1.45 var(--font-sans)', color: 'var(--text-faint)' }}>{sourceMeta[k].desc}</span>
+          </div>
+        ))}
+      </div>
+      <Card padding="none">
+        <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr 1.4fr 1.2fr', gap: 14, padding: '13px 20px', borderBottom: '1px solid var(--hairline)' }}>
+          {['指标', '来源', '算法家族', '参数'].map((h) => (
+            <span key={h} style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans)', letterSpacing: 'var(--ls-label)', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+              {h}
+            </span>
+          ))}
+        </div>
+        {algorithmMatrix.map((row, i) => (
+          <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr 1.4fr 1.2fr', gap: 14, alignItems: 'center', padding: '14px 20px', borderTop: i ? '1px solid var(--hairline)' : 'none' }}>
+            <span style={{ font: 'var(--fw-semibold) var(--fs-sm)/1.3 var(--font-sans)', color: 'var(--text-strong)' }}>{row.metric}</span>
+            <span>
+              <SourceBadge source={row.source} size="xs" />
+            </span>
+            <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1.3 var(--font-sans)', color: 'var(--text-muted)' }}>{row.family}</span>
+            <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1.3 var(--font-mono)', color: 'var(--text-faint)' }}>{row.params}</span>
+          </div>
+        ))}
+      </Card>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 14, padding: 14, background: 'rgba(59,91,255,0.08)', border: '1px solid rgba(59,91,255,0.24)', borderRadius: 'var(--r-md)' }}>
+        <Icon name="book-open" size={16} color="var(--blue-400)" />
+        <span style={{ font: 'var(--fw-regular) var(--fs-xs)/1.5 var(--font-sans)', color: 'var(--text-muted)' }}>
+          完整公式与参数说明见 <span style={{ color: 'var(--blue-300)', fontFamily: 'var(--font-mono)' }}>docs/algorithms.md</span>。每个指标卡上的 ⓘ 也可就地展开该说明。
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export interface SettingsCenterProps {
   profile: Profile
   settings: SettingsDoc
@@ -725,6 +775,7 @@ export function SettingsCenter({ profile, settings, onChange, onLogout }: Settin
           {sec === 'hr' && <HRZones profile={profile} settings={settings} onChange={onChange} />}
           {sec === 'notify' && <Notify settings={settings} onChange={onChange} />}
           {sec === 'privacy' && <Privacy settings={settings} onChange={onChange} />}
+          {sec === 'sources' && <Sources />}
           {sec === 'data' && <DataAccount onLogout={onLogout} />}
           {sec === 'theme' && <Theme settings={settings} onChange={onChange} />}
         </div>

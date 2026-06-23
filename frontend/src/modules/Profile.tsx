@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react'
 import { Button, IconButton } from '../design-system'
 import { Icon } from '../components/Icon'
+import { sports } from '../lib/taxonomy'
 import type { Profile, WeightEntry } from '../lib/types'
 import { bmi as bmiOf } from '../lib/format'
 
@@ -457,6 +458,52 @@ export function ProfileModal({
               <Field label="最大心率 (bpm)">
                 <TextInput type="number" value={d.maxHR} onChange={set('maxHR')} />
               </Field>
+            </div>
+          </div>
+
+          {/* sports / disciplines (multi-select) */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <Icon name="layers" size={15} color="var(--text-muted)" />
+              <span style={{ font: 'var(--fw-bold) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-strong)' }}>运动项目</span>
+              <span style={{ font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-sans)', color: 'var(--text-faint)' }}>多选 · 影响专项指标与训练建议</span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {sports
+                .filter((s) => s.id !== 'all')
+                .map((s) => {
+                  const on = d.disciplines.includes(s.name)
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() =>
+                        setD((cur) => ({
+                          ...cur,
+                          disciplines: on ? cur.disciplines.filter((x) => x !== s.name) : [...cur.disciplines, s.name],
+                        }))
+                      }
+                      aria-pressed={on}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 7,
+                        height: 36,
+                        padding: '0 13px',
+                        borderRadius: 'var(--r-pill)',
+                        cursor: 'pointer',
+                        border: `1px solid ${on ? s.color : 'var(--border-subtle)'}`,
+                        background: on ? `color-mix(in oklab, ${s.color} 16%, transparent)` : 'var(--surface-inset)',
+                        color: on ? 'var(--text-strong)' : 'var(--text-muted)',
+                        font: `var(--fw-${on ? 'bold' : 'medium'}) var(--fs-xs)/1 var(--font-sans)`,
+                        transition: 'all var(--dur-fast)',
+                      }}
+                    >
+                      <Icon name={s.icon} size={14} color={on ? s.color : 'var(--text-faint)'} />
+                      {s.name}
+                      {on && <Icon name="check" size={13} color={s.color} />}
+                    </button>
+                  )
+                })}
             </div>
           </div>
 
