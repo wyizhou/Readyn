@@ -252,7 +252,7 @@ export interface DashboardProps {
   onOpenAI: () => void
   onAskAI: (ins: Insight) => void
   onOpenActivity: (a: Activity) => void
-  onOpenMetric: (id: MetricId) => void
+  onOpenMetric: (id: string) => void
 }
 
 // Number of trailing days each range selects. `season` means the full series.
@@ -472,7 +472,7 @@ export function Dashboard({ data, range, sport, setSport, connected, onConnect, 
             <EmptyState compact inline icon="target" title="暂无能力数据" />
           )}
         </Card>
-        <SportSpecificCard sport={sport} data={data} onOpenMetric={(id) => onOpenMetric(id as MetricId)} onPickSport={setSport} />
+        <SportSpecificCard sport={sport} data={data} onOpenMetric={onOpenMetric} onPickSport={setSport} />
       </div>
 
       {/* Recent activities — filtered by the sport filter, with load source */}
