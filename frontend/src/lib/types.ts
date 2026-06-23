@@ -7,6 +7,48 @@ export type Tone = 'positive' | 'caution' | 'accent' | 'critical' | 'neutral'
 export type DeltaTone = 'pos' | 'neg' | 'flat'
 export type Impact = 'pos' | 'neg'
 
+// ============================================================
+// Multi-sport + algorithm-transparency taxonomy (design pivot).
+// These are static config (always present, even in the empty state),
+// not user data — see src/lib/taxonomy.ts.
+// ============================================================
+
+export type SportId = 'all' | 'run' | 'ride' | 'swim' | 'strength' | 'climb' | 'hike'
+
+export interface Sport {
+  id: SportId
+  name: string
+  icon: string
+  color: string
+  loadMethod?: string
+  specific?: string[]
+}
+
+// How an activity's load (AU) was derived; the activity detail surfaces this.
+export interface LoadSource {
+  label: string
+  icon: string
+  desc: string
+  color: string
+}
+
+// Provenance of a number shown in the UI (the transparency badge).
+export type SourceKey = 'garmin' | 'readyn' | 'mixed'
+export interface SourceMeta {
+  label: string
+  color: string
+  bg: string
+  icon: string
+  desc: string
+}
+
+// Per-module empty-state copy.
+export interface EmptyCopy {
+  icon: string
+  title: string
+  desc: string
+}
+
 export interface Profile {
   name: string
   handle: string
