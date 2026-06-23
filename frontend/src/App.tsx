@@ -221,15 +221,24 @@ export default function App() {
     setView('connectors')
     flashMsg('已断开连接')
   }
-  const syncSource = (id: string) => {
+  // Pull from Garmin and re-bootstrap so 累计记录数 / 最近同步时间 actually refresh.
+  // Shared by 立即同步 and 历史回填 — both must reflect the new data in the UI.
+  const runGarminSync = (okMsg: string) => {
     setSyncing(true)
-    api
+    return api
       .garminSync()
       .then(() => reload())
-      .then(() => flashMsg('已同步佳明数据'))
+      .then(() => flashMsg(okMsg))
       .catch(() => flashMsg('同步失败，请重新连接'))
       .finally(() => setSyncing(false))
+  }
+  const syncSource = (id: string) => {
     void id
+    return runGarminSync('已同步佳明数据')
+  }
+  const backfillSource = (id: string) => {
+    void id
+    return runGarminSync('历史回填完成，已更新累计记录与同步时间')
   }
 
   // Link a device-synced activity to a planned workout: drop it from the
@@ -372,8 +381,8 @@ export default function App() {
             <ConnectorDetail
               src={detail.src}
               onSync={() => syncSource(detail.src.id)}
+              onBackfill={() => backfillSource(detail.src.id)}
               onDisconnect={() => disconnectSource(detail.src.id)}
-              onToast={flashMsg}
             />
           )}
           {detail?.type === 'settings' && (

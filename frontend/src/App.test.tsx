@@ -58,6 +58,30 @@ describe('App integration (empty-state / real-data)', () => {
     expect(screen.getAllByText('70.3').length).toBeGreaterThan(0)
   })
 
+  it('links a recorded weight into the sidebar footer and the profile modal', async () => {
+    // Regression for issue #11: 体重记录 → 侧栏当前体重 / 个人资料体重 联动。
+    const user = userEvent.setup()
+    render(<App />)
+
+    // Empty state: sidebar footer shows the fallback (height 0cm · target 0kg).
+    expect(screen.getByText('0cm · 0kg')).toBeInTheDocument()
+
+    // Record a new weight in the 体重记录 module.
+    await user.click(within(screen.getByRole('navigation')).getByText('体重记录'))
+    await user.type(screen.getByPlaceholderText('例如 65.6'), '70.3')
+    await user.click(screen.getByRole('button', { name: '记录体重' }))
+
+    // Sidebar footer (always mounted) now reflects the new current weight.
+    const footer = screen.getByText('0cm · 70.3kg')
+    expect(footer).toBeInTheDocument()
+
+    // Opening the profile modal from that footer shows the same linked weight.
+    await user.click(footer.closest('button') as HTMLElement)
+    const linkLabel = await screen.findByText('当前体重 · 来自体重记录')
+    const block = linkLabel.parentElement as HTMLElement
+    expect(within(block).getByText(/70\.3/)).toBeInTheDocument()
+  })
+
   it('shows 佳明 · 中国区 in the market and opens the real credential login modal', async () => {
     const user = userEvent.setup()
     render(<App />)
