@@ -142,6 +142,7 @@ export interface MetricDeepDive {
   source?: SourceKey
   params?: string
   family?: string
+  algo?: string
   scope?: 'global' | 'sport'
   sportKey?: string
 }
@@ -482,7 +483,9 @@ export interface ApexData {
   today: Today
   pmc: PmcPoint[]
   templateDetails: Record<string, TemplateDetail>
-  metrics: Record<MetricId, MetricDeepDive>
+  // Keyed by metric id. Global metrics use MetricId; sport-specific metrics
+  // (vo2max_run/ftp/css/…) use their own ids, hence the widened string key.
+  metrics: Partial<Record<string, MetricDeepDive>>
   activityDetails: Record<string, ActivityDetail>
   hrv: HrvPoint[]
   sleep: SleepNight[]

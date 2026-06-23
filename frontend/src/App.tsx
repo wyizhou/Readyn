@@ -34,7 +34,6 @@ import type {
   Connector,
   Insight,
   LibraryPlan,
-  MetricId,
   Profile,
   SettingsDoc,
   Template,
@@ -44,7 +43,7 @@ import type {
 
 type Detail =
   | { type: 'activity'; act: Activity }
-  | { type: 'metric'; id: MetricId }
+  | { type: 'metric'; id: string }
   | { type: 'template'; tpl: Template; sport: string }
   | { type: 'plan'; plan: LibraryPlan }
   | { type: 'connector'; src: Connector }
@@ -180,7 +179,7 @@ export default function App() {
   }
   const askAI = (ins: Insight) => openChat(`关于「${ins.title}」，我该怎么做？`)
   const openActivity = (act: Activity) => setDetail({ type: 'activity', act })
-  const openMetric = (id: MetricId) => setDetail({ type: 'metric', id })
+  const openMetric = (id: string) => setDetail({ type: 'metric', id })
   const openTemplate = (tpl: Template, sport: string) => setDetail({ type: 'template', tpl, sport })
   const openPlan = (plan: LibraryPlan) => setDetail({ type: 'plan', plan })
   const openConnector = (src: Connector) => setDetail({ type: 'connector', src })
@@ -288,7 +287,7 @@ export default function App() {
         detailTitle = [detail.act.name, `${detail.act.sport} · ${detail.act.date}`]
         break
       case 'metric':
-        detailTitle = [D.metrics[detail.id].name, '指标深潜 · 定义 / 公式 / 趋势 / AI 解读']
+        detailTitle = [D.metrics[detail.id]?.name ?? '指标深潜', '指标深潜 · 定义 / 公式 / 趋势 / AI 解读']
         break
       case 'template':
         detailTitle = [detail.tpl.name, `${detail.sport === 'climbing' ? '攀岩' : '跑步'} · 训练模板`]
