@@ -74,6 +74,7 @@ export interface ConnectorDetailProps {
 }
 
 export function ConnectorDetail({ src, onSync, onBackfill, onDisconnect }: ConnectorDetailProps) {
+  const [confirmDisconnect, setConfirmDisconnect] = useState(false)
   const rows: [string, string, boolean][] = src.metrics.map((m) => [
     m === '全部' ? 'all_fields' : m === '跑步' ? 'activity_running' : `field_${m}`,
     CANON[m] || `ext.${m}`,
@@ -182,10 +183,40 @@ export function ConnectorDetail({ src, onSync, onBackfill, onDisconnect }: Conne
               <div style={{ font: 'var(--fw-bold) var(--fs-sm)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>断开连接</div>
               <div style={{ font: 'var(--fw-regular) var(--fs-xs)/1.4 var(--font-sans)', color: 'var(--text-faint)', marginTop: 3 }}>停止同步并撤销授权，已导入数据保留</div>
             </div>
-            <button onClick={onDisconnect} style={{ height: 36, padding: '0 14px', borderRadius: 'var(--r-md)', border: '1px solid var(--red-500)', background: 'transparent', color: 'var(--red-400)', cursor: 'pointer', font: 'var(--fw-semibold) var(--fs-xs)/1 var(--font-sans)' }}>断开</button>
+            <button onClick={() => setConfirmDisconnect(true)} style={{ height: 36, padding: '0 14px', borderRadius: 'var(--r-md)', border: '1px solid var(--red-500)', background: 'transparent', color: 'var(--red-400)', cursor: 'pointer', font: 'var(--fw-semibold) var(--fs-xs)/1 var(--font-sans)' }}>断开</button>
           </div>
         </div>
       </div>
+
+      {confirmDisconnect && (
+        <div onClick={() => setConfirmDisconnect(false)} style={{ position: 'fixed', inset: 0, zIndex: 40, background: 'rgba(7,8,11,0.78)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: 420, background: 'var(--surface-card)', border: '1px solid var(--border-strong)', borderRadius: 'var(--r-xl)', boxShadow: 'var(--shadow-lg), var(--inner-top)', padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(255,77,94,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+                <Icon name="unplug" size={19} color="var(--red-500)" />
+              </span>
+              <div style={{ font: 'var(--fw-bold) var(--fs-lg)/1.2 var(--font-display)', color: 'var(--text-strong)' }}>断开 {src.name}？</div>
+            </div>
+            <p style={{ margin: 0, font: 'var(--fw-regular) var(--fs-sm)/1.55 var(--font-sans)', color: 'var(--text-muted)' }}>
+              将停止同步并撤销授权，已导入的数据会保留。重新连接需再次登录佳明账号并通过两步验证。
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
+              <Button variant="secondary" size="sm" onClick={() => setConfirmDisconnect(false)}>
+                取消
+              </Button>
+              <button
+                onClick={() => {
+                  setConfirmDisconnect(false)
+                  onDisconnect()
+                }}
+                style={{ height: 36, padding: '0 16px', borderRadius: 'var(--r-md)', border: 'none', background: 'var(--red-500)', color: '#fff', cursor: 'pointer', font: 'var(--fw-bold) var(--fs-sm)/1 var(--font-sans)' }}
+              >
+                确认断开
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

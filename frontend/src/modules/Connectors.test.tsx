@@ -49,7 +49,7 @@ describe('Connectors (P3)', () => {
     for (let i = 0; i < 6; i++) await user.type(digits[i], String(i + 1))
     await user.click(screen.getByRole('button', { name: '验证' }))
 
-    expect(await screen.findByText('已连接佳明')).toBeInTheDocument()
+    expect(await screen.findByText('已连接佳明(CN)')).toBeInTheDocument()
     expect(screen.getByText(/已同步 3 项活动/)).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: '进入看板' }))
     expect(onConnect).toHaveBeenCalled()
@@ -81,6 +81,9 @@ describe('Connectors (P3)', () => {
     expect(screen.getByText('累计记录')).toBeInTheDocument()
     expect(screen.getAllByText('5,204').length).toBeGreaterThan(0)
     expect(screen.getByText('待补录 RPE')).toBeInTheDocument() // derived: 1 RPE activity
-    expect(screen.getByText('数据源市场')).toBeInTheDocument() // tabs present
+    // v9: Garmin-only — 数据源市场 tab removed; only 已连接 / 统一规范 remain.
+    expect(screen.queryByText('数据源市场')).not.toBeInTheDocument()
+    expect(screen.getByText('统一规范')).toBeInTheDocument()
+    expect(screen.getByText(/更多数据源即将开放/)).toBeInTheDocument()
   })
 })

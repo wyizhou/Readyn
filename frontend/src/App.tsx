@@ -5,7 +5,7 @@ import { Sidebar } from './components/Sidebar'
 import type { ViewId } from './components/Sidebar'
 import { Topbar } from './components/Topbar'
 import { SpecContext } from './components/spec/SpecContext'
-import { SpecToggle, SpecBanner } from './components/spec/Spec'
+import { SpecBanner } from './components/spec/Spec'
 import { Dashboard } from './modules/Dashboard'
 import { Training } from './modules/Training'
 import { Library } from './modules/Library'
@@ -70,7 +70,8 @@ export default function App() {
   const [profile, setProfile] = useState<Profile>({ ...D.profile })
   const [profileOpen, setProfileOpen] = useState(false)
   const [detail, setDetail] = useState<Detail | null>(null)
-  const [spec, setSpec] = useState(false)
+  // Spec annotation layer is dormant (no topbar toggle per design v9; kept off).
+  const [spec] = useState(false)
   const [settings, setSettings] = useState<SettingsDoc>(defaultSettings)
   const [flash, setFlash] = useState<string | null>(null)
 
@@ -307,12 +308,6 @@ export default function App() {
           {syncing ? '同步中…' : '同步'}
         </Button>
       )}
-      {!detail && view === 'connectors' && (
-        <Button variant="secondary" iconLeft={<Icon name="plus" size={15} />} onClick={() => setConnTab('market')}>
-          添加数据源
-        </Button>
-      )}
-      <SpecToggle on={spec} onToggle={() => setSpec((s) => !s)} />
     </>
   )
 

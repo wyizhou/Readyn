@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from 'react'
-import { Card, StatCard, Badge, ProgressRing, Sparkline } from '../design-system'
+import { Card, Badge, ProgressRing, Sparkline } from '../design-system'
 import { Icon } from '../components/Icon'
 import { PMCChart, HRVChart, SleepBars, HRZoneBar, Radar, GradePyramid, Donut } from '../components/charts/Charts'
 import { SourceBadge, HowInfo } from '../components/SourceBadge'
@@ -380,13 +380,29 @@ export function Dashboard({ data, range, sport, setSport, connected, onConnect, 
         >
           <PMCChart data={view.pmc} />
         </Card>
-        <div style={{ display: 'grid', gridTemplateRows: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-          <StatCard label={`${rangeLabel}负荷`} value={view.pmc.reduce((s, d) => s + d.load, 0)} unit="AU" delta={`+${t.weekLoadDelta}%`} trend="up">
-            <Sparkline data={view.pmc.map((d) => d.load)} />
-          </StatCard>
-          <StatCard label="疲劳 ATL" value={t.atl.toFixed(0)} delta={t.tsb < 0 ? '高于体能' : '低于体能'} trend={t.tsb < 0 ? 'up' : 'down'} accent="var(--violet-500)" />
-          <StatCard label="状态 TSB" value={`${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`} delta={t.tsb > 5 ? '新鲜' : t.tsb > -10 ? '中性' : '疲劳'} trend="flat" accent={t.tsb >= 0 ? 'var(--green-500)' : 'var(--amber-500)'} />
-        </div>
+        <Card title="本周概览">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {[
+              { label: '本周负荷', val: `${view.pmc.reduce((s, d) => s + d.load, 0)}`, unit: 'AU', delta: `+${t.weekLoadDelta}%`, color: 'var(--blue-400)', spark: view.pmc.map((d) => d.load) },
+              { label: '疲劳 ATL', val: t.atl.toFixed(0), unit: '', delta: t.tsb < 0 ? '高于体能' : '低于体能', color: 'var(--violet-400)', spark: view.pmc.map((d) => d.atl) },
+              { label: '状态 TSB', val: `${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, unit: '', delta: t.tsb > 5 ? '新鲜' : t.tsb > -10 ? '中性' : '疲劳', color: t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', spark: view.pmc.map((d) => d.tsb) },
+            ].map((r, i) => (
+              <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderTop: i ? '1px solid var(--hairline)' : 'none' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 'none', minWidth: 96 }}>
+                  <span style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans)', letterSpacing: 'var(--ls-label)', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{r.label}</span>
+                  <span style={{ font: 'var(--fw-bold) var(--fs-h3)/1 var(--font-mono)', color: 'var(--text-strong)' }}>
+                    {r.val}
+                    {r.unit ? <span style={{ fontSize: 11, color: 'var(--text-faint)', marginLeft: 3 }}>{r.unit}</span> : null}
+                  </span>
+                  <span style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-mono)', color: r.color }}>{r.delta}</span>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Sparkline data={r.spark} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
       </div>
 
       {/* Recovery: HRV + sleep + HR zones — Garmin-sourced */}
