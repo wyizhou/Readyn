@@ -1,5 +1,27 @@
 import { useId } from 'react'
+import { relDayLabels } from '../../lib/chartAxis'
 import type { BalanceAxis, HrvPoint, HrZone, PmcPoint, PyramidRow, SleepNight } from '../../lib/types'
+
+// Evenly-spaced X-axis tick labels rendered inside a chart's SVG (design v9 —
+// charts get an X axis). `labels` are placed left→right across the plot width.
+export function ChartXAxis({ labels, width, y, padL = 10, padR = 10 }: { labels: string[]; width: number; y: number; padL?: number; padR?: number }) {
+  const n = labels.length
+  const span = width - padL - padR
+  return (
+    <>
+      {labels.map((t, i) => {
+        const cx = n === 1 ? padL + span / 2 : padL + (i / (n - 1)) * span
+        const anchor: 'start' | 'middle' | 'end' = i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'
+        return (
+          <text key={i} x={cx} y={y} textAnchor={anchor} fontFamily="var(--font-mono)" fontSize="9" fill="var(--text-faint)">
+            {t}
+          </text>
+        )
+      })}
+    </>
+  )
+}
+
 
 // Shared empty-state placeholder — shown when a chart has no data yet (e.g.
 // before a Garmin sync). Keeps charts from indexing into empty arrays.
@@ -76,6 +98,7 @@ export function PMCChart({ data, width = 760, height = 240 }: PMCChartProps) {
         stroke="var(--ink-900)"
         strokeWidth="1.5"
       />
+      <ChartXAxis labels={relDayLabels(data.length)} width={width} y={height - 8} padL={pad.l} padR={pad.r} />
     </svg>
   )
 }
@@ -88,7 +111,7 @@ export interface HRVChartProps {
 }
 export function HRVChart({ data, width = 360, height = 150 }: HRVChartProps) {
   if (data.length === 0) return <ChartEmpty height={height} />
-  const pad = { t: 12, r: 6, b: 8, l: 6 }
+  const pad = { t: 12, r: 6, b: 18, l: 6 }
   const w = width - pad.l - pad.r
   const h = height - pad.t - pad.b
   const max = Math.max(...data.map((d) => d.v)) * 1.1
@@ -116,6 +139,7 @@ export function HRVChart({ data, width = 360, height = 150 }: HRVChartProps) {
         )
       })}
       <path d={baseLine} fill="none" stroke="var(--ink-200)" strokeWidth="1.5" strokeDasharray="4 3" />
+      <ChartXAxis labels={relDayLabels(data.length)} width={width} y={height - 5} padL={pad.l} padR={pad.r} />
     </svg>
   )
 }

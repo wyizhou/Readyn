@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { InputHTMLAttributes, ReactNode } from 'react'
 import { Card, Badge, Button } from '../design-system'
 import { Icon } from '../components/Icon'
+import { ChartXAxis } from '../components/charts/Charts'
 import type { Profile, WeightEntry } from '../lib/types'
 import { bmi as bmiOf } from '../lib/format'
 
@@ -131,6 +132,17 @@ function WeightChart({ entries, target, width = 900, height = 220 }: WeightChart
           strokeWidth="1.5"
         />
       ))}
+      <ChartXAxis
+        labels={
+          entries.length <= 1
+            ? entries.map((e) => e.date.slice(5))
+            : [entries[0].date.slice(5), entries[Math.floor((entries.length - 1) / 2)].date.slice(5), entries[entries.length - 1].date.slice(5)]
+        }
+        width={width}
+        y={height - 8}
+        padL={pad.l}
+        padR={pad.r}
+      />
     </svg>
   )
 }
