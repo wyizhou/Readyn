@@ -46,11 +46,9 @@ describe('App integration (empty-state / real-data)', () => {
     expect(topHeading()).toContain('看板')
   })
 
-  it('toggles the implementation-annotation (spec) layer', async () => {
-    const user = userEvent.setup()
+  it('does not show the dev-only spec-annotation toggle in the topbar (v9)', () => {
     render(<App />)
-    await user.click(screen.getByRole('button', { name: /实现批注/ }))
-    expect(screen.getByText(/实现批注已开启/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /实现批注/ })).not.toBeInTheDocument()
   })
 
   it('records a new weight entry that shows in the log (optimistic, offline)', async () => {
@@ -98,13 +96,13 @@ describe('App integration (empty-state / real-data)', () => {
     expect(screen.getByRole('button', { name: /登录并授权同步/ })).toBeInTheDocument()
   })
 
-  it('connectors empty state lists connectable sources (P3)', async () => {
+  it('connectors empty state shows the Garmin-only "更多数据源即将开放" hint (v9)', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
-    expect(screen.getByText('可连接的数据源')).toBeInTheDocument()
-    expect(screen.getByText('佳明 · 中国区')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '登录连接' })).toBeInTheDocument()
+    // v9: no market grid / connectable cards; just the Garmin CTA + coming-soon hint.
+    expect(screen.queryByText('可连接的数据源')).not.toBeInTheDocument()
+    expect(screen.getByText(/更多数据源即将开放/)).toBeInTheDocument()
   })
 
   // ---- Profile & settings persistence (regression for issue #13) ----

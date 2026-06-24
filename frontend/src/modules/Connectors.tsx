@@ -219,7 +219,7 @@ function GarminLogin({ src, onClose, onConnected, onToast }: { src: Connector; o
               <span style={{ width: 60, height: 60, borderRadius: 15, background: 'rgba(24,201,140,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="check" size={28} color="var(--green-500)" />
               </span>
-              <div style={{ font: 'var(--fw-bold) var(--fs-h3)/1.2 var(--font-display)', color: 'var(--text-strong)' }}>已连接佳明</div>
+              <div style={{ font: 'var(--fw-bold) var(--fs-h3)/1.2 var(--font-display)', color: 'var(--text-strong)' }}>已连接佳明(CN)</div>
               <p style={{ margin: 0, maxWidth: 340, font: 'var(--fw-regular) var(--fs-sm)/1.5 var(--font-sans)', color: 'var(--text-muted)' }}>
                 已同步 {result?.activities ?? 0} 项活动、{result?.hrv ?? 0} 天 HRV、{result?.sleep ?? 0} 晚睡眠、{result?.weight ?? 0} 条体重。历史数据将在后台继续回填。
               </p>
@@ -373,7 +373,6 @@ export function Connectors({ data, tab, setTab, connected, onOpenConnector, onCo
 
   const garmin = data.connectors.find((c) => isAccount(c)) ?? data.connectors[0]
   const linked = data.connectors.filter((c) => c.status !== 'available')
-  const available = data.connectors.filter((c) => c.status === 'available')
 
   const openConnect = (src: Connector) => (isAccount(src) ? setLoginSrc(src) : setOauthSrc(src))
 
@@ -408,13 +407,9 @@ export function Connectors({ data, tab, setTab, connected, onOpenConnector, onCo
           actionLabel="登录佳明（中国区）"
           onAction={() => garmin && setLoginSrc(garmin)}
         />
-        <div style={{ marginTop: 22 }}>
-          <h2 style={{ margin: '0 0 14px', font: 'var(--fw-bold) var(--fs-lg)/1 var(--font-display)', letterSpacing: 'var(--ls-tight)', color: 'var(--text-strong)' }}>可连接的数据源</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-            {data.connectors.map((s) => (
-              <SourceCard key={s.id} src={{ ...s, status: 'available' }} onConnect={openConnect} onConfig={onOpenConnector} />
-            ))}
-          </div>
+        <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10, padding: 14, background: 'var(--surface-card)', border: '1px dashed var(--border-strong)', borderRadius: 'var(--r-lg)' }}>
+          <Icon name="plug-zap" size={16} color="var(--text-faint)" />
+          <span style={{ font: 'var(--fw-regular) var(--fs-xs)/1.5 var(--font-sans)', color: 'var(--text-faint)' }}>更多数据源即将开放。</span>
         </div>
         {modals}
       </div>
@@ -452,35 +447,21 @@ export function Connectors({ data, tab, setTab, connected, onOpenConnector, onCo
           onChange={setTab}
           tabs={[
             { value: 'connected', label: '已连接', count: linked.length },
-            { value: 'market', label: '数据源市场', count: available.length },
             { value: 'schema', label: '统一规范', count: data.schema.length },
           ]}
         />
       </div>
 
-      {tab === 'connected' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-          {linked.map((s) => (
-            <SourceCard key={s.id} src={s} onConnect={openConnect} onConfig={onOpenConnector} />
-          ))}
-        </div>
-      )}
-      {tab === 'market' && (
+      {tab !== 'schema' && (
         <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-            {available.map((s) => (
-              <SourceCard key={s.id} src={s} onConnect={openConnect} onConfig={openConnect} />
+            {linked.map((s) => (
+              <SourceCard key={s.id} src={s} onConnect={openConnect} onConfig={onOpenConnector} />
             ))}
           </div>
-          <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 14, padding: 20, border: '1px dashed var(--border-strong)', borderRadius: 'var(--r-lg)' }}>
-            <Icon name="code-2" size={20} color="var(--violet-400)" />
-            <div style={{ flex: 1 }}>
-              <div style={{ font: 'var(--fw-bold) var(--fs-sm)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>没有你的设备？</div>
-              <div style={{ font: 'var(--fw-regular) var(--fs-xs)/1.4 var(--font-sans)', color: 'var(--text-muted)', marginTop: 3 }}>任何遵循统一规范的数据源都能通过开放 API / Webhook 自助接入。</div>
-            </div>
-            <Button variant="secondary" iconLeft={<Icon name="book-open" size={15} />} onClick={() => onToast('接入文档已在新窗口打开')}>
-              查看接入文档
-            </Button>
+          <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10, padding: 16, border: '1px dashed var(--border-strong)', borderRadius: 'var(--r-lg)' }}>
+            <Icon name="plug-zap" size={16} color="var(--text-faint)" />
+            <span style={{ font: 'var(--fw-regular) var(--fs-xs)/1.5 var(--font-sans)', color: 'var(--text-faint)' }}>更多数据源即将开放 —— 当前以佳明（中国区）为唯一数据源。</span>
           </div>
         </>
       )}
