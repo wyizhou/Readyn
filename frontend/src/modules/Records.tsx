@@ -3,7 +3,7 @@
 // opens the activity detail. Empty state until a data source is connected.
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { Card } from '../design-system'
+import { Card, Button } from '../design-system'
 import { Icon } from '../components/Icon'
 import { EmptyState } from '../components/EmptyState'
 import { emptyCopy } from '../lib/taxonomy'
@@ -54,9 +54,10 @@ export interface RecordsProps {
   connected: boolean
   onConnect: () => void
   onOpenActivity: (a: Activity) => void
+  onCompare?: () => void
 }
 
-export function Records({ data, connected, onConnect, onOpenActivity }: RecordsProps) {
+export function Records({ data, connected, onConnect, onOpenActivity, onCompare }: RecordsProps) {
   const [size, setSize] = useState(10)
   const [page, setPage] = useState(1)
   const all = data.records ?? data.activities
@@ -87,6 +88,11 @@ export function Records({ data, connected, onConnect, onOpenActivity }: RecordsP
         <span style={{ font: 'var(--fw-medium) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-muted)' }}>
           共 <b style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-strong)' }}>{total}</b> 条记录
         </span>
+        {onCompare && total >= 2 && (
+          <Button variant="secondary" size="sm" iconLeft={<Icon name="git-compare" size={14} />} onClick={onCompare}>
+            对比
+          </Button>
+        )}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-sans)', color: 'var(--text-faint)' }}>每页</span>
           <div style={{ display: 'inline-flex', gap: 3, padding: 3, background: 'var(--surface-inset)', borderRadius: 'var(--r-md)' }}>
