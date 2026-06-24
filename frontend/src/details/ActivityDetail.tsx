@@ -6,7 +6,7 @@ import { Fragment, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Card, Badge, Button } from '../design-system'
 import { Icon } from '../components/Icon'
-import { HRZoneBar, GradePyramid } from '../components/charts/Charts'
+import { HRZoneBar, GradePyramid, ChartXAxis } from '../components/charts/Charts'
 import { SourceBadge } from '../components/SourceBadge'
 import { loadSources } from '../lib/taxonomy'
 import type { Activity, ActivityVerdict, ApexData, HrZone } from '../lib/types'
@@ -194,7 +194,7 @@ function genClimbHR(act: Activity, d: DetailAny): Pt[] {
 }
 
 // ---- charts ----
-function LineChart({ pts, keys, width = 1000, height = 220 }: { pts: Pt[]; keys: LineKey[]; width?: number; height?: number }) {
+function LineChart({ pts, keys, width = 1000, height = 220, xUnit }: { pts: Pt[]; keys: LineKey[]; width?: number; height?: number; xUnit?: string }) {
   if (pts.length < 2) return null
   const pad = { t: 16, r: 14, b: 20, l: 14 }
   const w = width - pad.l - pad.r
@@ -217,6 +217,19 @@ function LineChart({ pts, keys, width = 1000, height = 220 }: { pts: Pt[]; keys:
         const d = pts.map((p, i) => `${i ? 'L' : 'M'}${xs(i).toFixed(1)},${y(kk.invert ? 1 - nf(p[kk.k]) : nf(p[kk.k])).toFixed(1)}`).join(' ')
         return <path key={kk.k} d={d} fill="none" stroke={kk.color} strokeWidth={kk.w || 2} strokeDasharray={kk.dash || 'none'} strokeLinejoin="round" opacity={kk.op || 1} />
       })}
+      {xUnit && (
+        <ChartXAxis
+          labels={[
+            `${Math.round(pts[0].x)}`,
+            `${Math.round(pts[Math.floor((pts.length - 1) / 2)].x)}`,
+            `${Math.round(pts[pts.length - 1].x)} ${xUnit}`,
+          ]}
+          width={width}
+          y={height - 4}
+          padL={pad.l}
+          padR={pad.r}
+        />
+      )}
     </svg>
   )
 }
@@ -561,7 +574,7 @@ export function ActivityDetail({ data, act, onToast }: ActivityDetailProps) {
                 </div>
               }
             >
-              <LineChart pts={run.pts} keys={[{ k: 'pace', color: 'var(--blue-500)', w: 2.5, invert: true }, { k: 'hr', color: 'var(--red-500)', w: 2, op: 0.9 }]} />
+              <LineChart pts={run.pts} keys={[{ k: 'pace', color: 'var(--blue-500)', w: 2.5, invert: true }, { k: 'hr', color: 'var(--red-500)', w: 2, op: 0.9 }]} xUnit="km" />
             </Card>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.7fr) minmax(0, 1fr)', gap: 16, marginBottom: 22 }}>
@@ -601,7 +614,7 @@ export function ActivityDetail({ data, act, onToast }: ActivityDetailProps) {
           <div style={{ marginBottom: 22 }}>
             <SectionTitle icon="zap">功率 · 心率</SectionTitle>
             <Card title="功率曲线">
-              <LineChart pts={genRide(act, detail)} keys={[{ k: 'power', color: 'var(--amber-500)', w: 2.5 }, { k: 'hr', color: 'var(--red-500)', w: 2, op: 0.85 }]} />
+              <LineChart pts={genRide(act, detail)} keys={[{ k: 'power', color: 'var(--amber-500)', w: 2.5 }, { k: 'hr', color: 'var(--red-500)', w: 2, op: 0.85 }]} xUnit="min" />
             </Card>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.7fr)', gap: 16, marginBottom: 22 }}>
@@ -734,7 +747,7 @@ export function ActivityDetail({ data, act, onToast }: ActivityDetailProps) {
       {isClimb && !sends.length && (
         <div style={{ marginBottom: 22 }}>
           <Card title="心率 (整段)">
-            <LineChart pts={genClimbHR(act, detail)} keys={[{ k: 'hr', color: 'var(--red-500)', w: 2 }]} height={180} />
+            <LineChart pts={genClimbHR(act, detail)} keys={[{ k: 'hr', color: 'var(--red-500)', w: 2 }]} height={180} xUnit="min" />
           </Card>
         </div>
       )}

@@ -3,6 +3,8 @@
 import { Card, Badge } from '../design-system'
 import type { BadgeTone } from '../design-system'
 import { Icon } from '../components/Icon'
+import { ChartXAxis } from '../components/charts/Charts'
+import { relDayLabels } from '../lib/chartAxis'
 import { SourceBadge } from '../components/SourceBadge'
 import { sportByKey } from '../lib/taxonomy'
 import type { ApexData } from '../lib/types'
@@ -86,6 +88,7 @@ function TrendChart({ series, color, width = 1000, height = 240 }: TrendChartPro
       <path d={area} fill="url(#mtg)" />
       <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" />
       <circle cx={x(series.length - 1)} cy={y(series[series.length - 1])} r="4" fill={color} stroke="var(--surface-card)" strokeWidth="1.5" />
+      <ChartXAxis labels={relDayLabels(series.length)} width={width} y={height - 6} padL={pad.l} padR={pad.r} />
     </svg>
   )
 }
