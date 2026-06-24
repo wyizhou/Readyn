@@ -34,7 +34,9 @@ describe('Connectors (P3)', () => {
   it('drives the real login → MFA → success flow', async () => {
     garminConnect.mockResolvedValue({ needsMfa: true, mfaToken: 'tok' })
     garminMfa.mockResolvedValue({ activities: 3, hrv: 5, sleep: 4, weight: 2 })
-    const user = userEvent.setup()
+    // delay:null removes userEvent's per-keystroke delay — this case types 6 MFA
+    // digits and was flaky against the 5s default under full-suite parallelism (#49).
+    const user = userEvent.setup({ delay: null })
     const { onConnect } = renderConn({ connected: false })
 
     expect(screen.getByText('尚未连接任何数据源')).toBeInTheDocument()
@@ -55,11 +57,11 @@ describe('Connectors (P3)', () => {
     expect(onConnect).toHaveBeenCalled()
     expect(garminConnect).toHaveBeenCalledWith('a@b.cn', 'pw')
     expect(garminMfa).toHaveBeenCalledWith('tok', '123456')
-  })
+  }, 15000)
 
   it('surfaces a clear error when login fails', async () => {
     garminConnect.mockRejectedValue(new Error('POST /garmin/connect → 502'))
-    const user = userEvent.setup()
+    const user = userEvent.setup({ delay: null })
     renderConn({ connected: false })
     await user.click(screen.getByRole('button', { name: /登录佳明/ }))
     await user.type(screen.getByPlaceholderText('you@example.com'), 'a@b.cn')
