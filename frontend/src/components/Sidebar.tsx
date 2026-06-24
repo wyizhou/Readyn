@@ -10,14 +10,14 @@ interface NavItem {
   sub: string
 }
 
+// 5-item nav per the design (app/shell.jsx). 训练日历 / 训练库 are temporarily
+// offline (CODING §1.3): their components are kept but removed from navigation.
 const NAV: NavItem[] = [
   { id: 'dashboard', icon: 'layout-dashboard', label: '看板', sub: '分析 · 趋势 · 状态' },
   { id: 'records', icon: 'list', label: '运动记录', sub: '全部活动 · 分页' },
-  { id: 'training', icon: 'calendar-check', label: '训练日历', sub: '计划 · 执行 · 关联' },
-  { id: 'library', icon: 'library-big', label: '训练库', sub: '跑步 · 攀岩 · 模板' },
   { id: 'weight', icon: 'scale', label: '体重记录', sub: '手动录入 · 趋势' },
   { id: 'connectors', icon: 'cable', label: '连接器', sub: '数据源 · 统一规范' },
-  { id: 'ai', icon: 'sparkles', label: 'AI 模块', sub: '生成课表 · 专家对话' },
+  { id: 'ai', icon: 'sparkles', label: 'AI 模块', sub: '运动专家对话' },
 ]
 
 export interface SidebarProps {

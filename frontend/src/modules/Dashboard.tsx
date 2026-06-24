@@ -5,7 +5,7 @@ import { PMCChart, HRVChart, SleepBars, HRZoneBar, Radar, GradePyramid, Donut } 
 import { SourceBadge, HowInfo } from '../components/SourceBadge'
 import { EmptyState } from '../components/EmptyState'
 import { sports, sportByKey, emptyCopy } from '../lib/taxonomy'
-import type { Activity, ApexData, Insight, MetricDeepDive, MetricId } from '../lib/types'
+import type { ApexData, Insight, MetricDeepDive, MetricId } from '../lib/types'
 
 function Label({ children }: { children: ReactNode }) {
   return (
@@ -251,7 +251,6 @@ export interface DashboardProps {
   onConnect: () => void
   onOpenAI: () => void
   onAskAI: (ins: Insight) => void
-  onOpenActivity: (a: Activity) => void
   onOpenMetric: (id: string) => void
 }
 
@@ -259,7 +258,7 @@ export interface DashboardProps {
 const RANGE_DAYS: Record<string, number> = { '7d': 7, '28d': 28, season: Infinity }
 const RANGE_LABEL: Record<string, string> = { '7d': '近 7 天', '28d': '近 28 天', season: '赛季' }
 
-export function Dashboard({ data, range, sport, setSport, connected, onConnect, onAskAI, onOpenActivity, onOpenMetric }: DashboardProps) {
+export function Dashboard({ data, range, sport, setSport, connected, onConnect, onAskAI, onOpenMetric }: DashboardProps) {
   const t = data.today
 
   // Window the time-series by the selected range (preserves the 7天/28天/赛季 switch).
@@ -303,10 +302,6 @@ export function Dashboard({ data, range, sport, setSport, connected, onConnect, 
     ['ACWR', t.acwr.toFixed(2), '', t.acwr > 1.3 ? '偏高' : '区间内', t.acwr > 1.3 ? 'var(--amber-400)' : 'var(--green-400)', 'acwr'],
     ['体能 CTL', t.ctl.toFixed(0), '', `状态 ${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', 'ctl'],
   ]
-
-  // Recent activities filtered by the global sport filter (core layer stays全运动).
-  const acts = sport === 'all' ? data.activities : data.activities.filter((a) => a.key === sport)
-  const sportName = sportByKey[sport]?.name ?? '全部运动'
 
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
@@ -474,56 +469,6 @@ export function Dashboard({ data, range, sport, setSport, connected, onConnect, 
         </Card>
         <SportSpecificCard sport={sport} data={data} onOpenMetric={onOpenMetric} onPickSport={setSport} />
       </div>
-
-      {/* Recent activities — filtered by the sport filter, with load source */}
-      <SectionTitle icon="route" note={sportName}>
-        近期活动
-      </SectionTitle>
-      {acts.length ? (
-        <Card padding="none">
-          <div>
-            {acts.map((s, i) => (
-              <div
-                key={s.id}
-                onClick={() => onOpenActivity(s)}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '34px 2.2fr 1fr 0.9fr 0.9fr 1.3fr 1.4fr 22px',
-                  gap: 14,
-                  alignItems: 'center',
-                  padding: '14px 20px',
-                  cursor: 'pointer',
-                  borderTop: i ? '1px solid var(--hairline)' : 'none',
-                  transition: 'background var(--dur-fast)',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--surface-hover)')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-              >
-                <span style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--surface-inset)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name={s.icon} size={16} color="var(--text-muted)" />
-                </span>
-                <div>
-                  <div style={{ font: 'var(--fw-semibold) var(--fs-sm)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>{s.name}</div>
-                  <div style={{ font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-mono)', color: 'var(--text-faint)', marginTop: 3 }}>{s.date}</div>
-                </div>
-                <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-sans)', color: 'var(--text-muted)' }}>{s.sport}</span>
-                <span style={{ font: 'var(--fw-medium) var(--fs-sm)/1 var(--font-mono)', color: 'var(--text-body)' }}>{s.dist}</span>
-                <span style={{ font: 'var(--fw-medium) var(--fs-sm)/1 var(--font-mono)', color: 'var(--text-body)' }}>{s.dur}</span>
-                <span style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <span style={{ font: 'var(--fw-semibold) var(--fs-sm)/1 var(--font-mono)', color: 'var(--text-strong)' }}>
-                    {s.load} <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>AU</span>
-                  </span>
-                  {s.loadSrc && <span style={{ font: 'var(--fw-medium) 9px/1 var(--font-sans)', color: 'var(--text-faint)', whiteSpace: 'nowrap' }}>{s.loadSrc}</span>}
-                </span>
-                <span style={{ font: 'var(--fw-regular) var(--fs-xs)/1.3 var(--font-sans)', color: 'var(--text-faint)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.note}</span>
-                <Icon name="chevron-right" size={16} color="var(--text-faint)" />
-              </div>
-            ))}
-          </div>
-        </Card>
-      ) : (
-        <EmptyState compact inline icon={emptyCopy.activities.icon} title={`暂无${sportName === '全部运动' ? '' : sportName}活动`} desc="切换到其他项目，或连接数据源后同步活动。" />
-      )}
     </div>
   )
 }
