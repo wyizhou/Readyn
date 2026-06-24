@@ -25,11 +25,10 @@ export interface SidebarProps {
   onNav: (id: ViewId) => void
   profile: Profile
   weight: number | string
-  onOpenAI: () => void
   onOpenProfile: () => void
 }
 
-export function Sidebar({ active, onNav, profile, weight, onOpenAI, onOpenProfile }: SidebarProps) {
+export function Sidebar({ active, onNav, profile, weight, onOpenProfile }: SidebarProps) {
   return (
     <aside
       style={{
@@ -140,47 +139,6 @@ export function Sidebar({ active, onNav, profile, weight, onOpenAI, onOpenProfil
           )
         })}
       </nav>
-
-      <button
-        onClick={onOpenAI}
-        style={{
-          marginTop: 16,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          padding: '12px 14px',
-          border: '1px solid var(--violet-700)',
-          borderRadius: 'var(--r-md)',
-          cursor: 'pointer',
-          textAlign: 'left',
-          background: 'linear-gradient(135deg, rgba(59,91,255,0.16), rgba(124,77,255,0.16))',
-          color: 'var(--text-strong)',
-          transition: 'filter var(--dur-fast)',
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.filter = 'brightness(1.18)')}
-        onMouseLeave={(e) => (e.currentTarget.style.filter = 'none')}
-      >
-        <span
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 7,
-            background: 'var(--grad-brand)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flex: 'none',
-          }}
-        >
-          <Icon name="message-square-text" size={15} color="#fff" />
-        </span>
-        <span style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-          <span style={{ font: 'var(--fw-bold) var(--fs-sm)/1 var(--font-sans)', whiteSpace: 'nowrap' }}>问 AI 专家</span>
-          <span style={{ font: 'var(--fw-medium) 10px/1.3 var(--font-sans)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-            已载入近 14 天数据
-          </span>
-        </span>
-      </button>
 
       <button
         onClick={onOpenProfile}
