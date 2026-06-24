@@ -413,9 +413,10 @@ export interface ActivityDetailProps {
   act: Activity
   spec: boolean
   onToast: (msg: string) => void
+  onCompare?: () => void
 }
 
-export function ActivityDetail({ data, act, onToast }: ActivityDetailProps) {
+export function ActivityDetail({ data, act, onToast, onCompare }: ActivityDetailProps) {
   const detail = (data.activityDetails[act.id] ?? {}) as DetailAny
   const sp = act.sport
   const c = sportColor(sp)
@@ -530,7 +531,7 @@ export function ActivityDetail({ data, act, onToast }: ActivityDetailProps) {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          <Button variant="secondary" size="sm" iconLeft={<Icon name="git-compare" size={14} />} onClick={() => onToast('已加入对比')}>
+          <Button variant="secondary" size="sm" iconLeft={<Icon name="git-compare" size={14} />} onClick={() => (onCompare ? onCompare() : onToast('已加入对比'))}>
             对比
           </Button>
           <Button variant="secondary" size="sm" iconLeft={<Icon name="share-2" size={14} />} onClick={() => onToast(`已导出「${act.name}」`)}>

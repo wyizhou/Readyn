@@ -12,6 +12,8 @@ import { Library } from './modules/Library'
 import { WeightModule } from './modules/Weight'
 import { Connectors } from './modules/Connectors'
 import { Records } from './modules/Records'
+import { CompareModal } from './components/CompareModal'
+import { ActivityCompare } from './details/ActivityCompare'
 import { AIModule } from './modules/AIModule'
 import { ProfileModal } from './modules/Profile'
 import { SettingsCenter } from './modules/Settings'
@@ -45,6 +47,7 @@ type Detail =
   | { type: 'template'; tpl: Template; sport: string }
   | { type: 'plan'; plan: LibraryPlan }
   | { type: 'connector'; src: Connector }
+  | { type: 'compare'; ids: string[] }
   | { type: 'settings' }
 
 interface Seed {
@@ -69,6 +72,8 @@ export default function App() {
   const [weightLog, setWeightLog] = useState<WeightEntry[]>(D.weightLog)
   const [profile, setProfile] = useState<Profile>({ ...D.profile })
   const [profileOpen, setProfileOpen] = useState(false)
+  const [compareOpen, setCompareOpen] = useState(false)
+  const [comparePreselect, setComparePreselect] = useState<string[]>([])
   const [detail, setDetail] = useState<Detail | null>(null)
   // Spec annotation layer is dormant (no topbar toggle per design v9; kept off).
   const [spec] = useState(false)
@@ -151,6 +156,11 @@ export default function App() {
   }
   const askAI = (ins: Insight) => openChat(`关于「${ins.title}」，我该怎么做？`)
   const openActivity = (act: Activity) => setDetail({ type: 'activity', act })
+  const openCompare = (ids: string[]) => setDetail({ type: 'compare', ids })
+  const openCompareModal = (preselect: string[] = []) => {
+    setComparePreselect(preselect)
+    setCompareOpen(true)
+  }
   const openMetric = (id: string) => setDetail({ type: 'metric', id })
   const openTemplate = (tpl: Template, sport: string) => setDetail({ type: 'template', tpl, sport })
   const openPlan = (plan: LibraryPlan) => setDetail({ type: 'plan', plan })
@@ -270,6 +280,9 @@ export default function App() {
       case 'connector':
         detailTitle = [detail.src.name, `${detail.src.cat} · 连接器配置`]
         break
+      case 'compare':
+        detailTitle = [`对比 ${detail.ids.length} 项活动`, '指标对比 · 心率叠加']
+        break
       case 'settings':
         detailTitle = ['设置中心', '单位 · 心率区间 · 通知 · 隐私 · 数据 · 外观']
         break
@@ -332,7 +345,10 @@ export default function App() {
             onBack={detail ? back : undefined}
           />
           <SpecBanner on={spec} />
-          {detail?.type === 'activity' && <ActivityDetail data={D} act={detail.act} spec={spec} onToast={flashMsg} />}
+          {detail?.type === 'activity' && (
+            <ActivityDetail data={D} act={detail.act} spec={spec} onToast={flashMsg} onCompare={() => openCompareModal([detail.act.id])} />
+          )}
+          {detail?.type === 'compare' && <ActivityCompare data={D} ids={detail.ids} onOpenActivity={openActivity} />}
           {detail?.type === 'metric' && <MetricDetail data={D} id={detail.id} onOpenMetric={openMetric} />}
           {detail?.type === 'template' && (
             <TemplateDetail
@@ -405,7 +421,7 @@ export default function App() {
             />
           )}
           {!detail && view === 'records' && (
-            <Records data={D} connected={connected} onConnect={goConnect} onOpenActivity={openActivity} />
+            <Records data={D} connected={connected} onConnect={goConnect} onOpenActivity={openActivity} onCompare={() => openCompareModal()} />
           )}
           {!detail && view === 'weight' && <WeightModule weightLog={weightLog} profile={profile} onAdd={addWeight} today={TODAY} />}
           {!detail && view === 'connectors' && (
@@ -468,6 +484,17 @@ export default function App() {
             onAddWeight={addWeight}
             onOpenSettings={openSettings}
             onClose={() => setProfileOpen(false)}
+          />
+        )}
+        {compareOpen && (
+          <CompareModal
+            activities={D.records ?? D.activities}
+            preselect={comparePreselect}
+            onClose={() => setCompareOpen(false)}
+            onConfirm={(ids) => {
+              setCompareOpen(false)
+              openCompare(ids)
+            }}
           />
         )}
       </div>
