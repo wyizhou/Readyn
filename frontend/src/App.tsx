@@ -421,7 +421,6 @@ export default function App() {
               onConnect={goConnect}
               onOpenAI={() => openChat()}
               onAskAI={askAI}
-              onOpenActivity={openActivity}
               onOpenMetric={openMetric}
             />
           )}

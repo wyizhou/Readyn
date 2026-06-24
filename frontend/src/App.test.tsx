@@ -30,13 +30,14 @@ describe('App integration (empty-state / real-data)', () => {
     render(<App />)
     const nav = screen.getByRole('navigation')
 
+    // 5-item nav (训练日历 / 训练库 are offline, removed from navigation).
+    expect(within(nav).queryByText('训练日历')).not.toBeInTheDocument()
+    expect(within(nav).queryByText('训练库')).not.toBeInTheDocument()
+
     await user.click(within(nav).getByText('连接器'))
     expect(topHeading()).toContain('连接器')
-    await user.click(within(nav).getByText('训练库'))
-    expect(topHeading()).toContain('训练库')
-    // Training calendar + AI modules must render on empty data without crashing.
-    await user.click(within(nav).getByText('训练日历'))
-    expect(topHeading()).toContain('训练日历')
+    await user.click(within(nav).getByText('运动记录'))
+    expect(topHeading()).toContain('运动记录')
     await user.click(within(nav).getByText('AI 模块'))
     expect(topHeading()).toContain('AI')
     await user.click(within(nav).getByText('体重记录'))

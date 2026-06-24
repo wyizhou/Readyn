@@ -32,7 +32,6 @@ function renderDash(overrides: Partial<DashboardProps> = {}) {
     onConnect: vi.fn(),
     onOpenAI: vi.fn(),
     onAskAI: vi.fn(),
-    onOpenActivity: vi.fn(),
     onOpenMetric: vi.fn(),
     ...overrides,
   }
@@ -48,8 +47,8 @@ describe('Dashboard (P2 redesign)', () => {
     expect(screen.getAllByText('Garmin 直供').length).toBeGreaterThan(0)
     // The PMC (computed) section carries the Readyn 自算 badge.
     expect(screen.getByText('Readyn 自算')).toBeInTheDocument()
-    // Recent activity row shows its load source.
-    expect(screen.getByText('HR-TRIMP')).toBeInTheDocument()
+    // The recent-activities table now lives in the Records module, not here.
+    expect(screen.queryByText('近期活动')).not.toBeInTheDocument()
   })
 
   it('prompts to pick a sport for specialty metrics when on 全部运动', () => {
