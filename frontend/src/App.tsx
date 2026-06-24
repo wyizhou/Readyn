@@ -3,8 +3,6 @@ import { Button, Tabs } from './design-system'
 import { Icon } from './components/Icon'
 import { Sidebar } from './components/Sidebar'
 import type { ViewId } from './components/Sidebar'
-import { SportFilter } from './components/SportFilter'
-import { sports } from './lib/taxonomy'
 import { Topbar } from './components/Topbar'
 import { SpecContext } from './components/spec/SpecContext'
 import { SpecToggle, SpecBanner } from './components/spec/Spec'
@@ -52,33 +50,6 @@ type Detail =
 interface Seed {
   q: string
   nonce: number
-}
-
-function AIButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 8,
-        height: 40,
-        padding: '0 16px',
-        borderRadius: 'var(--r-md)',
-        border: '1px solid var(--violet-700)',
-        cursor: 'pointer',
-        background: 'linear-gradient(135deg, rgba(59,91,255,0.18), rgba(124,77,255,0.18))',
-        color: 'var(--text-strong)',
-        font: 'var(--fw-semibold) var(--fs-sm)/1 var(--font-sans)',
-        whiteSpace: 'nowrap',
-        transition: 'filter var(--dur-fast)',
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.filter = 'brightness(1.2)')}
-      onMouseLeave={(e) => (e.currentTarget.style.filter = 'none')}
-    >
-      <Icon name="message-square-text" size={16} color="var(--violet-300)" /> 问 AI 专家
-    </button>
-  )
 }
 
 const TODAY = '2026-06-18'
@@ -276,7 +247,7 @@ export default function App() {
     library: ['训练库', '跑步 · 攀岩 · 我的计划'],
     weight: ['体重记录', '手动录入与趋势 · 与个人资料联动'],
     connectors: ['连接器', '统一数据规范 · 多源接入'],
-    ai: ['AI 模块', '生成课表 · 运动专家对话'],
+    ai: ['AI 模块', '运动专家对话'],
   }
   const [title, subtitle] = titles[view]
 
@@ -314,9 +285,6 @@ export default function App() {
 
   const right = (
     <>
-      {!detail && view === 'dashboard' && connected && (
-        <SportFilter sports={sports} value={sport} onChange={setSport} compact />
-      )}
       {!detail && view === 'dashboard' && (
         <Tabs
           variant="pill"
@@ -345,7 +313,6 @@ export default function App() {
         </Button>
       )}
       <SpecToggle on={spec} onToggle={() => setSpec((s) => !s)} />
-      {!detail && view !== 'ai' && <AIButton onClick={() => openChat()} />}
     </>
   )
 
@@ -360,10 +327,6 @@ export default function App() {
           }}
           profile={profile}
           weight={currentWeight}
-          onOpenAI={() => {
-            setDetail(null)
-            openChat()
-          }}
           onOpenProfile={() => setProfileOpen(true)}
         />
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
