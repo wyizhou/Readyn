@@ -71,6 +71,18 @@ describe('Dashboard (P2 redesign)', () => {
     expect(screen.queryByText('赛季')).not.toBeInTheDocument()
   })
 
+  it('colours the 本周概览 sparklines per metric (蓝/紫/绿|琥珀, issue #55)', () => {
+    renderDash()
+    const sparkColor = (label: string): string | null => {
+      const row = screen.getByText(label).closest('div')?.parentElement as HTMLElement
+      return row.querySelector('path[stroke]')?.getAttribute('stroke') ?? null
+    }
+    expect(sparkColor('本周负荷')).toBe('var(--blue-500)')
+    expect(sparkColor('疲劳 ATL')).toBe('var(--violet-500)')
+    // tsb = -4 (< 0) → 状态 TSB sparkline is amber.
+    expect(sparkColor('状态 TSB')).toBe('var(--amber-500)')
+  })
+
   it('renders the connect empty state when not connected', () => {
     const onConnect = vi.fn()
     renderDash({ connected: false, onConnect })
