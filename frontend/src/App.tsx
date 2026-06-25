@@ -320,7 +320,9 @@ export default function App() {
           {detail?.type === 'activity' && (
             <ActivityDetail data={D} act={detail.act} spec={spec} onToast={flashMsg} onCompare={() => openCompareModal([detail.act.id])} />
           )}
-          {detail?.type === 'compare' && <ActivityCompare data={D} ids={detail.ids} onOpenActivity={openActivity} />}
+          {detail?.type === 'compare' && (
+            <ActivityCompare data={D} ids={detail.ids} onOpenActivity={openActivity} onEdit={() => openCompareModal(detail.ids)} />
+          )}
           {detail?.type === 'metric' && <MetricDetail data={D} id={detail.id} onOpenMetric={openMetric} />}
           {detail?.type === 'template' && (
             <TemplateDetail
