@@ -99,7 +99,7 @@ describe('App integration (empty-state / real-data)', () => {
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
     // Offline → not connected → empty state with the Garmin login CTA.
-    expect(screen.getByText('尚未连接任何数据源')).toBeInTheDocument()
+    expect(screen.getByText('尚未连接佳明')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /登录佳明/ }))
     // Real account login modal (not a mock OAuth wizard).
     expect(await screen.findByText('佳明账号（邮箱/手机）')).toBeInTheDocument()
