@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Card, Badge, ProgressRing, Sparkline } from '../design-system'
 import { Icon } from '../components/Icon'
 import { PMCChart, HRVChart, SleepBars, HRZoneBar, Radar, GradePyramid, Donut } from '../components/charts/Charts'
@@ -243,8 +243,6 @@ function SportSpecificCard({
 
 export interface DashboardProps {
   data: ApexData
-  range: string
-  setRange: (r: string) => void
   sport: string
   setSport: (id: string) => void
   connected: boolean
@@ -254,19 +252,8 @@ export interface DashboardProps {
   onOpenMetric: (id: string) => void
 }
 
-// Number of trailing days each range selects. `season` means the full series.
-const RANGE_DAYS: Record<string, number> = { '7d': 7, '28d': 28, season: Infinity }
-const RANGE_LABEL: Record<string, string> = { '7d': '近 7 天', '28d': '近 28 天', season: '赛季' }
-
-export function Dashboard({ data, range, sport, setSport, connected, onConnect, onAskAI, onOpenMetric }: DashboardProps) {
+export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI, onOpenMetric }: DashboardProps) {
   const t = data.today
-
-  // Window the time-series by the selected range (preserves the 7天/28天/赛季 switch).
-  const view = useMemo(() => {
-    const days = RANGE_DAYS[range] ?? RANGE_DAYS['28d']
-    const tail = <T,>(arr: T[]) => (days === Infinity ? arr : arr.slice(-days))
-    return { pmc: tail(data.pmc), hrv: tail(data.hrv) }
-  }, [data.pmc, data.hrv, range])
 
   // ---- empty state (no data source connected) ----
   if (!connected) {
@@ -293,7 +280,6 @@ export function Dashboard({ data, range, sport, setSport, connected, onConnect, 
     )
   }
 
-  const rangeLabel = RANGE_LABEL[range] ?? RANGE_LABEL['28d']
   const rColor = t.readiness >= 75 ? 'var(--green-500)' : t.readiness >= 50 ? 'var(--amber-500)' : 'var(--red-500)'
   const hero: HeroTuple[] = [
     ['HRV', t.hrv, 'ms', `${t.hrvDelta > 0 ? '+' : ''}${t.hrvDelta}`, t.hrvDelta >= 0 ? 'var(--green-400)' : 'var(--red-400)', 'hrv'],
@@ -350,7 +336,7 @@ export function Dashboard({ data, range, sport, setSport, connected, onConnect, 
       </SectionTitle>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)', gap: 16, marginBottom: 16 }}>
         <Card
-          title={`${rangeLabel} · 体能 / 疲劳 / 状态`}
+          title="近 6 周 · 体能 / 疲劳 / 状态"
           action={
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <HowInfo
@@ -378,14 +364,14 @@ export function Dashboard({ data, range, sport, setSport, connected, onConnect, 
             </div>
           }
         >
-          <PMCChart data={view.pmc} />
+          <PMCChart data={data.pmc} />
         </Card>
         <Card title="本周概览">
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {[
-              { label: '本周负荷', val: `${view.pmc.reduce((s, d) => s + d.load, 0)}`, unit: 'AU', delta: `+${t.weekLoadDelta}%`, color: 'var(--blue-400)', spark: view.pmc.map((d) => d.load) },
-              { label: '疲劳 ATL', val: t.atl.toFixed(0), unit: '', delta: t.tsb < 0 ? '高于体能' : '低于体能', color: 'var(--violet-400)', spark: view.pmc.map((d) => d.atl) },
-              { label: '状态 TSB', val: `${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, unit: '', delta: t.tsb > 5 ? '新鲜' : t.tsb > -10 ? '中性' : '疲劳', color: t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', spark: view.pmc.map((d) => d.tsb) },
+              { label: '本周负荷', val: `${data.pmc.slice(-7).reduce((s, d) => s + d.load, 0)}`, unit: 'AU', delta: `+${t.weekLoadDelta}%`, color: 'var(--blue-400)', spark: data.pmc.slice(-7).map((d) => d.load) },
+              { label: '疲劳 ATL', val: t.atl.toFixed(0), unit: '', delta: t.tsb < 0 ? '高于体能' : '低于体能', color: 'var(--violet-400)', spark: data.pmc.slice(-7).map((d) => d.atl) },
+              { label: '状态 TSB', val: `${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, unit: '', delta: t.tsb > 5 ? '新鲜' : t.tsb > -10 ? '中性' : '疲劳', color: t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', spark: data.pmc.slice(-7).map((d) => d.tsb) },
             ].map((r, i) => (
               <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderTop: i ? '1px solid var(--hairline)' : 'none' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 'none', minWidth: 96 }}>
@@ -413,7 +399,7 @@ export function Dashboard({ data, range, sport, setSport, connected, onConnect, 
             <span style={{ font: 'var(--fw-medium) var(--fs-sm)/1 var(--font-mono)', color: 'var(--text-faint)' }}>ms</span>
             <span style={{ marginLeft: 'auto', font: 'var(--fw-semibold) var(--fs-xs)/1 var(--font-mono)', color: 'var(--green-400)' }}>▲ {t.hrvDelta} vs 基线</span>
           </div>
-          <HRVChart data={view.hrv} />
+          <HRVChart data={data.hrv} />
         </Card>
         <Card title="睡眠结构" action={<SourceBadge source="garmin" size="xs" />}>
           <SleepBars nights={data.sleep} />
