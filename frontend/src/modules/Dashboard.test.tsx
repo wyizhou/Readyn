@@ -24,8 +24,6 @@ const connected: ApexData = {
 function renderDash(overrides: Partial<DashboardProps> = {}) {
   const props = {
     data: connected,
-    range: '28d',
-    setRange: vi.fn(),
     sport: 'all',
     setSport: vi.fn(),
     connected: true,
@@ -62,6 +60,15 @@ describe('Dashboard (P2 redesign)', () => {
     const runButtons = screen.getAllByRole('button', { name: /跑步/ })
     await user.click(runButtons[0])
     expect(setSport).toHaveBeenCalledWith('run')
+  })
+
+  it('uses a fixed 近 6 周 PMC window (no time-range switch, issue #52)', () => {
+    renderDash()
+    // v9: the PMC card title is the fixed 近 6 周 window…
+    expect(screen.getByText('近 6 周 · 体能 / 疲劳 / 状态')).toBeInTheDocument()
+    // …and the old 7天/28天/赛季 range labels are gone from the dashboard.
+    expect(screen.queryByText('近 28 天')).not.toBeInTheDocument()
+    expect(screen.queryByText('赛季')).not.toBeInTheDocument()
   })
 
   it('renders the connect empty state when not connected', () => {

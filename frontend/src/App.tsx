@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Button, Tabs } from './design-system'
 import { Icon } from './components/Icon'
 import { Sidebar } from './components/Sidebar'
 import type { ViewId } from './components/Sidebar'
 import { Topbar } from './components/Topbar'
+import { ConnStatus } from './components/ConnStatus'
 import { SpecContext } from './components/spec/SpecContext'
 import { SpecBanner } from './components/spec/Spec'
 import { Dashboard } from './modules/Dashboard'
@@ -63,7 +63,6 @@ export default function App() {
   const [data, setData] = useState<ApexData>(emptyData)
   const D = data
   const [view, setView] = useState<ViewId>('dashboard')
-  const [range, setRange] = useState('28d')
   const [sport, setSport] = useState('all')
   const [connTab, setConnTab] = useState('connected')
   const [libTab, setLibTab] = useState('running')
@@ -80,7 +79,6 @@ export default function App() {
   const [settings, setSettings] = useState<SettingsDoc>(defaultSettings)
   const [flash, setFlash] = useState<string | null>(null)
 
-  const [syncing, setSyncing] = useState(false)
   const [todayDone, setTodayDone] = useState(false)
 
   const applyData = useCallback((d: ApexData) => {
@@ -89,16 +87,14 @@ export default function App() {
     setProfile({ ...d.profile })
   }, [])
 
-  // Manual re-sync (the dashboard "同步" button) with a spinner state.
+  // Re-pull the bootstrap snapshot (used after a connect / manual sync).
   const reload = useCallback(() => {
-    setSyncing(true)
     return api
       .bootstrap()
       .then(applyData)
       .catch(() => {
         /* backend unavailable — keep current data */
       })
-      .finally(() => setSyncing(false))
   }, [applyData])
 
   // Initial load from the backend; keep the empty skeleton if offline.
@@ -209,13 +205,11 @@ export default function App() {
   // Pull from Garmin and re-bootstrap so 累计记录数 / 最近同步时间 actually refresh.
   // Shared by 立即同步 and 历史回填 — both must reflect the new data in the UI.
   const runGarminSync = (okMsg: string) => {
-    setSyncing(true)
     return api
       .garminSync()
       .then(() => reload())
       .then(() => flashMsg(okMsg))
       .catch(() => flashMsg('同步失败，请重新连接'))
-      .finally(() => setSyncing(false))
   }
   const syncSource = (id: string) => {
     void id
@@ -297,32 +291,10 @@ export default function App() {
     setView('connectors')
   }
 
-  const right = (
-    <>
-      {!detail && view === 'dashboard' && (
-        <Tabs
-          variant="pill"
-          value={range}
-          onChange={setRange}
-          tabs={[
-            { value: '7d', label: '7 天' },
-            { value: '28d', label: '28 天' },
-            { value: 'season', label: '赛季' },
-          ]}
-        />
-      )}
-      {!detail && view === 'dashboard' && (
-        <Button
-          variant="secondary"
-          iconLeft={<Icon name="refresh-cw" size={15} style={syncing ? { animation: 'apexspin 0.8s linear infinite' } : undefined} />}
-          disabled={syncing}
-          onClick={reload}
-        >
-          {syncing ? '同步中…' : '同步'}
-        </Button>
-      )}
-    </>
-  )
+  // Topbar right (design v9): a read-only connection-status indicator on the
+  // dashboard — no time-range switch, no global sync button (manual re-sync now
+  // lives on the connector config detail).
+  const right = !detail && view === 'dashboard' ? <ConnStatus connected={connected} /> : undefined
 
   return (
     <SpecContext.Provider value={spec}>
@@ -387,8 +359,6 @@ export default function App() {
           {!detail && view === 'dashboard' && (
             <Dashboard
               data={D}
-              range={range}
-              setRange={setRange}
               sport={sport}
               setSport={setSport}
               connected={connected}

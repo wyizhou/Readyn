@@ -51,6 +51,16 @@ describe('App integration (empty-state / real-data)', () => {
     expect(screen.queryByRole('button', { name: /实现批注/ })).not.toBeInTheDocument()
   })
 
+  it('dashboard topbar shows a read-only connection status, no range/sync controls (issue #52)', () => {
+    // Offline → not connected → the topbar status reads 未连接 (read-only).
+    render(<App />)
+    expect(screen.getByRole('status', { name: '未连接' })).toBeInTheDocument()
+    // The old 7天/28天/赛季 range switch and the global 同步 button are gone.
+    expect(screen.queryByRole('button', { name: /^同步$/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('tab', { name: '28 天' })).not.toBeInTheDocument()
+    expect(screen.queryByText('赛季')).not.toBeInTheDocument()
+  })
+
   it('records a new weight entry that shows in the log (optimistic, offline)', async () => {
     const user = userEvent.setup()
     render(<App />)
