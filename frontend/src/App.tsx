@@ -193,9 +193,15 @@ export default function App() {
     reload()
   }
   const disconnectSource = (id: string) => {
-    // Local UI flip only — the cached token is cleared server-side on reconnect.
+    // Disconnect must close the v10 loop: `connected` is derived from synced data,
+    // so we drop the Garmin-sourced slices back to the empty skeleton (which flips
+    // `connected` → false and lands every module on its 未连接 empty state). User-
+    // entered weight/profile are NOT Garmin data, so they are preserved. The cached
+    // token is cleared server-side on reconnect.
     setData((d) => ({
-      ...d,
+      ...emptyData,
+      weightLog: d.weightLog,
+      profile: d.profile,
       connectors: d.connectors.map((c) => (c.id === id ? { ...c, status: 'available' as const, sync: '—' } : c)),
     }))
     setDetail(null)
