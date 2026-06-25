@@ -402,7 +402,7 @@ export function Connectors({ data, tab, setTab, connected, onOpenConnector, onCo
       <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
         <EmptyState
           icon="plug-zap"
-          title="尚未连接任何数据源"
+          title="尚未连接佳明"
           desc="Readyn 以佳明（中国区）为主数据源。连接后将自动同步你的全部运动、HRV、睡眠与就绪度。"
           actionLabel="登录佳明（中国区）"
           onAction={() => garmin && setLoginSrc(garmin)}

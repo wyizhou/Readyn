@@ -39,7 +39,7 @@ describe('Connectors (P3)', () => {
     const user = userEvent.setup({ delay: null })
     const { onConnect } = renderConn({ connected: false })
 
-    expect(screen.getByText('尚未连接任何数据源')).toBeInTheDocument()
+    expect(screen.getByText('尚未连接佳明')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /登录佳明/ }))
     await user.type(screen.getByPlaceholderText('you@example.com'), 'a@b.cn')
     await user.type(screen.getByPlaceholderText('输入密码'), 'pw')
