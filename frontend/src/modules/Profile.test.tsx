@@ -8,7 +8,9 @@ import { emptyProfile } from '../lib/emptyData'
 
 describe('ProfileModal — disciplines multi-select (P6)', () => {
   it('toggles a sport discipline on and off', async () => {
-    const user = userEvent.setup()
+    // delay: null keeps userEvent off fake timers so clicks don't stall under
+    // full-suite parallel load (same de-flake as the Connectors MFA test, #49).
+    const user = userEvent.setup({ delay: null })
     render(
       <ProfileModal
         profile={emptyProfile}
@@ -26,5 +28,5 @@ describe('ProfileModal — disciplines multi-select (P6)', () => {
     expect(screen.getByRole('button', { name: /跑步/ })).toHaveAttribute('aria-pressed', 'true')
     await user.click(screen.getByRole('button', { name: /跑步/ }))
     expect(screen.getByRole('button', { name: /跑步/ })).toHaveAttribute('aria-pressed', 'false')
-  })
+  }, 15000)
 })
