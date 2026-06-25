@@ -68,6 +68,22 @@ describe('ActivityDetail — per-sport heterogeneity (P4)', () => {
     expect(screen.getByText('功率指标')).toBeInTheDocument()
   })
 
+  // issue #56: data curves carry Y reference values + a top-left X axis name.
+  const svgText = (root: HTMLElement, re: RegExp): boolean =>
+    Array.from(root.querySelectorAll('text')).some((t) => re.test(t.textContent ?? ''))
+
+  it('labels the running curve with a 距离 km axis + bpm Y references (#56)', () => {
+    const { container } = render(<ActivityDetail data={emptyData} act={runAct} spec={false} onToast={vi.fn()} />)
+    expect(screen.getByText('距离 km')).toBeInTheDocument()
+    expect(svgText(container, /\d+\s*bpm/)).toBe(true)
+  })
+
+  it('labels the cycling curve with a 时间 min axis + W Y references (#56)', () => {
+    const { container } = render(<ActivityDetail data={emptyData} act={rideAct} spec={false} onToast={vi.fn()} />)
+    expect(screen.getByText('时间 min')).toBeInTheDocument()
+    expect(svgText(container, /\d+\s*W/)).toBe(true)
+  })
+
   it('renders swimming SWOLF block', () => {
     render(<ActivityDetail data={emptyData} act={swimAct} spec={false} onToast={vi.fn()} />)
     expect(screen.getByText('分段 · SWOLF')).toBeInTheDocument()

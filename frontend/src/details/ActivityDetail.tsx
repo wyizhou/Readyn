@@ -194,29 +194,58 @@ function genClimbHR(act: Activity, d: DetailAny): Pt[] {
 }
 
 // ---- charts ----
-function LineChart({ pts, keys, width = 1000, height = 220, xUnit }: { pts: Pt[]; keys: LineKey[]; width?: number; height?: number; xUnit?: string }) {
+// yLabels: render Y reference values (0/0.5/1 of the named series) on the right
+// edge (design v9 E) — e.g. run hr→bpm, ride power→W. xUnit also drives a
+// top-left axis name (距离 km / 时间 min).
+interface YLabels {
+  k: string
+  fmt: (v: number) => string | number
+  unit?: string
+}
+const X_AXIS_NAME: Record<string, string> = { km: '距离 km', min: '时间 min' }
+function LineChart({ pts, keys, width = 1000, height = 220, xUnit, yLabels }: { pts: Pt[]; keys: LineKey[]; width?: number; height?: number; xUnit?: string; yLabels?: YLabels }) {
   if (pts.length < 2) return null
-  const pad = { t: 16, r: 14, b: 20, l: 14 }
+  // Reserve room on the right for the Y reference values when present.
+  const pad = { t: 16, r: yLabels ? 44 : 14, b: 20, l: 14 }
   const w = width - pad.l - pad.r
   const h = height - pad.t - pad.b
   const xs = (i: number) => pad.l + (i / (pts.length - 1)) * w
-  const norm = (k: string) => {
+  const range = (k: string): [number, number] => {
     const arr = pts.map((p) => p[k])
-    const mn = Math.min(...arr)
-    const mx = Math.max(...arr)
+    return [Math.min(...arr), Math.max(...arr)]
+  }
+  const norm = (k: string) => {
+    const [mn, mx] = range(k)
     return (v: number) => (mx - mn ? (v - mn) / (mx - mn) : 0.5)
   }
   const y = (t: number) => pad.t + h - t * h
+  const yk = yLabels && pts[0][yLabels.k] !== undefined ? yLabels.k : null
+  const axisName = xUnit ? X_AXIS_NAME[xUnit] ?? xUnit : null
   return (
     <svg width="100%" viewBox={`0 0 ${width} ${height}`} style={{ display: 'block' }}>
       {[0.25, 0.5, 0.75].map((g, i) => (
         <line key={i} x1={pad.l} x2={width - pad.r} y1={pad.t + h - g * h} y2={pad.t + h - g * h} stroke="var(--hairline)" />
       ))}
+      {yk &&
+        [0, 0.5, 1].map((g, i) => {
+          const [mn, mx] = range(yk)
+          const v = mn + (mx - mn) * g
+          return (
+            <text key={'y' + i} x={width - pad.r + 6} y={y(g) + 3} fontFamily="var(--font-mono)" fontSize="10" fill="var(--text-faint)">
+              {yLabels?.unit ? `${yLabels.fmt(v)} ${yLabels.unit}` : yLabels?.fmt(v)}
+            </text>
+          )
+        })}
       {keys.map((kk) => {
         const nf = norm(kk.k)
         const d = pts.map((p, i) => `${i ? 'L' : 'M'}${xs(i).toFixed(1)},${y(kk.invert ? 1 - nf(p[kk.k]) : nf(p[kk.k])).toFixed(1)}`).join(' ')
         return <path key={kk.k} d={d} fill="none" stroke={kk.color} strokeWidth={kk.w || 2} strokeDasharray={kk.dash || 'none'} strokeLinejoin="round" opacity={kk.op || 1} />
       })}
+      {axisName && (
+        <text x={pad.l} y={12} fontFamily="var(--font-sans)" fontWeight="600" fontSize="9" letterSpacing="0.06em" fill="var(--text-faint)" style={{ textTransform: 'uppercase' }}>
+          {axisName}
+        </text>
+      )}
       {xUnit && (
         <ChartXAxis
           labels={[
@@ -575,7 +604,7 @@ export function ActivityDetail({ data, act, onToast, onCompare }: ActivityDetail
                 </div>
               }
             >
-              <LineChart pts={run.pts} keys={[{ k: 'pace', color: 'var(--blue-500)', w: 2.5, invert: true }, { k: 'hr', color: 'var(--red-500)', w: 2, op: 0.9 }]} xUnit="km" />
+              <LineChart pts={run.pts} keys={[{ k: 'pace', color: 'var(--blue-500)', w: 2.5, invert: true }, { k: 'hr', color: 'var(--red-500)', w: 2, op: 0.9 }]} xUnit="km" yLabels={{ k: 'hr', fmt: (v) => Math.round(v), unit: 'bpm' }} />
             </Card>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.7fr) minmax(0, 1fr)', gap: 16, marginBottom: 22 }}>
@@ -615,7 +644,7 @@ export function ActivityDetail({ data, act, onToast, onCompare }: ActivityDetail
           <div style={{ marginBottom: 22 }}>
             <SectionTitle icon="zap">功率 · 心率</SectionTitle>
             <Card title="功率曲线">
-              <LineChart pts={genRide(act, detail)} keys={[{ k: 'power', color: 'var(--amber-500)', w: 2.5 }, { k: 'hr', color: 'var(--red-500)', w: 2, op: 0.85 }]} xUnit="min" />
+              <LineChart pts={genRide(act, detail)} keys={[{ k: 'power', color: 'var(--amber-500)', w: 2.5 }, { k: 'hr', color: 'var(--red-500)', w: 2, op: 0.85 }]} xUnit="min" yLabels={{ k: 'power', fmt: (v) => Math.round(v), unit: 'W' }} />
             </Card>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.7fr)', gap: 16, marginBottom: 22 }}>
