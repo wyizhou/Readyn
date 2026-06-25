@@ -369,9 +369,11 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
         <Card title="本周概览">
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {[
-              { label: '本周负荷', val: `${data.pmc.slice(-7).reduce((s, d) => s + d.load, 0)}`, unit: 'AU', delta: `+${t.weekLoadDelta}%`, color: 'var(--blue-400)', spark: data.pmc.slice(-7).map((d) => d.load) },
-              { label: '疲劳 ATL', val: t.atl.toFixed(0), unit: '', delta: t.tsb < 0 ? '高于体能' : '低于体能', color: 'var(--violet-400)', spark: data.pmc.slice(-7).map((d) => d.atl) },
-              { label: '状态 TSB', val: `${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, unit: '', delta: t.tsb > 5 ? '新鲜' : t.tsb > -10 ? '中性' : '疲劳', color: t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', spark: data.pmc.slice(-7).map((d) => d.tsb) },
+              // delta text colour (color) and Sparkline colour (sc) are distinct per
+              // design v9: 负荷=蓝 / ATL=紫 / TSB=按正负 绿|琥珀 for the Sparkline.
+              { label: '本周负荷', val: `${data.pmc.slice(-7).reduce((s, d) => s + d.load, 0)}`, unit: 'AU', delta: `+${t.weekLoadDelta}%`, color: 'var(--green-400)', sc: 'var(--blue-500)', spark: data.pmc.slice(-7).map((d) => d.load) },
+              { label: '疲劳 ATL', val: t.atl.toFixed(0), unit: '', delta: t.tsb < 0 ? '高于体能' : '低于体能', color: 'var(--violet-300)', sc: 'var(--violet-500)', spark: data.pmc.slice(-7).map((d) => d.atl) },
+              { label: '状态 TSB', val: `${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, unit: '', delta: t.tsb > 5 ? '新鲜' : t.tsb > -10 ? '中性' : '疲劳', color: t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', sc: t.tsb >= 0 ? 'var(--green-500)' : 'var(--amber-500)', spark: data.pmc.slice(-7).map((d) => d.tsb) },
             ].map((r, i) => (
               <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderTop: i ? '1px solid var(--hairline)' : 'none' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 'none', minWidth: 96 }}>
@@ -383,7 +385,7 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
                   <span style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-mono)', color: r.color }}>{r.delta}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <Sparkline data={r.spark} />
+                  <Sparkline data={r.spark} color={r.sc} />
                 </div>
               </div>
             ))}
