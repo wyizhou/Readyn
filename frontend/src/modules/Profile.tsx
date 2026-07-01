@@ -549,7 +549,7 @@ export function ProfileModal({
                   type="text"
                   value={d.aiModel}
                   onChange={set('aiModel')}
-                  placeholder="gpt-4o / claude-3-5-sonnet"
+                  placeholder="gpt-5 / gpt-4.1"
                 />
               </Field>
             </div>

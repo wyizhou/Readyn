@@ -6,13 +6,14 @@
 本仓库是高保真设计稿的生产化实现（Vite + React + TypeScript 前端 + FastAPI 后端），
 1:1 对齐设计稿的每个页面、详情页与交互，并配套真实后端 API 与持久化。
 
-> 设计稿来源：claude.ai design 项目 `0260f084-fa7f-41d7-921d-fa86ce82228f`，
-> 设计系统为 **APEX Design System**。完整交接说明见设计项目内 `README.md`（§1–13）。
+> 设计稿来源：本地 Open Design 输出目录 `design/`。
+> 设计系统为 **APEX Design System**。完整交接说明以 `design/README.md` 为准。
 
 ## 架构
 
 ```
 Readyn/
+├── design/          # Open Design 输出目录（设计稿、交接说明与导出资产）
 ├── frontend/        # Vite 8 + React 19 + TypeScript（ESLint + Vitest）
 │   └── src/
 │       ├── design-system/   # APEX 设计系统 13 个组件（类型化端口）
