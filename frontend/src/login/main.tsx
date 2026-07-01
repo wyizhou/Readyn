@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import '../index.css'
 import { Login } from './Login'
 
-document.body.classList.add('readyn-login')
+document.body.classList.add('trainalyze-login')
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

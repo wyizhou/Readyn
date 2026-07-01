@@ -331,7 +331,7 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
       )}
 
       {/* Performance management chart — all-sport aggregate */}
-      <SectionTitle icon="activity" note="全运动汇总 · 体能 / 疲劳 / 状态" right={<SourceBadge source="readyn" />}>
+      <SectionTitle icon="activity" note="全运动汇总 · 体能 / 疲劳 / 状态" right={<SourceBadge source="trainalyze" />}>
         体能趋势
       </SectionTitle>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)', gap: 16, marginBottom: 16 }}>
@@ -340,7 +340,7 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
           action={
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <HowInfo
-                source="readyn"
+                source="trainalyze"
                 title="PMC · 体能管理图"
                 definition="对每日全运动归一负荷做指数加权平均，得到体能(CTL)、疲劳(ATL)与状态(TSB)。"
                 formula="CTL=42d EWMA · ATL=7d EWMA · TSB=CTL−ATL"

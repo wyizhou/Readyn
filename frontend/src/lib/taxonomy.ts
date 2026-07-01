@@ -30,25 +30,25 @@ export const loadSources: Record<string, LoadSource> = {
 }
 
 // Algorithm / source matrix for the settings "数据来源与算法" transparency page —
-// every key metric, whether Garmin-supplied or Readyn-computed, with its family
+// every key metric, whether Garmin-supplied or Trainalyze-computed, with its family
 // and parameters. Mirrors window.APEX_DATA.algorithmMatrix.
 export const algorithmMatrix: AlgorithmRow[] = [
-  { metric: 'CTL / ATL / TSB（体能/疲劳/状态）', source: 'readyn', family: 'Banister / Coggan PMC', params: 'CTL 42d · ATL 7d EWMA' },
-  { metric: 'ACWR（急慢性负荷比）', source: 'readyn', family: 'Acute:Chronic Workload Ratio', params: '7d 均值 ÷ 28d 均值' },
-  { metric: '训练负荷（AU，全运动归一）', source: 'readyn', family: 'HR-TRIMP / 功率 TSS / sRPE', params: '按项目方法归一到同一刻度' },
-  { metric: '单调性 / 训练应变', source: 'readyn', family: 'Foster Monotony / Strain', params: '周均负荷 ÷ 标准差' },
-  { metric: 'HRV 基线', source: 'mixed', family: 'RMSSD 7 日基线', params: '佳明逐拍 + Readyn 基线' },
+  { metric: 'CTL / ATL / TSB（体能/疲劳/状态）', source: 'trainalyze', family: 'Banister / Coggan PMC', params: 'CTL 42d · ATL 7d EWMA' },
+  { metric: 'ACWR（急慢性负荷比）', source: 'trainalyze', family: 'Acute:Chronic Workload Ratio', params: '7d 均值 ÷ 28d 均值' },
+  { metric: '训练负荷（AU，全运动归一）', source: 'trainalyze', family: 'HR-TRIMP / 功率 TSS / sRPE', params: '按项目方法归一到同一刻度' },
+  { metric: '单调性 / 训练应变', source: 'trainalyze', family: 'Foster Monotony / Strain', params: '周均负荷 ÷ 标准差' },
+  { metric: 'HRV 基线', source: 'mixed', family: 'RMSSD 7 日基线', params: '佳明逐拍 + Trainalyze 基线' },
   { metric: '训练就绪度', source: 'garmin', family: 'Garmin Training Readiness', params: '0–100 综合（睡眠/HRV/负荷）' },
   { metric: 'VO₂max / 睡眠 / 静息心率', source: 'garmin', family: '设备算法 (Firstbeat)', params: '佳明直接提供' },
-  { metric: 'FTP / CSS / 配速区间', source: 'readyn', family: '阈值测试派生', params: 'Coggan / CSS / LT2' },
-  { metric: '攀岩难度金字塔', source: 'readyn', family: '完攀计数聚合', params: 'V 制 / 法式' },
+  { metric: 'FTP / CSS / 配速区间', source: 'trainalyze', family: '阈值测试派生', params: 'Coggan / CSS / LT2' },
+  { metric: '攀岩难度金字塔', source: 'trainalyze', family: '完攀计数聚合', params: 'V 制 / 法式' },
 ]
 
-// Provenance metadata for the transparency badge: Garmin 直供 / Readyn 自算 / 混合.
+// Provenance metadata for the transparency badge: Garmin 直供 / Trainalyze 自算 / 混合.
 export const sourceMeta: Record<SourceKey, SourceMeta> = {
-  garmin: { label: 'Garmin 直供', color: 'var(--cyan-400)', bg: 'rgba(0,124,195,0.16)', icon: 'watch', desc: '由佳明设备/Connect 直接提供，Readyn 不二次加工。' },
-  readyn: { label: 'Readyn 自算', color: 'var(--violet-300)', bg: 'rgba(124,77,255,0.16)', icon: 'cpu', desc: '由 Readyn 依据公开运动科学模型在云端计算。' },
-  mixed: { label: '混合来源', color: 'var(--blue-300)', bg: 'rgba(59,91,255,0.16)', icon: 'git-merge', desc: '佳明提供原始数据，Readyn 计算派生基线。' },
+  garmin: { label: 'Garmin 直供', color: 'var(--cyan-400)', bg: 'rgba(0,124,195,0.16)', icon: 'watch', desc: '由佳明设备/Connect 直接提供，Trainalyze 不二次加工。' },
+  trainalyze: { label: 'Trainalyze 自算', color: 'var(--violet-300)', bg: 'rgba(124,77,255,0.16)', icon: 'cpu', desc: '由 Trainalyze 依据公开运动科学模型在云端计算。' },
+  mixed: { label: '混合来源', color: 'var(--blue-300)', bg: 'rgba(59,91,255,0.16)', icon: 'git-merge', desc: '佳明提供原始数据，Trainalyze 计算派生基线。' },
 }
 
 // Per-module empty-state copy (shown until a data source is connected).

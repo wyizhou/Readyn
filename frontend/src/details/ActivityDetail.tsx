@@ -556,7 +556,7 @@ export function ActivityDetail({ data, act, onToast, onCompare }: ActivityDetail
                 {t}
               </span>
             ))}
-            <SourceBadge source={detail.device && detail.device.includes('手动') ? 'readyn' : 'garmin'} size="xs" />
+            <SourceBadge source={detail.device && detail.device.includes('手动') ? 'trainalyze' : 'garmin'} size="xs" />
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>

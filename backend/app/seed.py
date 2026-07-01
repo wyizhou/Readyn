@@ -1,7 +1,7 @@
 """Initialise an empty database.
 
 The old mock seed (``seed_data.json`` generated from the frontend's fake data)
-is gone — Readyn now serves **real** data synced from Garmin China. On first run
+is gone — Trainalyze now serves **real** data synced from Garmin China. On first run
 we lay down a structurally-complete but empty ApexData payload (so the UI renders
 honest empty states) plus the connector registry, then the user connects their
 佳明 account and ``/api/garmin/sync`` fills it in.

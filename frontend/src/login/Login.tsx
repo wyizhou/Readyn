@@ -45,7 +45,7 @@ export function Login() {
       .login(selected, pw)
       .then((res) => {
         try {
-          localStorage.setItem('readyn.token', res.token)
+          localStorage.setItem('trainalyze.token', res.token)
         } catch {
           /* ignore storage errors */
         }
@@ -61,7 +61,7 @@ export function Login() {
           <span className="logo-mark">
             <Icon name="hexagon" size={22} color="#fff" strokeWidth={2} />
           </span>
-          <span className="wordmark">Readyn</span>
+          <span className="wordmark">Trainalyze</span>
           <span className="brand-badge">个人版</span>
         </div>
 
@@ -88,12 +88,12 @@ export function Login() {
           </div>
         </div>
 
-        <div className="brand-foot">© 2026 Readyn · Performance Analytics</div>
+        <div className="brand-foot">© 2026 Trainalyze · Performance Analytics</div>
       </aside>
 
       <main className="auth">
         <div className="auth-card">
-          <h2>登录 Readyn</h2>
+          <h2>登录 Trainalyze</h2>
           <p className="sub">选择账户以继续</p>
 
           <span className="label">账户</span>
@@ -152,7 +152,7 @@ export function Login() {
 
           <p className="hint">
             没有账户？请联系你的教练或管理员开通 ·<br />
-            <a href="#">了解 Readyn</a>
+            <a href="#">了解 Trainalyze</a>
           </p>
         </div>
       </main>

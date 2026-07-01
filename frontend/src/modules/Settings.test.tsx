@@ -14,7 +14,7 @@ describe('SettingsCenter — source/algorithm matrix (P6)', () => {
     await user.click(screen.getByRole('button', { name: '数据来源与算法' }))
     expect(screen.getByText('ACWR（急慢性负荷比）')).toBeInTheDocument()
     expect(screen.getByText('训练就绪度')).toBeInTheDocument()
-    expect(screen.getAllByText('Readyn 自算').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Trainalyze 自算').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Garmin 直供').length).toBeGreaterThan(0)
   })
 })

@@ -1,7 +1,7 @@
-/* Readyn login page — layout specific to the standalone auth screen.
+/* Trainalyze login page — layout specific to the standalone auth screen.
    Tokens come from the global stylesheet (index.css). */
 
-body.readyn-login {
+body.trainalyze-login {
   background: var(--bg-app);
   color: var(--text-body);
   font-family: var(--font-sans);

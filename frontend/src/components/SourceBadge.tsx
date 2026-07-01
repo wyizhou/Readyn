@@ -1,5 +1,5 @@
 // Data-source transparency layer (a core product differentiator):
-//  - SourceBadge: a small labelled chip — Garmin 直供 / Readyn 自算 / 混合来源.
+//  - SourceBadge: a small labelled chip — Garmin 直供 / Trainalyze 自算 / 混合来源.
 //  - HowInfo: an ⓘ trigger revealing a "how is this calculated" popover
 //    (definition + formula + params + provenance). User-visible — NOT gated by
 //    any spec/annotation toggle.

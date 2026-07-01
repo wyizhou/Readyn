@@ -26,7 +26,7 @@ const data: ApexData = {
   hrv: [{ i: 0, v: 70, base: 60 }],
   metrics: {
     hrv: { ...base, name: '心率变异性 (HRV)', short: 'HRV', value: 71, unit: 'ms', color: 'var(--green-500)', source: 'garmin', scope: 'global', family: 'RMSSD 7 日基线', params: '夜间逐拍 RMSSD', related: ['ctl'] },
-    ctl: { ...base, name: '慢性训练负荷', short: 'CTL', value: 78, unit: '', color: 'var(--blue-500)', source: 'readyn', scope: 'global' },
+    ctl: { ...base, name: '慢性训练负荷', short: 'CTL', value: 78, unit: '', color: 'var(--blue-500)', source: 'trainalyze', scope: 'global' },
     vo2max_run: { ...base, name: 'VO₂max（跑步）', short: 'VO₂max', value: 56, unit: 'ml/kg/min', color: 'var(--blue-500)', source: 'garmin', scope: 'sport', sportKey: 'run', family: '设备估算' },
   },
 }

@@ -1,1 +1,1 @@
-"""Readyn backend — FastAPI app package."""
+"""Trainalyze backend — FastAPI app package."""

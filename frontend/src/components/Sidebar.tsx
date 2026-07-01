@@ -63,7 +63,7 @@ export function Sidebar({ active, onNav, profile, weight, onOpenProfile }: Sideb
             color: 'var(--text-strong)',
           }}
         >
-          Readyn
+          Trainalyze
         </span>
         <span
           style={{

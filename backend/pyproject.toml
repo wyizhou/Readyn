@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "readyn-backend"
+name = "trainalyze-backend"
 version = "0.1.0"
-description = "Readyn 运动数据分析平台 — FastAPI backend (README §7 data shapes, §9–10 endpoints)"
+description = "Trainalyze 运动数据分析平台 — FastAPI backend (README §7 data shapes, §9–10 endpoints)"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",

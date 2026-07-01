@@ -38,12 +38,12 @@ describe('P1 support layer', () => {
 
   it('HowInfo reveals the "how calculated" popover with formula + source', async () => {
     const user = userEvent.setup()
-    render(<HowInfo source="readyn" title="ACWR" definition="急慢性负荷比" formula="7d / 28d" />)
+    render(<HowInfo source="trainalyze" title="ACWR" definition="急慢性负荷比" formula="7d / 28d" />)
     // Closed by default — the transparency detail is not in the DOM yet.
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
     await user.hover(screen.getByRole('button', { name: '如何计算' }))
     expect(screen.getByRole('tooltip')).toBeInTheDocument()
     expect(screen.getByText('7d / 28d')).toBeInTheDocument()
-    expect(screen.getByText('Readyn 自算')).toBeInTheDocument()
+    expect(screen.getByText('Trainalyze 自算')).toBeInTheDocument()
   })
 })

@@ -1,6 +1,6 @@
-# Readyn Backend
+# Trainalyze Backend
 
-FastAPI + SQLAlchemy backend for the Readyn 运动数据分析平台. Implements the
+FastAPI + SQLAlchemy backend for the Trainalyze 运动数据分析平台. Implements the
 README §7 data shapes and §9–10 endpoints with SQLite persistence. Data is
 seeded from `app/seed_data.json` (generated from the frontend's canonical mock
 data, so both sides serve identical shapes).
@@ -39,8 +39,8 @@ Interactive docs at `/docs`. The Vite dev server proxies `/api` here (see
 | Catalog | `GET /library` · `GET /templates/{id}` · `GET /plans/{id}` · `GET /connectors` · `GET /connectors/{id}` · `PUT /connectors/{id}/config` · `GET /schema` |
 | AI | `POST /ai/chat` · `POST /ai/plan` · `GET /ai/insights` · `POST /ai/session-review` · `POST /ai/metric-insight` |
 
-The database URL is configurable via `READYN_DATABASE_URL` (default
-`sqlite:///./readyn.db`; tests use a shared in-memory database).
+The database URL is configurable via `TRAINALYZE_DATABASE_URL` (default
+`sqlite:///./trainalyze.db`; tests use a shared in-memory database).
 
 ## Notes
 

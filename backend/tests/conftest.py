@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 
 # Must be set before importing the app (engine is created at import time).
-os.environ["READYN_DATABASE_URL"] = "sqlite://"
+os.environ["TRAINALYZE_DATABASE_URL"] = "sqlite://"
 
 import pytest  # noqa: E402
 from app.main import app  # noqa: E402

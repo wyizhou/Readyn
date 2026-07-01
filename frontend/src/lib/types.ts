@@ -1,5 +1,5 @@
 // ============================================================
-// Readyn domain model — typed mirror of the README §7 data shapes
+// Trainalyze domain model — typed mirror of the README §7 data shapes
 // (window.APEX_DATA). Field names double as the backend API contract.
 // ============================================================
 
@@ -33,7 +33,7 @@ export interface LoadSource {
 }
 
 // Provenance of a number shown in the UI (the transparency badge).
-export type SourceKey = 'garmin' | 'readyn' | 'mixed'
+export type SourceKey = 'garmin' | 'trainalyze' | 'mixed'
 export interface SourceMeta {
   label: string
   color: string

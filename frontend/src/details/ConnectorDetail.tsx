@@ -115,9 +115,9 @@ export function ConnectorDetail({ src, onSync, onBackfill, onDisconnect }: Conne
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16, marginBottom: 16 }}>
         {/* field mapping */}
-        <Card title="字段映射" action={<SpecPin n={2} title="字段映射" field="connector.mapping[] {source, canonical, enabled}" state="映射到 Readyn 统一模型" event="开关切换字段同步" api="PUT /api/connectors/:id/mapping" />} padding="none">
+        <Card title="字段映射" action={<SpecPin n={2} title="字段映射" field="connector.mapping[] {source, canonical, enabled}" state="映射到 Trainalyze 统一模型" event="开关切换字段同步" api="PUT /api/connectors/:id/mapping" />} padding="none">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 22px 1.2fr 52px', gap: 10, padding: '11px 16px', borderBottom: '1px solid var(--hairline)' }}>
-            {['源字段', '', 'Readyn 规范字段', '同步'].map((h, i) => <span key={i} style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans)', letterSpacing: 'var(--ls-label)', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{h}</span>)}
+            {['源字段', '', 'Trainalyze 规范字段', '同步'].map((h, i) => <span key={i} style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans)', letterSpacing: 'var(--ls-label)', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{h}</span>)}
           </div>
           {rows.map((r, i) => <MapRow key={i} from={r[0]} to={r[1]} on={r[2]} top={i > 0} />)}
         </Card>
@@ -134,7 +134,7 @@ export function ConnectorDetail({ src, onSync, onBackfill, onDisconnect }: Conne
             <div style={{ borderTop: '1px solid var(--hairline)' }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0' }}>
               <span style={{ font: 'var(--fw-semibold) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-strong)' }}>冲突策略</span>
-              <Select value="以设备为准" options={['以设备为准', '以 Readyn 为准', '保留两者']} />
+              <Select value="以设备为准" options={['以设备为准', '以 Trainalyze 为准', '保留两者']} />
             </div>
             <div style={{ borderTop: '1px solid var(--hairline)' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0' }}>

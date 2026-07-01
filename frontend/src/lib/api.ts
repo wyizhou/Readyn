@@ -1,4 +1,4 @@
-// Thin API client for the Readyn backend. In dev, Vite proxies `/api` to the
+// Thin API client for the Trainalyze backend. In dev, Vite proxies `/api` to the
 // FastAPI server (see vite.config.ts). All calls are best-effort: callers fall
 // back to local/mock data when the backend is unavailable.
 import type { ApexData, Connector, ConnectorConfig, Profile, SettingsDoc, WeightEntry } from './types'

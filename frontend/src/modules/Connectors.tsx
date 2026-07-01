@@ -59,7 +59,7 @@ type LoginPhase = 'login' | 'verifying' | 'mfa' | 'syncing' | 'success' | 'error
 
 // Real Garmin China login (connect.garmin.cn) — credentials → MFA → server-side
 // sync. The backend logs in, handles MFA, and syncs; the frontend only holds the
-// login state. Credentials are used to log in and are not stored by Readyn.
+// login state. Credentials are used to log in and are not stored by Trainalyze.
 function GarminLogin({ src, onClose, onConnected, onToast }: { src: Connector; onClose: () => void; onConnected: () => void; onToast: (m: string) => void }) {
   const [phase, setPhase] = useState<LoginPhase>('login')
   const [email, setEmail] = useState('')
@@ -143,7 +143,7 @@ function GarminLogin({ src, onClose, onConnected, onToast }: { src: Connector; o
               <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '11px 13px', background: 'var(--surface-inset)', borderRadius: 'var(--r-md)' }}>
                 <Icon name="shield-check" size={15} color="var(--green-500)" />
                 <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1.4 var(--font-sans)', color: 'var(--text-muted)' }}>
-                  账号仅用于登录佳明并同步数据，<b style={{ color: 'var(--text-body)' }}>Readyn 不存储你的密码</b>。
+                  账号仅用于登录佳明并同步数据，<b style={{ color: 'var(--text-body)' }}>Trainalyze 不存储你的密码</b>。
                 </span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -256,7 +256,7 @@ function OAuthModal({ src, onClose, onToast }: { src: Connector; onClose: () => 
       <div onClick={(e) => e.stopPropagation()} style={{ width: 440, background: 'var(--surface-card)', border: '1px solid var(--border-strong)', borderRadius: 'var(--r-xl)', boxShadow: 'var(--shadow-lg), var(--inner-top)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', textAlign: 'center' }}>
         <SourceLogo c={src.color} icon={src.icon} size={48} />
         <div style={{ font: 'var(--fw-bold) var(--fs-lg)/1.2 var(--font-display)', color: 'var(--text-strong)' }}>连接 {src.name}</div>
-        <p style={{ margin: 0, font: 'var(--fw-regular) var(--fs-sm)/1.5 var(--font-sans)', color: 'var(--text-muted)' }}>将跳转 {src.name} 官方授权页（OAuth），授权后数据将映射到 Readyn 统一模型。</p>
+        <p style={{ margin: 0, font: 'var(--fw-regular) var(--fs-sm)/1.5 var(--font-sans)', color: 'var(--text-muted)' }}>将跳转 {src.name} 官方授权页（OAuth），授权后数据将映射到 Trainalyze 统一模型。</p>
         <Button variant="gradient" fullWidth iconLeft={<Icon name="external-link" size={15} />} onClick={() => { onToast(`已打开 ${src.name} 授权页`); onClose() }}>
           前往授权
         </Button>
@@ -403,7 +403,7 @@ export function Connectors({ data, tab, setTab, connected, onOpenConnector, onCo
         <EmptyState
           icon="plug-zap"
           title="尚未连接佳明"
-          desc="Readyn 以佳明（中国区）为主数据源。连接后将自动同步你的全部运动、HRV、睡眠与就绪度。"
+          desc="Trainalyze 以佳明（中国区）为主数据源。连接后将自动同步你的全部运动、HRV、睡眠与就绪度。"
           actionLabel="登录佳明（中国区）"
           onAction={() => garmin && setLoginSrc(garmin)}
         />
@@ -470,7 +470,7 @@ export function Connectors({ data, tab, setTab, connected, onOpenConnector, onCo
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: 'rgba(59,91,255,0.08)', border: '1px solid rgba(59,91,255,0.24)', borderRadius: 'var(--r-lg)' }}>
             <Icon name="info" size={18} color="var(--blue-400)" />
             <span style={{ font: 'var(--fw-regular) var(--fs-sm)/1.5 var(--font-sans)', color: 'var(--text-muted)' }}>
-              所有数据源都会被转换为 Readyn 统一数据模型，<span style={{ color: 'var(--text-body)', fontWeight: 600 }}>同一指标无论来自哪个设备都可比、可合并</span>。这是连接器层的核心契约。
+              所有数据源都会被转换为 Trainalyze 统一数据模型，<span style={{ color: 'var(--text-body)', fontWeight: 600 }}>同一指标无论来自哪个设备都可比、可合并</span>。这是连接器层的核心契约。
             </span>
           </div>
           {data.schema.length ? (

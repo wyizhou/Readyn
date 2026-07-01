@@ -1,6 +1,6 @@
 """SQLAlchemy engine/session setup.
 
-The database URL is read from the ``READYN_DATABASE_URL`` env var, defaulting to
+The database URL is read from the ``TRAINALYZE_DATABASE_URL`` env var, defaulting to
 a local SQLite file. Tests point it at an in-memory database via a shared pool.
 """
 
@@ -13,7 +13,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-DATABASE_URL = os.environ.get("READYN_DATABASE_URL", "sqlite:///./readyn.db")
+DATABASE_URL = os.environ.get("TRAINALYZE_DATABASE_URL", "sqlite:///./trainalyze.db")
 
 if DATABASE_URL == "sqlite://" or ":memory:" in DATABASE_URL:
     # Shared in-memory database (used by the test-suite).

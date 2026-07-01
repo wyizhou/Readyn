@@ -569,7 +569,7 @@ function Theme({ settings, onChange }: SectionProps) {
     <div>
       <SectionHead
         title="外观"
-        desc="Readyn 当前为深色高性能主题；浅色主题即将推出。"
+        desc="Trainalyze 当前为深色高性能主题；浅色主题即将推出。"
         pin={
           <SpecPin
             n={1}
@@ -665,14 +665,14 @@ function Theme({ settings, onChange }: SectionProps) {
 }
 
 // 数据来源与算法 — the transparency matrix: every key metric, whether it is
-// Garmin-supplied or Readyn-computed, with its algorithm family and parameters.
+// Garmin-supplied or Trainalyze-computed, with its algorithm family and parameters.
 function Sources() {
   const keys = Object.keys(sourceMeta) as SourceKey[]
   return (
     <div>
       <SectionHead
         title="数据来源与算法"
-        desc="Readyn 的每个关键数字都可追源。下表列出各指标是「佳明直供」还是「Readyn 自算」，以及所用算法家族与参数。"
+        desc="Trainalyze 的每个关键数字都可追源。下表列出各指标是「佳明直供」还是「Trainalyze 自算」，以及所用算法家族与参数。"
       />
       <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
         {keys.map((k) => (

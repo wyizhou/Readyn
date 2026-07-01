@@ -43,8 +43,8 @@ describe('Dashboard (P2 redesign)', () => {
     expect(screen.getByText('就绪度')).toBeInTheDocument()
     // Garmin-sourced numbers (readiness/HRV/sleep) carry the 直供 badge.
     expect(screen.getAllByText('Garmin 直供').length).toBeGreaterThan(0)
-    // The PMC (computed) section carries the Readyn 自算 badge.
-    expect(screen.getByText('Readyn 自算')).toBeInTheDocument()
+    // The PMC (computed) section carries the Trainalyze 自算 badge.
+    expect(screen.getByText('Trainalyze 自算')).toBeInTheDocument()
     // The recent-activities table now lives in the Records module, not here.
     expect(screen.queryByText('近期活动')).not.toBeInTheDocument()
   })

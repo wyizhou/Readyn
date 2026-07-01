@@ -1,4 +1,4 @@
-# Readyn · 运动数据分析平台
+# Trainalyze · 运动数据分析平台
 
 面向个人多运动场景的综合训练数据分析平台。连接器统一接入多源数据 →
 看板综合分析 → 训练模块闭环 → AI 贯穿全局。支持跑步、骑行、游泳、力量、登山、徒步、攀岩等多类运动。
@@ -12,7 +12,7 @@
 ## 架构
 
 ```
-Readyn/
+Trainalyze/
 ├── design/          # Open Design 输出目录（设计稿、交接说明与导出资产）
 ├── frontend/        # Vite 8 + React 19 + TypeScript（ESLint + Vitest）
 │   └── src/
@@ -61,7 +61,7 @@ python -m venv .venv
 
 ### 数据来源 · 佳明中国区（connect.garmin.cn）
 
-Readyn 已移除全部 mock 数据，改为对接佳明中国区真实数据（活动 / HRV / 睡眠 /
+Trainalyze 已移除全部 mock 数据，改为对接佳明中国区真实数据（活动 / HRV / 睡眠 /
 心率 / 体重，并据活动负荷推导 CTL/ATL/TSB）。集成基于 `garminconnect` 账号登录（佳明
 中国区无开放 OAuth）。
 

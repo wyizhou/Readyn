@@ -1,4 +1,4 @@
-"""Readyn API — FastAPI application factory + entrypoint.
+"""Trainalyze API — FastAPI application factory + entrypoint.
 
 Run locally:  uvicorn app.main:app --reload
 """
@@ -30,7 +30,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="Readyn API",
+        title="Trainalyze API",
         version="0.1.0",
         description="运动数据分析平台后端 — README §7 data shapes, §9–10 endpoints.",
         lifespan=lifespan,
