@@ -539,7 +539,7 @@ function TrainTab({ onSaved, onApply }: { onSaved: Props['onSaved']; onApply: Pr
   const [msgs, setMsgs] = useState<Message[]>([
     {
       role: 'ai',
-      text: '我已读取你近 90 天的训练负荷、HRV 基线与历史课表。基于目标「提升有氧耐力」，草拟了右侧这周计划——跑步为主、穿插攀岩力量，并控制 ACWR。你可以直接让我调整，比如某天更轻、增加一节攀岩、或改成多周周期。',
+      text: '我已读取你近 90 天的训练负荷、HRV 基线与历史课表。基于目标「提升有氧耐力」，草拟了右侧这周计划——按不同运动项目分配主课、辅助训练与恢复窗口，并控制 ACWR。你可以直接让我调整，比如某天更轻、增加专项训练，或改成多周周期。',
     },
   ])
   const [input, setInput] = useState('')

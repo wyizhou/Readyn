@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api", tags=["system"])
 
 # Login accounts (mirrors the standalone login page; README §12).
 ACCOUNTS: list[Account] = [
-    Account(id="linyue", name="林越", handle="@linyue", role="多项目耐力 / 攀岩", initial="林"),
+    Account(id="linyue", name="林越", handle="@linyue", role="综合运动训练", initial="林"),
     Account(id="suning", name="苏宁", handle="@suning", role="马拉松 · 公路跑", initial="苏"),
     Account(id="chenyu", name="陈宇", handle="@chenyu", role="越野跑 · 登山", initial="陈"),
 ]

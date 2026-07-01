@@ -252,10 +252,10 @@ export default function App() {
   }
 
   const titles: Record<ViewId, [string, string]> = {
-    dashboard: ['看板', '林越 · 多项目耐力 / 攀岩 · 2026-06-18'],
+    dashboard: ['看板', '林越 · 综合运动训练 · 2026-06-18'],
     records: ['运动记录', '全部活动 · 按时间倒序'],
     training: ['训练日历', `${D.plan.week} · 焦点 ${D.plan.focus}`],
-    library: ['训练库', '跑步 · 攀岩 · 我的计划'],
+    library: ['训练库', '专项模板 · 我的计划'],
     weight: ['体重记录', '手动录入与趋势 · 与个人资料联动'],
     connectors: ['连接器', '统一数据规范 · 多源接入'],
     ai: ['AI 模块', '运动专家对话'],

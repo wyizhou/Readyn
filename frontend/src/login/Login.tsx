@@ -12,7 +12,7 @@ interface Account {
 }
 
 const ACCOUNTS: Account[] = [
-  { id: 'linyue', name: '林越', handle: '@linyue', role: '多项目耐力 / 攀岩', initial: '林' },
+  { id: 'linyue', name: '林越', handle: '@linyue', role: '综合运动训练', initial: '林' },
   { id: 'suning', name: '苏宁', handle: '@suning', role: '马拉松 · 公路跑', initial: '苏' },
   { id: 'chenyu', name: '陈宇', handle: '@chenyu', role: '越野跑 · 登山', initial: '陈' },
 ]
@@ -71,7 +71,7 @@ export function Login() {
             <br />
             quantified.
           </h1>
-          <p>把跑步、攀岩与全部训练数据汇聚一处 —— 趋势、恢复、HRV 与 AI 教练，让每一次训练都有据可依。</p>
+          <p>把多源运动与健康数据汇聚一处 —— 趋势、恢复、HRV 与 AI 教练，让每一次训练都有据可依。</p>
           <div className="brand-stats">
             <div className="s">
               <span className="v">8</span>

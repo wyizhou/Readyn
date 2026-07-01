@@ -506,7 +506,7 @@ export function PlanDetail({ plan, onApply, onToast }: PlanDetailProps) {
               textWrap: 'pretty',
             }}
           >
-            本计划以「{plan.goal}」为目标，采用 3 周积累 + 1 周减载的周期化结构；跑步承担有氧主负荷，攀岩穿插于恢复充分的窗口，全程 ACWR
+            本计划以「{plan.goal}」为目标，采用 3 周积累 + 1 周减载的周期化结构；依据各运动项目的负荷特征安排主课、辅助训练与恢复窗口，全程 ACWR
             控制在 0.8–1.3。减载周整体负荷下调约 40%，用于吸收前序刺激并保护伤病风险。
           </p>
         </div>
