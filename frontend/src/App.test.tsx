@@ -17,7 +17,7 @@ describe('App integration (empty-state / real-data)', () => {
     // With no backend reachable in jsdom there is no data, so the redesigned
     // dashboard (P2) shows the connect empty state + greyed placeholder cards.
     render(<App />)
-    expect(topHeading()).toContain('看板')
+    expect(topHeading()).toContain('总览')
     expect(screen.getByText('尚未连接数据源')).toBeInTheDocument()
     expect(screen.getByText('就绪度')).toBeInTheDocument() // placeholder card label
     expect(screen.getAllByText('连接后显示').length).toBeGreaterThan(0)
@@ -30,20 +30,35 @@ describe('App integration (empty-state / real-data)', () => {
     render(<App />)
     const nav = screen.getByRole('navigation')
 
-    // 5-item nav (训练日历 / 训练库 are offline, removed from navigation).
+    // Open Design v0.1.0 shell: 5 top-level nav items and one health submenu.
+    expect(within(nav).getByRole('button', { name: /01 总览/ })).toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: /02 活动/ })).toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: /03 健康/ })).toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: /04 连接/ })).toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: /05 教练/ })).toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: '睡眠' })).toBeInTheDocument()
+    expect(within(nav).getByRole('button', { name: '体重' })).toBeInTheDocument()
+    expect(within(nav).queryByText('看板')).not.toBeInTheDocument()
+    expect(within(nav).queryByText('运动记录')).not.toBeInTheDocument()
+    expect(within(nav).queryByText('体重记录')).not.toBeInTheDocument()
+    expect(within(nav).queryByText('连接器')).not.toBeInTheDocument()
+    expect(within(nav).queryByText('AI 模块')).not.toBeInTheDocument()
     expect(within(nav).queryByText('训练日历')).not.toBeInTheDocument()
     expect(within(nav).queryByText('训练库')).not.toBeInTheDocument()
 
-    await user.click(within(nav).getByText('连接器'))
-    expect(topHeading()).toContain('连接器')
-    await user.click(within(nav).getByText('运动记录'))
-    expect(topHeading()).toContain('运动记录')
-    await user.click(within(nav).getByText('AI 模块'))
-    expect(topHeading()).toContain('AI')
-    await user.click(within(nav).getByText('体重记录'))
-    expect(topHeading()).toContain('体重记录')
-    await user.click(within(nav).getByText('看板'))
-    expect(topHeading()).toContain('看板')
+    await user.click(within(nav).getByRole('button', { name: /04 连接/ }))
+    expect(topHeading()).toContain('连接')
+    await user.click(within(nav).getByRole('button', { name: /02 活动/ }))
+    expect(topHeading()).toContain('活动')
+    await user.click(within(nav).getByRole('button', { name: /05 教练/ }))
+    expect(topHeading()).toContain('教练')
+    await user.click(within(nav).getByRole('button', { name: /03 健康/ }))
+    expect(topHeading()).toContain('睡眠')
+    expect(screen.getByText('睡眠数据骨架')).toBeInTheDocument()
+    await user.click(within(nav).getByRole('button', { name: '体重' }))
+    expect(topHeading()).toContain('体重')
+    await user.click(within(nav).getByRole('button', { name: /01 总览/ }))
+    expect(topHeading()).toContain('总览')
   })
 
   it('does not show the dev-only spec-annotation toggle in the topbar (v9)', () => {
@@ -64,22 +79,23 @@ describe('App integration (empty-state / real-data)', () => {
   it('records a new weight entry that shows in the log (optimistic, offline)', async () => {
     const user = userEvent.setup()
     render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('体重记录'))
+    const nav = screen.getByRole('navigation')
+    await user.click(within(nav).getByRole('button', { name: '体重' }))
     await user.type(screen.getByPlaceholderText('例如 65.6'), '70.3')
     await user.click(screen.getByRole('button', { name: '记录体重' }))
     expect(screen.getAllByText('70.3').length).toBeGreaterThan(0)
   })
 
   it('links a recorded weight into the sidebar footer and the profile modal', async () => {
-    // Regression for issue #11: 体重记录 → 侧栏当前体重 / 个人资料体重 联动。
+    // Regression for issue #11: 健康 / 体重 → 侧栏当前体重 / 个人资料体重 联动。
     const user = userEvent.setup()
     render(<App />)
 
     // Empty state: sidebar footer shows the fallback (height 0cm · target 0kg).
     expect(screen.getByText('0cm · 0kg')).toBeInTheDocument()
 
-    // Record a new weight in the 体重记录 module.
-    await user.click(within(screen.getByRole('navigation')).getByText('体重记录'))
+    // Record a new weight in the 健康 / 体重 module.
+    await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: '体重' }))
     await user.type(screen.getByPlaceholderText('例如 65.6'), '70.3')
     await user.click(screen.getByRole('button', { name: '记录体重' }))
 
@@ -97,7 +113,7 @@ describe('App integration (empty-state / real-data)', () => {
   it('connectors empty state opens the real Garmin login modal (P3)', async () => {
     const user = userEvent.setup()
     render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
+    await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: /04 连接/ }))
     // Offline → not connected → empty state with the Garmin login CTA.
     expect(screen.getByText('尚未连接佳明')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /登录佳明/ }))
@@ -109,7 +125,7 @@ describe('App integration (empty-state / real-data)', () => {
   it('connectors empty state shows the Garmin-only "更多数据源即将开放" hint (v9)', async () => {
     const user = userEvent.setup()
     render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
+    await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: /04 连接/ }))
     // v9: no market grid / connectable cards; just the Garmin CTA + coming-soon hint.
     expect(screen.queryByText('可连接的数据源')).not.toBeInTheDocument()
     expect(screen.getByText(/更多数据源即将开放/)).toBeInTheDocument()
@@ -166,7 +182,7 @@ describe('App integration (empty-state / real-data)', () => {
   it('AI module opens straight to the expert chat (训练 tab offline)', async () => {
     const user = userEvent.setup()
     render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
+    await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: /05 教练/ }))
     expect(screen.getByText(/运动科学专家 · 已载入/)).toBeInTheDocument()
     // The offline course-generation tab/canvas is not rendered.
     expect(screen.queryByText('AI 草拟计划')).not.toBeInTheDocument()
@@ -176,7 +192,7 @@ describe('App integration (empty-state / real-data)', () => {
   it('sends a chat message and gets an expert reply (no AI key → built-in)', async () => {
     const user = userEvent.setup()
     render(<App />)
-    await user.click(within(screen.getByRole('navigation')).getByText('AI 模块'))
+    await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: /05 教练/ }))
     await user.click(screen.getByRole('button', { name: '我的睡眠怎么样？' }))
     // The user message lands and the AI replies (sleep branch of expertReply).
     expect(await screen.findByText(/近 7 晚平均 7\.4h/, {}, { timeout: 4000 })).toBeInTheDocument()

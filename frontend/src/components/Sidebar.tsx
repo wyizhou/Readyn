@@ -1,7 +1,8 @@
 import { Icon } from './Icon'
 import type { Profile } from '../lib/types'
 
-export type ViewId = 'dashboard' | 'records' | 'training' | 'library' | 'weight' | 'connectors' | 'ai'
+export type ViewId = 'dashboard' | 'records' | 'health' | 'training' | 'library' | 'connectors' | 'ai'
+export type HealthSection = 'sleep' | 'weight'
 
 interface NavItem {
   id: ViewId
@@ -10,25 +11,31 @@ interface NavItem {
   sub: string
 }
 
-// 5-item nav per the design (app/shell.jsx). 训练日历 / 训练库 are temporarily
-// offline (CODING §1.3): their components are kept but removed from navigation.
+// Open Design v0.1.0: 5 top-level items; health is the only item with a submenu.
 const NAV: NavItem[] = [
-  { id: 'dashboard', icon: 'layout-dashboard', label: '看板', sub: '分析 · 趋势 · 状态' },
-  { id: 'records', icon: 'list', label: '运动记录', sub: '全部活动 · 分页' },
-  { id: 'weight', icon: 'scale', label: '体重记录', sub: '手动录入 · 趋势' },
-  { id: 'connectors', icon: 'cable', label: '连接器', sub: '数据源 · 统一规范' },
-  { id: 'ai', icon: 'sparkles', label: 'AI 模块', sub: '运动专家对话' },
+  { id: 'dashboard', icon: 'layout-dashboard', label: '01 总览', sub: '负荷总览' },
+  { id: 'records', icon: 'list', label: '02 活动', sub: '活动记录' },
+  { id: 'health', icon: 'heart-pulse', label: '03 健康', sub: '睡眠 · 体重' },
+  { id: 'connectors', icon: 'cable', label: '04 连接', sub: 'Garmin 数据源' },
+  { id: 'ai', icon: 'sparkles', label: '05 教练', sub: 'AI 教练' },
 ]
 
 export interface SidebarProps {
   active: ViewId
   onNav: (id: ViewId) => void
+  activeHealth: HealthSection
+  onHealthNav: (section: HealthSection) => void
   profile: Profile
   weight: number | string
   onOpenProfile: () => void
 }
 
-export function Sidebar({ active, onNav, profile, weight, onOpenProfile }: SidebarProps) {
+const healthItems: { id: HealthSection; label: string }[] = [
+  { id: 'sleep', label: '睡眠' },
+  { id: 'weight', label: '体重' },
+]
+
+export function Sidebar({ active, onNav, activeHealth, onHealthNav, profile, weight, onOpenProfile }: SidebarProps) {
   return (
     <aside
       style={{
@@ -82,60 +89,89 @@ export function Sidebar({ active, onNav, profile, weight, onOpenProfile }: Sideb
         {NAV.map((n) => {
           const on = active === n.id
           return (
-            <button
-              key={n.id}
-              onClick={() => onNav(n.id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 11,
-                minHeight: 48,
-                padding: '8px 12px',
-                border: 'none',
-                borderRadius: 'var(--r-md)',
-                cursor: 'pointer',
-                textAlign: 'left',
-                background: on ? 'var(--surface-raised)' : 'transparent',
-                color: on ? 'var(--text-strong)' : 'var(--text-muted)',
-                position: 'relative',
-                transition: 'background var(--dur-fast), color var(--dur-fast)',
-              }}
-              onMouseEnter={(e) => {
-                if (!on) {
-                  e.currentTarget.style.background = 'var(--surface-hover)'
-                  e.currentTarget.style.color = 'var(--text-body)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!on) {
-                  e.currentTarget.style.background = 'transparent'
-                  e.currentTarget.style.color = 'var(--text-muted)'
-                }
-              }}
-            >
-              {on && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 11,
-                    bottom: 11,
-                    width: 3,
-                    borderRadius: 2,
-                    background: 'var(--accent)',
-                  }}
-                />
+            <div key={n.id}>
+              <button
+                onClick={() => onNav(n.id)}
+                aria-expanded={n.id === 'health' ? on : undefined}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 11,
+                  minHeight: 48,
+                  padding: '8px 12px',
+                  border: 'none',
+                  borderRadius: 'var(--r-md)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  background: on ? 'var(--surface-raised)' : 'transparent',
+                  color: on ? 'var(--text-strong)' : 'var(--text-muted)',
+                  position: 'relative',
+                  transition: 'background var(--dur-fast), color var(--dur-fast)',
+                  width: '100%',
+                }}
+                onMouseEnter={(e) => {
+                  if (!on) {
+                    e.currentTarget.style.background = 'var(--surface-hover)'
+                    e.currentTarget.style.color = 'var(--text-body)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!on) {
+                    e.currentTarget.style.background = 'transparent'
+                    e.currentTarget.style.color = 'var(--text-muted)'
+                  }
+                }}
+              >
+                {on && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 11,
+                      bottom: 11,
+                      width: 3,
+                      borderRadius: 2,
+                      background: 'var(--accent)',
+                    }}
+                  />
+                )}
+                <Icon name={n.icon} size={18} />
+                <span style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+                  <span style={{ font: `var(--fw-${on ? 'bold' : 'semibold'}) var(--fs-sm)/1 var(--font-sans)`, whiteSpace: 'nowrap' }}>
+                    {n.label}
+                  </span>
+                  <span style={{ font: 'var(--fw-medium) 10px/1.3 var(--font-sans)', color: 'var(--text-faint)', whiteSpace: 'nowrap' }}>
+                    {n.sub}
+                  </span>
+                </span>
+              </button>
+              {n.id === 'health' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 0 4px 41px' }}>
+                  {healthItems.map((item) => {
+                    const subOn = active === 'health' && activeHealth === item.id
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => onHealthNav(item.id)}
+                        style={{
+                          height: 30,
+                          border: 'none',
+                          borderRadius: 'var(--r-sm)',
+                          background: subOn ? 'var(--surface-hover)' : 'transparent',
+                          color: subOn ? 'var(--text-strong)' : 'var(--text-faint)',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          padding: '0 10px',
+                          font: `var(--fw-${subOn ? 'bold' : 'medium'}) var(--fs-xs)/1 var(--font-sans)`,
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    )
+                  })}
+                </div>
               )}
-              <Icon name={n.icon} size={18} />
-              <span style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-                <span style={{ font: `var(--fw-${on ? 'bold' : 'semibold'}) var(--fs-sm)/1 var(--font-sans)`, whiteSpace: 'nowrap' }}>
-                  {n.label}
-                </span>
-                <span style={{ font: 'var(--fw-medium) 10px/1.3 var(--font-sans)', color: 'var(--text-faint)', whiteSpace: 'nowrap' }}>
-                  {n.sub}
-                </span>
-              </span>
-            </button>
+            </div>
           )
         })}
       </nav>

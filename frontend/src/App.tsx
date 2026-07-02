@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Icon } from './components/Icon'
 import { Sidebar } from './components/Sidebar'
-import type { ViewId } from './components/Sidebar'
+import type { HealthSection, ViewId } from './components/Sidebar'
 import { Topbar } from './components/Topbar'
 import { ConnStatus } from './components/ConnStatus'
 import { SpecContext } from './components/spec/SpecContext'
@@ -63,6 +63,7 @@ export default function App() {
   const [data, setData] = useState<ApexData>(emptyData)
   const D = data
   const [view, setView] = useState<ViewId>('dashboard')
+  const [healthSection, setHealthSection] = useState<HealthSection>('sleep')
   const [sport, setSport] = useState('all')
   const [connTab, setConnTab] = useState('connected')
   const [libTab, setLibTab] = useState('running')
@@ -166,6 +167,11 @@ export default function App() {
     setDetail({ type: 'settings' })
   }
   const back = () => setDetail(null)
+  const openHealthSection = (section: HealthSection) => {
+    setDetail(null)
+    setHealthSection(section)
+    setView('health')
+  }
 
   // Transient toast (auto-clears). Used to confirm side-effectful actions.
   const flashMsg = (m: string) => {
@@ -252,15 +258,17 @@ export default function App() {
   }
 
   const titles: Record<ViewId, [string, string]> = {
-    dashboard: ['看板', '林越 · 综合运动训练 · 2026-06-18'],
-    records: ['运动记录', '全部活动 · 按时间倒序'],
+    dashboard: ['总览', '林越 · 综合运动训练 · 2026-06-18'],
+    records: ['活动', '全部活动 · 按时间倒序'],
+    health: ['健康', '睡眠 · 体重'],
     training: ['训练日历', `${D.plan.week} · 焦点 ${D.plan.focus}`],
     library: ['训练库', '专项模板 · 我的计划'],
-    weight: ['体重记录', '手动录入与趋势 · 与个人资料联动'],
-    connectors: ['连接器', '统一数据规范 · 多源接入'],
-    ai: ['AI 模块', '运动专家对话'],
+    connectors: ['连接', '统一数据规范 · 多源接入'],
+    ai: ['教练', '运动专家对话'],
   }
-  const [title, subtitle] = titles[view]
+  const healthTitle: [string, string] =
+    healthSection === 'sleep' ? ['睡眠', '健康 · 睡眠数据骨架'] : ['体重', '健康 · 体重趋势']
+  const [title, subtitle] = view === 'health' ? healthTitle : titles[view]
 
   let detailTitle: [string, string] | null = null
   if (detail) {
@@ -309,8 +317,11 @@ export default function App() {
           active={view}
           onNav={(v) => {
             setDetail(null)
+            if (v === 'health') setHealthSection('sleep')
             setView(v)
           }}
+          activeHealth={healthSection}
+          onHealthNav={openHealthSection}
           profile={profile}
           weight={currentWeight}
           onOpenProfile={() => setProfileOpen(true)}
@@ -401,7 +412,30 @@ export default function App() {
           {!detail && view === 'records' && (
             <Records data={D} connected={connected} onConnect={goConnect} onOpenActivity={openActivity} onCompare={() => openCompareModal()} />
           )}
-          {!detail && view === 'weight' && <WeightModule weightLog={weightLog} profile={profile} onAdd={addWeight} today={TODAY} />}
+          {!detail && view === 'health' && healthSection === 'sleep' && (
+            <div style={{ padding: 28, overflow: 'auto' }}>
+              <section
+                style={{
+                  background: 'var(--surface-card)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--r-lg)',
+                  padding: 24,
+                  maxWidth: 760,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                  <Icon name="moon" size={20} color="var(--accent)" />
+                  <h2 style={{ margin: 0, font: 'var(--fw-bold) var(--fs-lg)/1.2 var(--font-display)', color: 'var(--text-strong)' }}>
+                    睡眠数据骨架
+                  </h2>
+                </div>
+                <p style={{ margin: 0, maxWidth: 560, color: 'var(--text-muted)', font: 'var(--fw-medium) var(--fs-sm)/1.7 var(--font-sans)' }}>
+                  这里保留健康二级菜单的睡眠入口。完整睡眠趋势、阶段和来源证据将在后续切片按 Open Design 实现；当前不伪造同步数据。
+                </p>
+              </section>
+            </div>
+          )}
+          {!detail && view === 'health' && healthSection === 'weight' && <WeightModule weightLog={weightLog} profile={profile} onAdd={addWeight} today={TODAY} />}
           {!detail && view === 'connectors' && (
             <Connectors data={D} tab={connTab} setTab={setConnTab} connected={connected} onOpenConnector={openConnector} onConnect={connectSource} onToast={flashMsg} />
           )}

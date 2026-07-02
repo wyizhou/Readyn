@@ -44,7 +44,7 @@ C:\Users\e_\AppData\Roaming\Open Design\namespaces\release-stable-win\data\proje
 
 ## 当前实现状态摘要
 
-前端当前是已有 React/Vite 应用，包含 Dashboard、Records、Training、Library、Weight、Connectors、AI、Settings、ActivityDetail 等模块和较完整测试。它已有数据空态、连接器、活动详情、AI fallback 等能力，但整体导航和页面结构仍明显偏旧，不等同于 Open Design 最新 `01-05` 主流程。
+前端当前是已有 React/Vite 应用，包含 Dashboard、Records、Training、Library、Weight、Connectors、AI、Settings、ActivityDetail 等模块和较完整测试。它已有数据空态、连接器、活动详情、AI fallback 等能力。主导航骨架已对齐 Open Design v0.1.0 的 `01 总览 / 02 活动 / 03 健康 / 04 连接 / 05 教练`，健康已作为唯一二级菜单并包含睡眠/体重入口；完整页面内容仍需后续切片继续对齐 Open Design。
 
 后端当前是 FastAPI 应用，已包含 profile/data/garmin/ai/settings/system 路由。测试确认 bootstrap 在 Garmin 同步前保持完整但空的数据结构；Garmin 同步、MFA、token、数据转换、训练负荷归一化等已有后端支持。
 
@@ -61,13 +61,12 @@ C:\Users\e_\AppData\Roaming\Open Design\namespaces\release-stable-win\data\proje
 
 后端工作目录：`backend`
 
-- `python -m ruff check app tests`
-- `python -m pytest`
+- `.\.venv\Scripts\python.exe -m ruff check .`
+- `.\.venv\Scripts\python.exe -m pytest`
 
 详细规则见 `validation-and-delivery.md`。
 
 ## Git / GitHub 交付规则
 
 根据 `AGENTS.md`，每次完成一个功能后应本地 git commit 并 push 到 GitHub。  
-如果任务只是只读分析，不需要 commit/push。  
-本次 Harness 初始化只创建文档，按用户要求不提交 git。
+如果任务只是只读分析，不需要 commit/push。

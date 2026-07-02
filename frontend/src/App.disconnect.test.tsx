@@ -46,8 +46,8 @@ describe('App — disconnect closes the v10 loop (#61)', () => {
     // Boots connected: the topbar shows the read-only 已连接佳明(CN) status.
     expect(await screen.findByRole('status', { name: '已连接佳明(CN)' }, { timeout: 4000 })).toBeInTheDocument()
 
-    // Go to 连接器 → open the Garmin connector detail via 配置.
-    await user.click(within(screen.getByRole('navigation')).getByText('连接器'))
+    // Go to 04 连接 → open the Garmin connector detail via 配置.
+    await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: /04 连接/ }))
     await user.click(await screen.findByRole('button', { name: /配置/ }))
 
     // Disconnect with the confirmation step.
