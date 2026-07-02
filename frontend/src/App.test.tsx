@@ -19,7 +19,8 @@ describe('App integration (empty-state / real-data)', () => {
     render(<App />)
     expect(topHeading()).toContain('总览')
     expect(screen.getByText('尚未连接数据源')).toBeInTheDocument()
-    expect(screen.getByText('就绪度')).toBeInTheDocument() // placeholder card label
+    expect(screen.getByText('Fatigue / ATL')).toBeInTheDocument() // placeholder card label
+    expect(screen.getByText('Easy TRIMP')).toBeInTheDocument()
     expect(screen.getByText('下一次训练建议')).toBeInTheDocument()
     expect(screen.getAllByText('连接后显示').length).toBeGreaterThan(0)
     expect(screen.queryByText(/dashboard\.html/)).not.toBeInTheDocument()

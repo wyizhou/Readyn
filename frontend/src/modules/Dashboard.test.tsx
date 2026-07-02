@@ -40,7 +40,17 @@ function renderDash(overrides: Partial<DashboardProps> = {}) {
 describe('Dashboard (P2 redesign)', () => {
   it('shows the all-sport core with source-transparency badges', () => {
     renderDash()
-    expect(screen.getByRole('region', { name: '负荷指标' })).toBeInTheDocument()
+    const loadMetrics = screen.getByRole('region', { name: '负荷指标' })
+    expect(loadMetrics).toBeInTheDocument()
+    expect(within(loadMetrics).getByText('Fatigue / ATL')).toBeInTheDocument()
+    expect(within(loadMetrics).getByText('Fitness / CTL')).toBeInTheDocument()
+    expect(within(loadMetrics).getByText('Stress Balance / TSB')).toBeInTheDocument()
+    expect(within(loadMetrics).getByText('Workload Ratio / A:C')).toBeInTheDocument()
+    expect(within(loadMetrics).getByText('Easy TRIMP')).toBeInTheDocument()
+    expect(within(loadMetrics).getByText('待算法字段')).toBeInTheDocument()
+    expect(within(loadMetrics).queryByText('HRV')).not.toBeInTheDocument()
+    expect(within(loadMetrics).queryByText('静息心率')).not.toBeInTheDocument()
+    expect(within(loadMetrics).queryByText('睡眠')).not.toBeInTheDocument()
     expect(screen.getByRole('region', { name: '体能趋势' })).toBeInTheDocument()
     expect(screen.getByRole('region', { name: '下一次训练建议' })).toBeInTheDocument()
 
@@ -48,7 +58,7 @@ describe('Dashboard (P2 redesign)', () => {
     expect(within(sourceFormula).getByLabelText('如何计算')).toBeInTheDocument()
     expect(within(sourceFormula).getByText('Trainalyze 自算')).toBeInTheDocument()
 
-    expect(screen.getByText('就绪度')).toBeInTheDocument()
+    expect(screen.getByText('Fatigue / ATL')).toBeInTheDocument()
     // Garmin-sourced numbers (readiness/HRV/sleep) carry the 直供 badge.
     expect(screen.getAllByText('Garmin 直供').length).toBeGreaterThan(0)
     // The PMC (computed) section carries the Trainalyze 自算 badge.
@@ -121,6 +131,8 @@ describe('Dashboard (P2 redesign)', () => {
     renderDash({ connected: false, onConnect })
     expect(screen.getByText('尚未连接数据源')).toBeInTheDocument()
     expect(screen.getByText('下一次训练建议')).toBeInTheDocument()
-    expect(screen.getAllByText('连接后显示').length).toBe(4)
+    expect(screen.getByText('Fatigue / ATL')).toBeInTheDocument()
+    expect(screen.getByText('Easy TRIMP')).toBeInTheDocument()
+    expect(screen.getAllByText('连接后显示').length).toBe(6)
   })
 })

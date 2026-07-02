@@ -5,7 +5,7 @@ import { PMCChart, HRVChart, SleepBars, HRZoneBar, Radar, GradePyramid, Donut } 
 import { SourceBadge, HowInfo } from '../components/SourceBadge'
 import { EmptyState } from '../components/EmptyState'
 import { sports, sportByKey, emptyCopy } from '../lib/taxonomy'
-import type { ApexData, Insight, MetricDeepDive, MetricId } from '../lib/types'
+import type { ApexData, Insight, MetricDeepDive, MetricId, SourceKey } from '../lib/types'
 
 function Label({ children }: { children: ReactNode }) {
   return (
@@ -121,11 +121,47 @@ function InsightCard({ ins, onAsk }: { ins: Insight; onAsk: (ins: Insight) => vo
   )
 }
 
-type HeroTuple = [label: string, value: string | number, unit: string, delta: string, deltaColor: string, mid: MetricId]
+interface LoadMetricInfo {
+  source?: SourceKey
+  title: string
+  definition?: string
+  formula?: string
+  params?: ReactNode
+  family?: ReactNode
+}
+
+interface HeroMetric {
+  label: string
+  value: string | number
+  unit: string
+  delta: string
+  deltaColor: string
+  metricId?: MetricId
+  info?: LoadMetricInfo
+}
+
+function metricInfoFromDeepDive(m?: MetricDeepDive): LoadMetricInfo | undefined {
+  if (!m) return undefined
+  return {
+    source: m.source,
+    title: m.name,
+    definition: m.definition,
+    formula: m.formula,
+    params: m.params,
+    family: m.family,
+  }
+}
 
 // Hero metric tile — value opens the deep dive; ⓘ opens "how calculated".
-function HeroTile({ m, mObj, onOpenMetric }: { m: HeroTuple; mObj?: MetricDeepDive; onOpenMetric: (id: MetricId) => void }) {
-  const [l, v, u, d, dc, mid] = m
+function HeroTile({ metric, info, onOpenMetric }: { metric: HeroMetric; info?: LoadMetricInfo; onOpenMetric: (id: string) => void }) {
+  const value = (
+    <>
+      {metric.value}
+      <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>{metric.unit}</span>
+      {metric.metricId && <Icon name="chevron-right" size={13} color="var(--text-faint)" />}
+    </>
+  )
+
   return (
     <div
       style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start', padding: '8px 10px', margin: '-8px -10px', borderRadius: 'var(--r-md)', transition: 'background var(--dur-fast)' }}
@@ -133,20 +169,24 @@ function HeroTile({ m, mObj, onOpenMetric }: { m: HeroTuple; mObj?: MetricDeepDi
       onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
     >
       <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        <Label>{l}</Label>
-        {mObj && (
-          <HowInfo source={mObj.source} title={mObj.name} definition={mObj.definition} formula={mObj.formula} params={mObj.params} family={mObj.family} />
+        <Label>{metric.label}</Label>
+        {info && (
+          <HowInfo source={info.source} title={info.title} definition={info.definition} formula={info.formula} params={info.params} family={info.family} />
         )}
       </span>
-      <button
-        onClick={() => onOpenMetric(mid)}
-        style={{ display: 'flex', alignItems: 'baseline', gap: 3, background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'var(--fw-bold) var(--fs-h2)/1 var(--font-mono)', color: 'var(--text-strong)' }}
-      >
-        {v}
-        <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>{u}</span>
-        <Icon name="chevron-right" size={13} color="var(--text-faint)" />
-      </button>
-      <span style={{ font: 'var(--fw-semibold) var(--fs-xs)/1 var(--font-mono)', color: dc }}>{d}</span>
+      {metric.metricId ? (
+        <button
+          onClick={() => onOpenMetric(metric.metricId as MetricId)}
+          style={{ display: 'flex', alignItems: 'baseline', gap: 3, background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'var(--fw-bold) var(--fs-h2)/1 var(--font-mono)', color: 'var(--text-strong)' }}
+        >
+          {value}
+        </button>
+      ) : (
+        <span style={{ display: 'flex', alignItems: 'baseline', gap: 3, font: 'var(--fw-bold) var(--fs-h2)/1 var(--font-mono)', color: 'var(--text-strong)' }}>
+          {value}
+        </span>
+      )}
+      <span style={{ font: 'var(--fw-semibold) var(--fs-xs)/1 var(--font-mono)', color: metric.deltaColor }}>{metric.delta}</span>
     </div>
   )
 }
@@ -301,9 +341,11 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
         <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
           {(
             [
-              ['就绪度', 'gauge'],
-              ['体能趋势 (CTL/ATL/TSB)', 'activity'],
-              ['全运动负荷', 'layers'],
+              ['Fatigue / ATL', 'activity'],
+              ['Fitness / CTL', 'trending-up'],
+              ['Stress Balance / TSB', 'gauge'],
+              ['Workload Ratio / A:C', 'layers'],
+              ['Easy TRIMP', 'calendar-check'],
               ['下一次训练建议', 'calendar-check'],
             ] as const
           ).map(([l, ic]) => (
@@ -319,12 +361,61 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
   }
 
   const rColor = t.readiness >= 75 ? 'var(--green-500)' : t.readiness >= 50 ? 'var(--amber-500)' : 'var(--red-500)'
-  const hero: HeroTuple[] = [
-    ['HRV', t.hrv, 'ms', `${t.hrvDelta > 0 ? '+' : ''}${t.hrvDelta}`, t.hrvDelta >= 0 ? 'var(--green-400)' : 'var(--red-400)', 'hrv'],
-    ['静息心率', t.rhr, 'bpm', `${t.rhrDelta} vs 均`, 'var(--green-400)', 'rhr'],
-    ['睡眠', t.sleep, 'hrs', `评分 ${t.sleepScore}`, 'var(--text-faint)', 'sleep'],
-    ['ACWR', t.acwr.toFixed(2), '', t.acwr > 1.3 ? '偏高' : '区间内', t.acwr > 1.3 ? 'var(--amber-400)' : 'var(--green-400)', 'acwr'],
-    ['体能 CTL', t.ctl.toFixed(0), '', `状态 ${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', 'ctl'],
+  const hero: HeroMetric[] = [
+    {
+      label: 'Fatigue / ATL',
+      value: t.atl.toFixed(0),
+      unit: '',
+      delta: '7 天 EWMA',
+      deltaColor: 'var(--violet-300)',
+      info: {
+        source: 'trainalyze',
+        title: 'Fatigue / ATL',
+        definition: '基于每日全运动归一负荷计算的短期疲劳指标。',
+        formula: 'ATL = 7d EWMA(load)',
+        params: '7 天窗口',
+        family: 'PMC',
+      },
+    },
+    {
+      label: 'Fitness / CTL',
+      value: t.ctl.toFixed(0),
+      unit: '',
+      delta: '42 天 EWMA',
+      deltaColor: 'var(--blue-300)',
+      metricId: 'ctl',
+    },
+    {
+      label: 'Stress Balance / TSB',
+      value: `${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`,
+      unit: '',
+      delta: t.tsb >= 0 ? '压力较低' : '疲劳累积',
+      deltaColor: t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)',
+      metricId: 'tsb',
+    },
+    {
+      label: 'Workload Ratio / A:C',
+      value: t.acwr.toFixed(2),
+      unit: '',
+      delta: t.acwr > 1.3 ? '偏高' : '区间内',
+      deltaColor: t.acwr > 1.3 ? 'var(--amber-400)' : 'var(--green-400)',
+      metricId: 'acwr',
+    },
+    {
+      label: 'Easy TRIMP',
+      value: '—',
+      unit: '',
+      delta: '待算法字段',
+      deltaColor: 'var(--text-faint)',
+      info: {
+        source: 'trainalyze',
+        title: 'Easy TRIMP',
+        definition: '用于估算下一日可承受的轻松负荷上限。当前前端数据契约还没有真实字段，因此不显示推测值。',
+        formula: '待后端提供真实 Easy TRIMP 字段',
+        params: 'N/A',
+        family: 'PMC',
+      },
+    },
   ]
 
   return (
@@ -346,9 +437,10 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
         </div>
         <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--hairline)' }} />
         <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 20 }}>
-          {hero.map((m) => (
-            <HeroTile key={m[0]} m={m} mObj={data.metrics[m[5]]} onOpenMetric={onOpenMetric} />
-          ))}
+          {hero.map((metric) => {
+            const deepDive = metric.metricId ? data.metrics[metric.metricId] : undefined
+            return <HeroTile key={metric.label} metric={metric} info={metric.info ?? metricInfoFromDeepDive(deepDive)} onOpenMetric={onOpenMetric} />
+          })}
         </div>
       </div>
 
