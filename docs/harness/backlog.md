@@ -2,6 +2,14 @@
 
 本文件是待办池，只记录当前可执行待办和优先级建议，不是规格来源。需求来源以 Open Design 和 `decisions.md` 为准。
 
+状态标记：
+
+- `[ ]` not started
+- `[~]` in progress
+- `[x]` done
+
+Active exec plan 应关联对应 backlog 项；completed exec plan 应回写对应 backlog 项。
+
 ## P0：必须先处理，否则影响主流程
 
 - 建立 Open Design 到当前 React 模块的最小页面映射，确认哪些现有模块保留、改名、合并或替换。

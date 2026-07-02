@@ -84,6 +84,10 @@ Required for this task:
 - 是否需要更新 backlog.md:
 - 是否需要更新 decisions.md:
 - 是否需要 commit/push:
+- Backlog source item:
+- Backlog update required: yes/no
+- Completion effect: done / partial / superseded / no backlog change
+- Suggested next slice needs review: yes/no
 
 ## Resume Point
 
