@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Card, Badge, ProgressRing, Sparkline } from '../design-system'
 import { Icon } from '../components/Icon'
 import { PMCChart, HRVChart, SleepBars, HRZoneBar, Radar, GradePyramid, Donut } from '../components/charts/Charts'
@@ -139,6 +139,8 @@ interface HeroMetric {
   metricId?: MetricId
   info?: LoadMetricInfo
 }
+
+type TrendTab = 'daily' | 'source' | 'formula'
 
 function metricInfoFromDeepDive(m?: MetricDeepDive): LoadMetricInfo | undefined {
   if (!m) return undefined
@@ -372,6 +374,7 @@ export interface DashboardProps {
 
 export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI, onOpenMetric }: DashboardProps) {
   const t = data.today
+  const [trendTab, setTrendTab] = useState<TrendTab>('daily')
 
   // ---- empty state (no data source connected) ----
   if (!connected) {
@@ -513,9 +516,9 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)', gap: 16, marginBottom: 16 }}>
           <Card
             title="近 6 周 · 体能 / 疲劳 / 状态"
-            aria-label="来源证据与公式说明"
+            aria-label="体能趋势明细"
             action={
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                 <SourceBadge source="trainalyze" />
                 <HowInfo
                   source="trainalyze"
@@ -525,7 +528,46 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
                   params="Banister / Coggan"
                   family="PMC"
                 />
-                <div style={{ display: 'flex', gap: 14 }}>
+                <div role="tablist" aria-label="体能趋势视图" style={{ display: 'inline-flex', gap: 4, padding: 3, background: 'var(--surface-inset)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--r-pill)' }}>
+                  {(
+                    [
+                      ['daily', '每日'],
+                      ['source', '来源'],
+                      ['formula', '公式'],
+                    ] as const
+                  ).map(([id, label]) => {
+                    const selected = trendTab === id
+                    return (
+                      <button
+                        key={id}
+                        role="tab"
+                        aria-selected={selected}
+                        aria-controls={`trend-panel-${id}`}
+                        id={`trend-tab-${id}`}
+                        onClick={() => setTrendTab(id)}
+                        style={{
+                          padding: '6px 10px',
+                          border: 'none',
+                          borderRadius: 'var(--r-pill)',
+                          cursor: 'pointer',
+                          background: selected ? 'var(--surface-card)' : 'transparent',
+                          color: selected ? 'var(--text-strong)' : 'var(--text-muted)',
+                          font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans)',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <div role="tabpanel" id="trend-panel-daily" aria-labelledby="trend-tab-daily" hidden={trendTab !== 'daily'}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <PMCChart data={data.pmc} />
+                <div aria-label="趋势图例" style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
                   {(
                     [
                       ['CTL 体能', 'var(--blue-500)', 'solid'],
@@ -540,18 +582,17 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
                   ))}
                 </div>
               </div>
-          }
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-            <PMCChart data={data.pmc} />
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 18, paddingTop: 4 }}>
-              <section aria-label="来源证据">
+            </div>
+            <div role="tabpanel" id="trend-panel-source" aria-labelledby="trend-tab-source" hidden={trendTab !== 'source'}>
+              <section aria-label="来源证据" style={{ paddingTop: 4 }}>
                 <Label>来源证据</Label>
                 <EvidenceRow title="Garmin 中国" desc="活动、睡眠和体重可作为基础数据来源；负荷指标仍由 Trainalyze 计算。" status="主来源" tone="positive" />
                 <EvidenceRow title="Trainalyze 负荷模型" desc="ATL、CTL、TSB、A:C 基于平台归一负荷自算，不直接信任 Garmin 结论。" status="自算" tone="accent" />
                 <EvidenceRow title="Garmin International" desc="当前实现未接入该来源，本窗口不参与负荷计算或来源合并。" status="未接入" tone="neutral" />
               </section>
-              <section aria-label="公式摘要">
+            </div>
+            <div role="tabpanel" id="trend-panel-formula" aria-labelledby="trend-tab-formula" hidden={trendTab !== 'formula'}>
+              <section aria-label="公式摘要" style={{ paddingTop: 4 }}>
                 <Label>公式摘要</Label>
                 <FormulaRow code="ATL" title="Fatigue / ATL" desc="基于每日全运动归一负荷的 7 天指数加权平均。" value="7d" />
                 <FormulaRow code="CTL" title="Fitness / CTL" desc="基于每日全运动归一负荷的 42 天指数加权平均。" value="42d" />
