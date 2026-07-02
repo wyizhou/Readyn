@@ -40,6 +40,12 @@ function renderDash(overrides: Partial<DashboardProps> = {}) {
 describe('Dashboard (P2 redesign)', () => {
   it('shows the all-sport core with source-transparency badges', () => {
     renderDash()
+    const dashboardHead = screen.getByRole('region', { name: '今日负荷模型' })
+    expect(within(dashboardHead).getByText('今日负荷模型')).toBeInTheDocument()
+    expect(within(dashboardHead).getByRole('heading', { name: '先恢复，再推进强度。' })).toBeInTheDocument()
+    expect(within(dashboardHead).getByText(/Trainalyze 将活动、睡眠、体重和平台自行计算的负荷模型整合成可执行的训练决策/)).toBeInTheDocument()
+    expect(within(dashboardHead).getByText('Garmin 中国已同步')).toBeInTheDocument()
+    expect(within(dashboardHead).getByText('健康数据待补全')).toBeInTheDocument()
     const loadMetrics = screen.getByRole('region', { name: '负荷指标' })
     expect(loadMetrics).toBeInTheDocument()
     expect(within(loadMetrics).getByText('Fatigue / ATL')).toBeInTheDocument()
@@ -189,6 +195,11 @@ describe('Dashboard (P2 redesign)', () => {
   it('renders the connect empty state when not connected', () => {
     const onConnect = vi.fn()
     renderDash({ connected: false, onConnect })
+    const dashboardHead = screen.getByRole('region', { name: '今日负荷模型' })
+    expect(within(dashboardHead).getByRole('heading', { name: '连接数据源后生成负荷决策。' })).toBeInTheDocument()
+    expect(within(dashboardHead).getByText('Garmin 未连接')).toBeInTheDocument()
+    expect(within(dashboardHead).getByText('健康数据待补全')).toBeInTheDocument()
+    expect(within(dashboardHead).queryByText('Garmin 中国已同步')).not.toBeInTheDocument()
     expect(screen.getByText('尚未连接数据源')).toBeInTheDocument()
     expect(screen.getByText('下一次训练建议')).toBeInTheDocument()
     expect(screen.getByText('Fatigue / ATL')).toBeInTheDocument()

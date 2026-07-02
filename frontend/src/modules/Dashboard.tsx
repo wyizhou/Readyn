@@ -361,6 +361,54 @@ function NextWorkoutCard({ data }: { data: ApexData }) {
   )
 }
 
+function DashboardHead({ data, connected }: { data: ApexData; connected: boolean }) {
+  const hasGarminData = connected && (data.activities.length > 0 || data.pmc.length > 0 || data.today.readiness > 0)
+  const hasHealthWindow = data.sleep.length > 0 && data.weightLog.length > 0
+  const headline = connected
+    ? data.today.tsb >= 0
+      ? '保持节奏，不要追强度。'
+      : '先恢复，再推进强度。'
+    : '连接数据源后生成负荷决策。'
+  const desc = connected
+    ? 'Trainalyze 将活动、睡眠、体重和平台自行计算的负荷模型整合成可执行的训练决策，而不是一个装饰性的分数。'
+    : '连接 Garmin 中国并完成同步后，Trainalyze 才会生成负荷决策；当前不显示假分数或假建议。'
+
+  return (
+    <section
+      aria-label="今日负荷模型"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) auto',
+        gap: 18,
+        alignItems: 'start',
+        marginBottom: 22,
+      }}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, minWidth: 0 }}>
+        <Label>今日负荷模型</Label>
+        <h1
+          style={{
+            margin: 0,
+            font: 'var(--fw-bold) var(--fs-h2)/1.08 var(--font-display)',
+            letterSpacing: 'var(--ls-tight)',
+            color: 'var(--text-strong)',
+            textWrap: 'balance',
+          }}
+        >
+          {headline}
+        </h1>
+        <p style={{ margin: 0, maxWidth: 720, font: 'var(--fw-regular) var(--fs-sm)/1.7 var(--font-sans)', color: 'var(--text-muted)', textWrap: 'pretty' }}>
+          {desc}
+        </p>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end', gap: 8 }}>
+        <Badge tone={hasGarminData ? 'positive' : 'neutral'}>{hasGarminData ? 'Garmin 中国已同步' : 'Garmin 未连接'}</Badge>
+        <Badge tone={hasHealthWindow ? 'positive' : 'caution'}>{hasHealthWindow ? '健康数据已记录' : '健康数据待补全'}</Badge>
+      </div>
+    </section>
+  )
+}
+
 export interface DashboardProps {
   data: ApexData
   sport: string
@@ -381,6 +429,7 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
     const e = emptyCopy.dashboard
     return (
       <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
+        <DashboardHead data={data} connected={connected} />
         <EmptyState icon={e.icon} title={e.title} desc={e.desc} onAction={onConnect} secondaryLabel="了解数据来源" onSecondary={onConnect} />
         <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
           {(
@@ -464,6 +513,7 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
 
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
+      <DashboardHead data={data} connected={connected} />
       {/* Hero readiness strip */}
       <div role="region" aria-label="负荷指标" style={{ display: 'flex', alignItems: 'center', gap: 28, padding: 24, marginBottom: 22, background: 'var(--surface-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-md), var(--inner-top)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, flex: 'none' }}>
