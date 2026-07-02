@@ -241,6 +241,42 @@ function SportSpecificCard({
   )
 }
 
+function NextWorkoutCard({ data }: { data: ApexData }) {
+  const w = data.workout
+  const hasWorkout = Boolean(w.title.trim())
+
+  return (
+    <Card title="下一次训练建议" action={<SourceBadge source="trainalyze" size="xs" />} aria-label="下一次训练建议">
+      {hasWorkout ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ font: 'var(--fw-bold) var(--fs-h3)/1.15 var(--font-display)', color: 'var(--text-strong)' }}>{w.title}</span>
+            <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-sans)', color: 'var(--text-faint)' }}>{w.when || '计划时间待定'}</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+            {[
+              ['项目', w.sport || '—'],
+              ['时长', w.duration || '—'],
+              ['目标负荷', w.load ? `${w.load} AU` : '—'],
+            ].map(([k, v]) => (
+              <div key={k} style={{ display: 'flex', flexDirection: 'column', gap: 5, padding: 12, background: 'var(--surface-inset)', borderRadius: 'var(--r-md)' }}>
+                <Label>{k}</Label>
+                <span style={{ font: 'var(--fw-semibold) var(--fs-sm)/1.2 var(--font-sans)', color: 'var(--text-body)' }}>{v}</span>
+              </div>
+            ))}
+          </div>
+          {w.target && <Badge tone="accent">{w.target}</Badge>}
+          {w.rationale && (
+            <p style={{ margin: 0, font: 'var(--fw-regular) var(--fs-sm)/1.6 var(--font-sans)', color: 'var(--text-muted)', textWrap: 'pretty' }}>{w.rationale}</p>
+          )}
+        </div>
+      ) : (
+        <EmptyState compact inline icon="calendar-check" title="暂无下一次训练建议" desc="应用训练计划后，这里展示下一次课程；当前不生成假建议。" />
+      )}
+    </Card>
+  )
+}
+
 export interface DashboardProps {
   data: ApexData
   sport: string
@@ -267,6 +303,7 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
               ['就绪度', 'gauge'],
               ['体能趋势 (CTL/ATL/TSB)', 'activity'],
               ['全运动负荷', 'layers'],
+              ['下一次训练建议', 'calendar-check'],
             ] as const
           ).map(([l, ic]) => (
             <div key={l} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: 20, background: 'var(--surface-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--r-lg)', opacity: 0.7 }}>
@@ -292,7 +329,7 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: 28 }}>
       {/* Hero readiness strip */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 28, padding: 24, marginBottom: 22, background: 'var(--surface-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-md), var(--inner-top)' }}>
+      <div role="region" aria-label="负荷指标" style={{ display: 'flex', alignItems: 'center', gap: 28, padding: 24, marginBottom: 22, background: 'var(--surface-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-md), var(--inner-top)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, flex: 'none' }}>
           <ProgressRing value={t.readiness} sublabel="就绪度" size={116} stroke={10} color={rColor} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -329,6 +366,10 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
           <EmptyState compact inline icon="sparkles" title="暂无洞察" desc="完成首次同步后，AI 会基于近 14 天全运动数据生成洞察。" />
         </div>
       )}
+
+      <div style={{ marginBottom: 26 }}>
+        <NextWorkoutCard data={data} />
+      </div>
 
       {/* Performance management chart — all-sport aggregate */}
       <SectionTitle icon="activity" note="全运动汇总 · 体能 / 疲劳 / 状态" right={<SourceBadge source="trainalyze" />}>

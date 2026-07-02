@@ -40,13 +40,39 @@ function renderDash(overrides: Partial<DashboardProps> = {}) {
 describe('Dashboard (P2 redesign)', () => {
   it('shows the all-sport core with source-transparency badges', () => {
     renderDash()
+    expect(screen.getByRole('region', { name: '负荷指标' })).toBeInTheDocument()
     expect(screen.getByText('就绪度')).toBeInTheDocument()
     // Garmin-sourced numbers (readiness/HRV/sleep) carry the 直供 badge.
     expect(screen.getAllByText('Garmin 直供').length).toBeGreaterThan(0)
     // The PMC (computed) section carries the Trainalyze 自算 badge.
-    expect(screen.getByText('Trainalyze 自算')).toBeInTheDocument()
+    expect(screen.getAllByText('Trainalyze 自算').length).toBeGreaterThan(0)
+    expect(screen.getAllByLabelText('如何计算').length).toBeGreaterThan(0)
+    expect(screen.getByText('体能趋势')).toBeInTheDocument()
+    expect(screen.getByText('下一次训练建议')).toBeInTheDocument()
+    expect(screen.getByText('暂无下一次训练建议')).toBeInTheDocument()
     // The recent-activities table now lives in the Records module, not here.
     expect(screen.queryByText('近期活动')).not.toBeInTheDocument()
+  })
+
+  it('renders the next-workout recommendation from existing workout data only', () => {
+    renderDash({
+      data: {
+        ...connected,
+        workout: {
+          ...emptyData.workout,
+          title: '节奏跑 40 分钟',
+          sport: '跑步',
+          when: '明天',
+          target: 'Z3',
+          load: 72,
+          duration: '40 min',
+          rationale: '来自已应用训练计划。',
+        },
+      },
+    })
+    expect(screen.getByText('节奏跑 40 分钟')).toBeInTheDocument()
+    expect(screen.getByText('72 AU')).toBeInTheDocument()
+    expect(screen.queryByText('暂无下一次训练建议')).not.toBeInTheDocument()
   })
 
   it('prompts to pick a sport for specialty metrics when on 全部运动', () => {
@@ -87,6 +113,7 @@ describe('Dashboard (P2 redesign)', () => {
     const onConnect = vi.fn()
     renderDash({ connected: false, onConnect })
     expect(screen.getByText('尚未连接数据源')).toBeInTheDocument()
-    expect(screen.getAllByText('连接后显示').length).toBe(3)
+    expect(screen.getByText('下一次训练建议')).toBeInTheDocument()
+    expect(screen.getAllByText('连接后显示').length).toBe(4)
   })
 })

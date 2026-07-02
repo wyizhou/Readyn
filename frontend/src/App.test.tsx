@@ -20,7 +20,9 @@ describe('App integration (empty-state / real-data)', () => {
     expect(topHeading()).toContain('总览')
     expect(screen.getByText('尚未连接数据源')).toBeInTheDocument()
     expect(screen.getByText('就绪度')).toBeInTheDocument() // placeholder card label
+    expect(screen.getByText('下一次训练建议')).toBeInTheDocument()
     expect(screen.getAllByText('连接后显示').length).toBeGreaterThan(0)
+    expect(screen.queryByText(/dashboard\.html/)).not.toBeInTheDocument()
     // The connect CTA routes to the connectors module.
     expect(screen.getByRole('button', { name: /连接佳明/ })).toBeInTheDocument()
   })

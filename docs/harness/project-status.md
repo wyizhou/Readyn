@@ -52,6 +52,8 @@ C:\Users\e_\AppData\Roaming\Open Design\namespaces\release-stable-win\data\proje
 
 Open Design 到当前 React 入口的最小页面映射已建立在 `design-source-map.md`。当前 8 个设计页面中，`register.html` 暂无实现入口，其余页面均有可复用入口或模块但整体仍为 `partial`，后续应按单个切片逐步对齐。
 
+首页 / `index.html` 已确认对应当前 `dashboard` 总览入口。总览页最小骨架已覆盖负荷指标、体能趋势、来源证据、公式说明和下一次训练建议空态；当前仍不是完整 Open Design 视觉重写。
+
 ## 当前验证入口
 
 前端工作目录：`frontend`
