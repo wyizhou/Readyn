@@ -216,6 +216,18 @@ function FormulaRow({ code, title, desc, value }: { code: string; title: string;
   )
 }
 
+function WorkoutEvidenceRow({ title, desc, value }: { title: string; desc: string; value: string }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'start', padding: '12px 0', borderTop: '1px solid var(--hairline)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <span style={{ font: 'var(--fw-semibold) var(--fs-xs)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>{title}</span>
+        <span style={{ font: 'var(--fw-regular) var(--fs-2xs)/1.5 var(--font-sans)', color: 'var(--text-faint)', textWrap: 'pretty' }}>{desc}</span>
+      </div>
+      <span style={{ font: 'var(--fw-bold) var(--fs-xs)/1 var(--font-mono)', color: 'var(--text-muted)' }}>{value}</span>
+    </div>
+  )
+}
+
 // Sport-specific card — de-headlines climbing; content driven by the sport filter.
 function SportSpecificCard({
   sport,
@@ -310,6 +322,7 @@ function SportSpecificCard({
 function NextWorkoutCard({ data }: { data: ApexData }) {
   const w = data.workout
   const hasWorkout = Boolean(w.title.trim())
+  const stepCount = w.steps.length
 
   return (
     <Card title="下一次训练建议" action={<SourceBadge source="trainalyze" size="xs" />} aria-label="下一次训练建议">
@@ -318,6 +331,7 @@ function NextWorkoutCard({ data }: { data: ApexData }) {
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
             <span style={{ font: 'var(--fw-bold) var(--fs-h3)/1.15 var(--font-display)', color: 'var(--text-strong)' }}>{w.title}</span>
             <span style={{ font: 'var(--fw-medium) var(--fs-xs)/1 var(--font-sans)', color: 'var(--text-faint)' }}>{w.when || '计划时间待定'}</span>
+            <Badge tone={w.when ? 'positive' : 'neutral'}>{w.when ? '已排程' : '待确认'}</Badge>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
             {[
@@ -331,10 +345,12 @@ function NextWorkoutCard({ data }: { data: ApexData }) {
               </div>
             ))}
           </div>
-          {w.target && <Badge tone="accent">{w.target}</Badge>}
-          {w.rationale && (
-            <p style={{ margin: 0, font: 'var(--fw-regular) var(--fs-sm)/1.6 var(--font-sans)', color: 'var(--text-muted)', textWrap: 'pretty' }}>{w.rationale}</p>
-          )}
+          <section aria-label="训练建议证据">
+            <Label>建议证据</Label>
+            <WorkoutEvidenceRow title="强度" desc={w.target ? `按当前课程目标执行：${w.target}` : '当前课程没有目标强度字段。'} value={w.target || '—'} />
+            <WorkoutEvidenceRow title="原因" desc={w.rationale || '当前课程没有原因说明字段。'} value={w.rationale ? '已记录' : '暂无'} />
+            <WorkoutEvidenceRow title="后续" desc={stepCount ? `当前课程包含 ${stepCount} 个分段；执行结果需等待真实活动同步。` : '当前课程没有分段步骤字段。'} value={stepCount ? `${stepCount} 步` : '暂无'} />
+          </section>
         </div>
       ) : (
         <EmptyState compact inline icon="calendar-check" title="暂无下一次训练建议" desc="应用训练计划后，这里展示下一次课程；当前不生成假建议。" />

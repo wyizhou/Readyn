@@ -100,12 +100,28 @@ describe('Dashboard (P2 redesign)', () => {
           load: 72,
           duration: '40 min',
           rationale: '来自已应用训练计划。',
+          steps: [
+            { t: '热身', d: '10 min', z: 'Z1' },
+            { t: '节奏跑', d: '20 min', z: 'Z3' },
+            { t: '放松', d: '10 min', z: 'Z1' },
+          ],
         },
       },
     })
-    expect(screen.getByText('节奏跑 40 分钟')).toBeInTheDocument()
-    expect(screen.getByText('72 AU')).toBeInTheDocument()
-    expect(screen.queryByText('暂无下一次训练建议')).not.toBeInTheDocument()
+    const nextWorkout = screen.getByRole('region', { name: '下一次训练建议' })
+    expect(within(nextWorkout).getByText('节奏跑 40 分钟')).toBeInTheDocument()
+    expect(within(nextWorkout).getByText('72 AU')).toBeInTheDocument()
+    expect(within(nextWorkout).getByText('已排程')).toBeInTheDocument()
+
+    const evidence = within(nextWorkout).getByRole('region', { name: '训练建议证据' })
+    expect(within(evidence).getByText('强度')).toBeInTheDocument()
+    expect(within(evidence).getByText('按当前课程目标执行：Z3')).toBeInTheDocument()
+    expect(within(evidence).getByText('原因')).toBeInTheDocument()
+    expect(within(evidence).getByText('来自已应用训练计划。')).toBeInTheDocument()
+    expect(within(evidence).getByText('后续')).toBeInTheDocument()
+    expect(within(evidence).getByText('当前课程包含 3 个分段；执行结果需等待真实活动同步。')).toBeInTheDocument()
+    expect(within(evidence).getByText('3 步')).toBeInTheDocument()
+    expect(within(nextWorkout).queryByText('暂无下一次训练建议')).not.toBeInTheDocument()
   })
 
   it('prompts to pick a sport for specialty metrics when on 全部运动', () => {
@@ -150,5 +166,16 @@ describe('Dashboard (P2 redesign)', () => {
     expect(screen.getByText('Fatigue / ATL')).toBeInTheDocument()
     expect(screen.getByText('Easy TRIMP')).toBeInTheDocument()
     expect(screen.getAllByText('连接后显示').length).toBe(6)
+  })
+
+  it('keeps the next-workout empty state honest when no workout data exists', () => {
+    renderDash()
+    const nextWorkout = screen.getByRole('region', { name: '下一次训练建议' })
+    expect(within(nextWorkout).getByText('暂无下一次训练建议')).toBeInTheDocument()
+    expect(within(nextWorkout).getByText('应用训练计划后，这里展示下一次课程；当前不生成假建议。')).toBeInTheDocument()
+    expect(within(nextWorkout).queryByRole('region', { name: '训练建议证据' })).not.toBeInTheDocument()
+    expect(within(nextWorkout).queryByText('强度')).not.toBeInTheDocument()
+    expect(within(nextWorkout).queryByText('原因')).not.toBeInTheDocument()
+    expect(within(nextWorkout).queryByText('后续')).not.toBeInTheDocument()
   })
 })
