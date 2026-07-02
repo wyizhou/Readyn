@@ -454,6 +454,20 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
   }
 
   const rColor = t.readiness >= 75 ? 'var(--green-500)' : t.readiness >= 50 ? 'var(--amber-500)' : 'var(--red-500)'
+  const hasHealthWindow = data.sleep.length > 0 && data.weightLog.length > 0
+  const loadDecisionTitle =
+    t.tsb >= 0
+      ? hasHealthWindow
+        ? '适合绿色基础训练。当前 TSB 为正，可维持基础负荷。'
+        : '适合绿色基础训练。当前 TSB 为正，等睡眠和体重窗口补齐后，再安排阈值训练。'
+      : hasHealthWindow
+        ? '先恢复，再推进强度。当前 TSB 为负，优先降低短期疲劳。'
+        : '先恢复，再推进强度。当前 TSB 为负，且健康数据窗口待补全。'
+  const loadDecisionDesc = hasHealthWindow
+    ? '分数会和来源置信度、公式上下文并列展示，先看到变化原因，再决定是否信任建议。'
+    : '分数会和来源置信度、公式上下文并列展示；当前健康窗口不足，避免把阈值训练判断写成确定结论。'
+  const loadDecisionTone = !hasHealthWindow || t.tsb < 0 ? 'caution' : 'positive'
+  const loadDecisionStatus = !hasHealthWindow ? '健康数据待补全' : t.tsb < 0 ? '优先恢复' : '适合基础训练'
   const hero: HeroMetric[] = [
     {
       label: 'Fatigue / ATL',
@@ -518,14 +532,17 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
       <div role="region" aria-label="负荷指标" style={{ display: 'flex', alignItems: 'center', gap: 28, padding: 24, marginBottom: 22, background: 'var(--surface-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--r-lg)', boxShadow: 'var(--shadow-md), var(--inner-top)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, flex: 'none' }}>
           <ProgressRing value={t.readiness} sublabel="就绪度" size={116} stroke={10} color={rColor} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 390 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Label>今日状态</Label>
-              <SourceBadge source="garmin" size="xs" />
+              <Label>负荷决策</Label>
+              <SourceBadge source="trainalyze" size="xs" />
             </span>
-            <span style={{ font: 'var(--fw-bold) var(--fs-h2)/1 var(--font-display)', letterSpacing: 'var(--ls-tight)', color: 'var(--text-strong)' }}>状态均衡</span>
-            <Badge tone="positive" dot>
-              可承接强度
+            <span style={{ font: 'var(--fw-bold) var(--fs-lg)/1.25 var(--font-display)', letterSpacing: 'var(--ls-tight)', color: 'var(--text-strong)', textWrap: 'balance' }}>{loadDecisionTitle}</span>
+            <p style={{ margin: 0, font: 'var(--fw-regular) var(--fs-xs)/1.55 var(--font-sans)', color: 'var(--text-muted)', textWrap: 'pretty' }}>
+              {loadDecisionDesc}
+            </p>
+            <Badge tone={loadDecisionTone} dot>
+              {loadDecisionStatus}
             </Badge>
           </div>
         </div>
