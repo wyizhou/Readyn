@@ -2,7 +2,7 @@
 
 ## Status
 
-- State: active
+- State: completed
 - Created: 2026-07-02
 - Updated: 2026-07-02
 - Owner: Codex
@@ -28,7 +28,7 @@
 
 ## Goal
 
-建立 Open Design v0.1.0 页面到当前 React 模块、入口和测试覆盖的最小映射，让后续 P0/P1 切片不靠猜测选择改动范围。
+建立 Open Design v0.1.0 页面到当前 React 模块、入口和测试覆盖的最小映射，让后续 P0/P1 切片不依赖猜测选择改动范围。
 
 ## Scope
 
@@ -49,7 +49,7 @@
 
 ## Inputs
 
-执行本计划前必须读取：
+执行本计划时已读取：
 
 - AGENTS.md
 - docs/harness/README.md
@@ -69,34 +69,36 @@
 - frontend/src/modules/Connectors.tsx
 - frontend/src/modules/AIModule.tsx
 - frontend/src/details/ActivityDetail.tsx
+- frontend/src/login/Login.tsx
 - related frontend test files
 
 ## Current Facts
 
-- Open Design v0.1.0 页面清单包括 `index.html`、`login.html`、`register.html`、`activities.html`、`activity-detail.html`、`health.html`、`connectors.html`、`coach.html`。
-- Harness 已记录 Open Design HTML 是高保真实现规格，不是生产代码源。
+- Open Design v0.1.0 页面清单包含 `index.html`、`login.html`、`register.html`、`activities.html`、`activity-detail.html`、`health.html`、`connectors.html`、`coach.html`。
+- Open Design HTML 是高保真实现规格，不是生产代码源。
 - 当前前端是 React/Vite 应用，主要模块包括 Dashboard、Records、Weight、Connectors、AIModule、ActivityDetail 等。
 - 当前主导航骨架已对齐 `01 总览` / `02 活动` / `03 健康` / `04 连接` / `05 教练`。
 - 当前 `health` view 已有 `睡眠` 骨架和复用 `WeightModule` 的 `体重` 入口。
 - 当前 `App.tsx` 中仍保留 `training`、`library` 等内部 view 和模块入口，但它们不在当前主导航中。
-- 当前 `design-source-map.md` 已有高层映射，但还没有逐页面状态、具体文件和测试覆盖矩阵。
+- 当前 `frontend` 下存在 `index.html` 和 `login.html`，未发现 `register.html`。
+- 当前 `design-source-map.md` 已补充逐页面状态、代码文件和测试覆盖矩阵。
 
 ## Open Questions
 
 暂无阻塞。
 
-如果执行时发现某个 Open Design 页面无法明确映射到现有模块，先记录 `needs-confirmation`，不要自行扩大为实现任务。
+后续实现注册、真实认证、AI LLM、地图路线、训练负荷参数或后端健康数据边界时，需先向用户确认。
 
 ## Steps
 
-- [ ] 重新读取本 exec plan、Open Design 文档、`decisions.md`、`design-source-map.md` 和当前前端入口文件。
-- [ ] 列出 Open Design 页面到 React 模块/入口的映射表。
-- [ ] 为每个页面标记状态：aligned / partial / missing / needs-confirmation。
-- [ ] 为每个页面列出主要代码文件和相关测试文件。
-- [ ] 为每个页面写一条后续最小切片建议。
-- [ ] 更新 Harness 文档保存映射结果。
-- [ ] 运行本计划需要的验证。
-- [ ] 更新 `project-status.md`、`backlog.md`，并将本 plan 移到 completed。
+- [x] 重新读取本 exec plan、Open Design 文档、`decisions.md`、`design-source-map.md` 和当前前端入口文件。
+- [x] 列出 Open Design 页面到 React 模块/入口的映射表。
+- [x] 为每个页面标记状态：aligned / partial / missing / needs-confirmation。
+- [x] 为每个页面列出主要代码文件和相关测试文件。
+- [x] 为每个页面写一条后续最小切片建议。
+- [x] 更新 Harness 文档保存映射结果。
+- [x] 运行本计划需要的验证。
+- [x] 更新 `project-status.md`、`backlog.md`，并将本 plan 移到 completed。
 
 ## Acceptance Checks
 
@@ -108,12 +110,12 @@ Project-wide references:
 
 Task-specific checks:
 
-- [ ] Open Design 8 个页面均有对应映射行。
-- [ ] 每个映射行都有当前状态。
-- [ ] 每个映射行都有主要代码文件或明确 `missing` / `needs-confirmation`。
-- [ ] 每个映射行都有相关测试文件或明确缺口。
-- [ ] 文档明确映射不是规格来源；规格仍来自 Open Design + `decisions.md`。
-- [ ] 没有业务代码改动。
+- [x] Open Design 8 个页面均有对应映射行。
+- [x] 每个映射行都有当前状态。
+- [x] 每个映射行都有主要代码文件或明确 `missing` / `needs-confirmation`。
+- [x] 每个映射行都有相关测试文件或明确缺口。
+- [x] 文档明确映射不是规格来源；规格仍来自 Open Design + `decisions.md`。
+- [x] 没有业务代码改动。
 
 ## Verification
 
@@ -121,30 +123,32 @@ Baseline verification rules: see docs/harness/validation-and-delivery.md.
 
 Required for this task:
 
-- [ ] Frontend lint: N/A，计划创建阶段不改业务代码；执行映射文档切片时如仅改 Harness 文档也可 N/A。
-- [ ] Frontend tests: N/A，计划创建阶段不改业务代码；执行映射文档切片时如仅改 Harness 文档也可 N/A。
-- [ ] Frontend typecheck: N/A，计划创建阶段不改业务代码；执行映射文档切片时如仅改 Harness 文档也可 N/A。
-- [ ] Frontend build: N/A，计划创建阶段不改业务代码；执行映射文档切片时如仅改 Harness 文档也可 N/A。
-- [ ] Backend ruff: N/A，本切片不改后端代码。
-- [ ] Backend pytest: N/A，本切片不改后端代码。
+- [x] Frontend lint: N/A，仅更新 Harness 文档，未改业务代码。
+- [x] Frontend tests: N/A，仅更新 Harness 文档，未改业务代码。
+- [x] Frontend typecheck: N/A，仅更新 Harness 文档，未改业务代码。
+- [x] Frontend build: N/A，仅更新 Harness 文档，未改业务代码。
+- [x] Backend ruff: N/A，本切片不改后端代码。
+- [x] Backend pytest: N/A，本切片不改后端代码。
 
-不需要的项目写 `N/A` 和原因。不要在本计划里复制所有全局验证规则，只记录本任务需要运行的验证。
+额外检查：
+
+- [x] `git diff --check`
 
 ## Delivery
 
 参考 docs/harness/validation-and-delivery.md。
 
-- 是否需要更新 project-status.md: yes，执行完成后记录页面映射状态已建立。
-- 是否需要更新 backlog.md: yes，执行完成后回写 P0 映射项，并重新评估 Suggested next slice。
-- 是否需要更新 decisions.md: no，除非执行中产生新的确认决策。
-- 是否需要 commit/push: yes，执行完成后按 AGENTS.md 提交并 push。
+- 是否需要更新 project-status.md: yes，已记录页面映射矩阵建立完成。
+- 是否需要更新 backlog.md: yes，已回写 P0 映射项并重新评估 Suggested next slice。
+- 是否需要更新 decisions.md: no，本切片未产生新决策。
+- 是否需要 commit/push: yes，按用户要求“先提交，再执行，再提交”完成第二次提交并 push。
 - Backlog source item: P0 `建立 Open Design 到当前 React 模块的最小页面映射`
 - Backlog update required: yes
-- Completion effect: done / partial / superseded / no backlog change
+- Completion effect: done
 - Suggested next slice needs review: yes
 
 ## Resume Point
 
-- 已完成什么：已创建 active exec plan；尚未开始执行映射文档切片。
-- 下一步是什么：等待用户确认本计划后，读取 Open Design 原文和相关前端文件，更新 Harness 映射文档。
+- 已完成什么：Open Design 8 个页面到当前 React 模块、入口和测试覆盖的最小映射已写入 `design-source-map.md`；project status 和 backlog 已回写。
+- 下一步是什么：如果用户确认继续推进，基于 backlog 当前 Suggested next slice 创建“首页/总览入口与骨架对齐”的 active exec plan。
 - 当前阻塞是什么：暂无阻塞。
