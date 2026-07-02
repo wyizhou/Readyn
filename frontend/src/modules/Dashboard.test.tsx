@@ -57,8 +57,24 @@ describe('Dashboard (P2 redesign)', () => {
     const sourceFormula = screen.getByRole('region', { name: '来源证据与公式说明' })
     expect(within(sourceFormula).getByLabelText('如何计算')).toBeInTheDocument()
     expect(within(sourceFormula).getByText('Trainalyze 自算')).toBeInTheDocument()
+    expect(within(sourceFormula).getByText('近 6 周 · 体能 / 疲劳 / 状态')).toBeInTheDocument()
 
-    expect(screen.getByText('Fatigue / ATL')).toBeInTheDocument()
+    const sourceEvidence = within(sourceFormula).getByRole('region', { name: '来源证据' })
+    expect(within(sourceEvidence).getByText('Garmin 中国')).toBeInTheDocument()
+    expect(within(sourceEvidence).getByText('Trainalyze 负荷模型')).toBeInTheDocument()
+    expect(within(sourceEvidence).getByText('Garmin International')).toBeInTheDocument()
+    expect(within(sourceEvidence).getByText('未接入')).toBeInTheDocument()
+    expect(sourceEvidence.textContent).not.toMatch(/Garmin International.*已同步/s)
+
+    const formulaSummary = within(sourceFormula).getByRole('region', { name: '公式摘要' })
+    expect(within(formulaSummary).getByText('ATL')).toBeInTheDocument()
+    expect(within(formulaSummary).getByText('CTL')).toBeInTheDocument()
+    expect(within(formulaSummary).getByText('TSB')).toBeInTheDocument()
+    expect(within(formulaSummary).getByText('A:C')).toBeInTheDocument()
+    expect(within(formulaSummary).getByText('Easy TRIMP')).toBeInTheDocument()
+    expect(within(formulaSummary).getByText('—')).toBeInTheDocument()
+
+    expect(screen.getAllByText('Fatigue / ATL').length).toBeGreaterThan(1)
     // Garmin-sourced numbers (readiness/HRV/sleep) carry the 直供 badge.
     expect(screen.getAllByText('Garmin 直供').length).toBeGreaterThan(0)
     // The PMC (computed) section carries the Trainalyze 自算 badge.

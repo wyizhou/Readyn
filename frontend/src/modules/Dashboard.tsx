@@ -191,6 +191,31 @@ function HeroTile({ metric, info, onOpenMetric }: { metric: HeroMetric; info?: L
   )
 }
 
+function EvidenceRow({ title, desc, status, tone }: { title: string; desc: string; status: string; tone: 'neutral' | 'accent' | 'positive' | 'caution' }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'start', padding: '12px 0', borderTop: '1px solid var(--hairline)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <span style={{ font: 'var(--fw-semibold) var(--fs-xs)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>{title}</span>
+        <span style={{ font: 'var(--fw-regular) var(--fs-2xs)/1.5 var(--font-sans)', color: 'var(--text-faint)', textWrap: 'pretty' }}>{desc}</span>
+      </div>
+      <Badge tone={tone}>{status}</Badge>
+    </div>
+  )
+}
+
+function FormulaRow({ code, title, desc, value }: { code: string; title: string; desc: string; value: string }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '42px 1fr auto', gap: 10, alignItems: 'center', padding: '12px 0', borderTop: '1px solid var(--hairline)' }}>
+      <span style={{ font: 'var(--fw-bold) var(--fs-xs)/1 var(--font-mono)', color: 'var(--blue-300)' }}>{code}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <span style={{ font: 'var(--fw-semibold) var(--fs-xs)/1.2 var(--font-sans)', color: 'var(--text-strong)' }}>{title}</span>
+        <span style={{ font: 'var(--fw-regular) var(--fs-2xs)/1.5 var(--font-sans)', color: 'var(--text-faint)', textWrap: 'pretty' }}>{desc}</span>
+      </div>
+      <span style={{ font: 'var(--fw-bold) var(--fs-xs)/1 var(--font-mono)', color: 'var(--text-muted)' }}>{value}</span>
+    </div>
+  )
+}
+
 // Sport-specific card — de-headlines climbing; content driven by the sport filter.
 function SportSpecificCard({
   sport,
@@ -499,10 +524,28 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
                   ))}
                 </div>
               </div>
-            }
-          >
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             <PMCChart data={data.pmc} />
-          </Card>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 18, paddingTop: 4 }}>
+              <section aria-label="来源证据">
+                <Label>来源证据</Label>
+                <EvidenceRow title="Garmin 中国" desc="活动、睡眠和体重可作为基础数据来源；负荷指标仍由 Trainalyze 计算。" status="主来源" tone="positive" />
+                <EvidenceRow title="Trainalyze 负荷模型" desc="ATL、CTL、TSB、A:C 基于平台归一负荷自算，不直接信任 Garmin 结论。" status="自算" tone="accent" />
+                <EvidenceRow title="Garmin International" desc="当前实现未接入该来源，本窗口不参与负荷计算或来源合并。" status="未接入" tone="neutral" />
+              </section>
+              <section aria-label="公式摘要">
+                <Label>公式摘要</Label>
+                <FormulaRow code="ATL" title="Fatigue / ATL" desc="基于每日全运动归一负荷的 7 天指数加权平均。" value="7d" />
+                <FormulaRow code="CTL" title="Fitness / CTL" desc="基于每日全运动归一负荷的 42 天指数加权平均。" value="42d" />
+                <FormulaRow code="TSB" title="Stress Balance / TSB" desc="用 CTL - ATL 判断压力状态。" value="CTL-ATL" />
+                <FormulaRow code="A:C" title="Workload Ratio / A:C" desc="使用现有 ACWR 字段观察急性与慢性负荷比例。" value={t.acwr.toFixed(2)} />
+                <FormulaRow code="Easy" title="Easy TRIMP" desc="当前数据契约没有真实字段，因此保持空值，不显示推测值。" value="—" />
+              </section>
+            </div>
+          </div>
+        </Card>
           <Card title="本周概览">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {[
