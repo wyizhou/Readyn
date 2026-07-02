@@ -22,11 +22,12 @@ function Label({ children }: { children: ReactNode }) {
   )
 }
 
-function SectionTitle({ icon, children, note, right }: { icon: string; children: ReactNode; note?: ReactNode; right?: ReactNode }) {
+function SectionTitle({ icon, children, note, right, id }: { icon: string; children: ReactNode; note?: ReactNode; right?: ReactNode; id?: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
       <Icon name={icon} size={16} color="var(--text-muted)" />
       <h2
+        id={id}
         style={{
           margin: 0,
           font: 'var(--fw-bold) var(--fs-lg)/1 var(--font-display)',
@@ -372,67 +373,71 @@ export function Dashboard({ data, sport, setSport, connected, onConnect, onAskAI
       </div>
 
       {/* Performance management chart — all-sport aggregate */}
-      <SectionTitle icon="activity" note="全运动汇总 · 体能 / 疲劳 / 状态" right={<SourceBadge source="trainalyze" />}>
-        体能趋势
-      </SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)', gap: 16, marginBottom: 16 }}>
-        <Card
-          title="近 6 周 · 体能 / 疲劳 / 状态"
-          action={
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <HowInfo
-                source="trainalyze"
-                title="PMC · 体能管理图"
-                definition="对每日全运动归一负荷做指数加权平均，得到体能(CTL)、疲劳(ATL)与状态(TSB)。"
-                formula="CTL=42d EWMA · ATL=7d EWMA · TSB=CTL−ATL"
-                params="Banister / Coggan"
-                family="PMC"
-              />
-              <div style={{ display: 'flex', gap: 14 }}>
-                {(
-                  [
-                    ['CTL 体能', 'var(--blue-500)', 'solid'],
-                    ['ATL 疲劳', 'var(--violet-500)', 'dash'],
-                    ['TSB 状态', 'var(--green-500)', 'solid'],
-                  ] as const
-                ).map(([l, c, st]) => (
-                  <span key={l} style={{ display: 'flex', alignItems: 'center', gap: 6, font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-sans)', color: 'var(--text-muted)' }}>
-                    <span style={{ width: 14, height: st === 'dash' ? 0 : 2, borderTop: st === 'dash' ? `2px dashed ${c}` : 'none', background: st === 'dash' ? 'none' : c }} />
-                    {l}
-                  </span>
-                ))}
+      <section aria-labelledby="overview-trend-title">
+        <SectionTitle id="overview-trend-title" icon="activity" note="全运动汇总 · 体能 / 疲劳 / 状态">
+          体能趋势
+        </SectionTitle>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)', gap: 16, marginBottom: 16 }}>
+          <Card
+            title="近 6 周 · 体能 / 疲劳 / 状态"
+            aria-label="来源证据与公式说明"
+            action={
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <SourceBadge source="trainalyze" />
+                <HowInfo
+                  source="trainalyze"
+                  title="PMC · 体能管理图"
+                  definition="对每日全运动归一负荷做指数加权平均，得到体能(CTL)、疲劳(ATL)与状态(TSB)。"
+                  formula="CTL=42d EWMA · ATL=7d EWMA · TSB=CTL−ATL"
+                  params="Banister / Coggan"
+                  family="PMC"
+                />
+                <div style={{ display: 'flex', gap: 14 }}>
+                  {(
+                    [
+                      ['CTL 体能', 'var(--blue-500)', 'solid'],
+                      ['ATL 疲劳', 'var(--violet-500)', 'dash'],
+                      ['TSB 状态', 'var(--green-500)', 'solid'],
+                    ] as const
+                  ).map(([l, c, st]) => (
+                    <span key={l} style={{ display: 'flex', alignItems: 'center', gap: 6, font: 'var(--fw-medium) var(--fs-2xs)/1 var(--font-sans)', color: 'var(--text-muted)' }}>
+                      <span style={{ width: 14, height: st === 'dash' ? 0 : 2, borderTop: st === 'dash' ? `2px dashed ${c}` : 'none', background: st === 'dash' ? 'none' : c }} />
+                      {l}
+                    </span>
+                  ))}
+                </div>
               </div>
+            }
+          >
+            <PMCChart data={data.pmc} />
+          </Card>
+          <Card title="本周概览">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {[
+                // delta text colour (color) and Sparkline colour (sc) are distinct per
+                // design v9: 负荷=蓝 / ATL=紫 / TSB=按正负 绿|琥珀 for the Sparkline.
+                { label: '本周负荷', val: `${data.pmc.slice(-7).reduce((s, d) => s + d.load, 0)}`, unit: 'AU', delta: `+${t.weekLoadDelta}%`, color: 'var(--green-400)', sc: 'var(--blue-500)', spark: data.pmc.slice(-7).map((d) => d.load) },
+                { label: '疲劳 ATL', val: t.atl.toFixed(0), unit: '', delta: t.tsb < 0 ? '高于体能' : '低于体能', color: 'var(--violet-300)', sc: 'var(--violet-500)', spark: data.pmc.slice(-7).map((d) => d.atl) },
+                { label: '状态 TSB', val: `${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, unit: '', delta: t.tsb > 5 ? '新鲜' : t.tsb > -10 ? '中性' : '疲劳', color: t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', sc: t.tsb >= 0 ? 'var(--green-500)' : 'var(--amber-500)', spark: data.pmc.slice(-7).map((d) => d.tsb) },
+              ].map((r, i) => (
+                <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderTop: i ? '1px solid var(--hairline)' : 'none' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 'none', minWidth: 96 }}>
+                    <span style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans)', letterSpacing: 'var(--ls-label)', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{r.label}</span>
+                    <span style={{ font: 'var(--fw-bold) var(--fs-h3)/1 var(--font-mono)', color: 'var(--text-strong)' }}>
+                      {r.val}
+                      {r.unit ? <span style={{ fontSize: 11, color: 'var(--text-faint)', marginLeft: 3 }}>{r.unit}</span> : null}
+                    </span>
+                    <span style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-mono)', color: r.color }}>{r.delta}</span>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Sparkline data={r.spark} color={r.sc} />
+                  </div>
+                </div>
+              ))}
             </div>
-          }
-        >
-          <PMCChart data={data.pmc} />
-        </Card>
-        <Card title="本周概览">
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {[
-              // delta text colour (color) and Sparkline colour (sc) are distinct per
-              // design v9: 负荷=蓝 / ATL=紫 / TSB=按正负 绿|琥珀 for the Sparkline.
-              { label: '本周负荷', val: `${data.pmc.slice(-7).reduce((s, d) => s + d.load, 0)}`, unit: 'AU', delta: `+${t.weekLoadDelta}%`, color: 'var(--green-400)', sc: 'var(--blue-500)', spark: data.pmc.slice(-7).map((d) => d.load) },
-              { label: '疲劳 ATL', val: t.atl.toFixed(0), unit: '', delta: t.tsb < 0 ? '高于体能' : '低于体能', color: 'var(--violet-300)', sc: 'var(--violet-500)', spark: data.pmc.slice(-7).map((d) => d.atl) },
-              { label: '状态 TSB', val: `${t.tsb > 0 ? '+' : ''}${t.tsb.toFixed(0)}`, unit: '', delta: t.tsb > 5 ? '新鲜' : t.tsb > -10 ? '中性' : '疲劳', color: t.tsb >= 0 ? 'var(--green-400)' : 'var(--amber-400)', sc: t.tsb >= 0 ? 'var(--green-500)' : 'var(--amber-500)', spark: data.pmc.slice(-7).map((d) => d.tsb) },
-            ].map((r, i) => (
-              <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderTop: i ? '1px solid var(--hairline)' : 'none' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 'none', minWidth: 96 }}>
-                  <span style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-sans)', letterSpacing: 'var(--ls-label)', textTransform: 'uppercase', color: 'var(--text-faint)' }}>{r.label}</span>
-                  <span style={{ font: 'var(--fw-bold) var(--fs-h3)/1 var(--font-mono)', color: 'var(--text-strong)' }}>
-                    {r.val}
-                    {r.unit ? <span style={{ fontSize: 11, color: 'var(--text-faint)', marginLeft: 3 }}>{r.unit}</span> : null}
-                  </span>
-                  <span style={{ font: 'var(--fw-semibold) var(--fs-2xs)/1 var(--font-mono)', color: r.color }}>{r.delta}</span>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <Sparkline data={r.spark} color={r.sc} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
+      </section>
 
       {/* Recovery: HRV + sleep + HR zones — Garmin-sourced */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16, marginBottom: 26 }}>

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Dashboard, type DashboardProps } from './Dashboard'
 import { emptyData } from '../lib/emptyData'
@@ -41,6 +41,13 @@ describe('Dashboard (P2 redesign)', () => {
   it('shows the all-sport core with source-transparency badges', () => {
     renderDash()
     expect(screen.getByRole('region', { name: '负荷指标' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: '体能趋势' })).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: '下一次训练建议' })).toBeInTheDocument()
+
+    const sourceFormula = screen.getByRole('region', { name: '来源证据与公式说明' })
+    expect(within(sourceFormula).getByLabelText('如何计算')).toBeInTheDocument()
+    expect(within(sourceFormula).getByText('Trainalyze 自算')).toBeInTheDocument()
+
     expect(screen.getByText('就绪度')).toBeInTheDocument()
     // Garmin-sourced numbers (readiness/HRV/sleep) carry the 直供 badge.
     expect(screen.getAllByText('Garmin 直供').length).toBeGreaterThan(0)
