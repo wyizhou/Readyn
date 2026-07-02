@@ -1,6 +1,6 @@
 # Backlog
 
-本文件只记录当前可执行待办，不展开成一次性全量重构方案。优先级会随设计更新和实现进展调整。
+本文件是待办池，只记录当前可执行待办和优先级建议，不是规格来源。需求来源以 Open Design 和 `decisions.md` 为准。
 
 ## P0：必须先处理，否则影响主流程
 
@@ -29,29 +29,25 @@
 - 增加导出、分享、批量编辑等能力，前提是产品需求确认。
 - 将 Harness 扩展为更细的 `frontend-map.md`、`backend-map.md`、`open-questions.md`。
 
-## 当前推荐第一个最小实现切片
+## Suggested next slice (temporary)
+
+- Last reviewed: 2026-07-02
+- Status: tentative
 
 暂定：主导航和页面骨架对齐。
 
-原因：
+这是临时建议，不是长期决策。执行前必须创建 exec plan，并重新核对 Open Design、`decisions.md` 和当前代码。
+
+需求来源不是 backlog，而是 Open Design + `decisions.md`；backlog 只提供优先级和切片建议。
+
+简要原因：
 
 - 它是所有设计页面的共同入口。
 - 范围比完整页面重构小。
 - 能尽早暴露旧模块与新设计命名、路由、状态之间的冲突。
 
-范围：
+建议范围：
 
 - 只对齐主导航结构、页面入口和健康二级菜单骨架。
 - 不重写全部图表和数据算法。
 - 不接入新后端能力。
-
-验证：
-
-- 前端 lint、test、typecheck、build。
-- 重点补/跑导航切换、健康二级菜单、无数据空态相关测试。
-
-完成后应更新：
-
-- `project-status.md`
-- `backlog.md`
-- 如有新决策，更新 `decisions.md`
