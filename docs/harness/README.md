@@ -11,8 +11,33 @@
 - 状态梳理、接手项目：读 `project-status.md`、`decisions.md`。
 - 设计实现或设计更新：读 `design-source-map.md`、`decisions.md`、`backlog.md`。
 - 计划拆分或排优先级：读 `backlog.md`、`project-status.md`。
+- 可追踪功能执行：读 `exec-plans/TEMPLATE.md`，并在 `exec-plans/active/` 创建任务计划。
 - 验证、交付、收尾：读 `validation-and-delivery.md`。
 - 遇到设计/代码冲突：先查 `decisions.md`，再回到 Open Design 原文确认。
+
+## Exec Plan
+
+Exec plan 用于让较大的功能开发可控、可追踪、可恢复。模板位于 `exec-plans/TEMPLATE.md`。
+
+需要创建 exec plan 的情况：
+
+- 跨多个文件。
+- 影响主流程。
+- 需要多轮实现。
+- 用户要求可追踪计划。
+
+通常不需要创建 exec plan 的情况：
+
+- 小 typo。
+- 只读分析。
+- 单个简单 bug 修复。
+
+使用规则：
+
+- 新计划从 `exec-plans/TEMPLATE.md` 复制到 `exec-plans/active/`，文件名使用简短任务名。
+- 计划执行中持续更新 `Status`、`Steps`、`Open Questions` 和 `Resume Point`。
+- 完成后把计划移到 `exec-plans/completed/`，并在需要时同步更新 `project-status.md`、`backlog.md` 或 `decisions.md`。
+- Exec plan 不替代用户确认；如果计划中出现阻塞或架构影响问题，先向用户确认。
 
 ## 文档边界
 
@@ -28,3 +53,4 @@
 - `decisions.md`：已确认且后续应遵守的产品/实现决策。
 - `backlog.md`：按 P0/P1/P2 管理的未完成事项。
 - `validation-and-delivery.md`：lint/test/typecheck/build、commit/push 与只读分析规则。
+- `exec-plans/TEMPLATE.md`：多文件、多轮或主流程变更的执行计划模板。
