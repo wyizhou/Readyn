@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { InputHTMLAttributes, ReactNode } from 'react'
 import { Card, Badge, Button } from '../design-system'
 import { Icon } from '../components/Icon'
+import { EmptyState } from '../components/EmptyState'
 import { ChartXAxis } from '../components/charts/Charts'
 import type { Profile, WeightEntry } from '../lib/types'
 import { bmi as bmiOf } from '../lib/format'
@@ -251,7 +252,11 @@ export function WeightModule({ weightLog, profile, onAdd, today }: WeightModuleP
             </span>
           }
         >
-          <WeightChart entries={[...weightLog].reverse()} target={profile.targetWeight} />
+          {weightLog.length ? (
+            <WeightChart entries={[...weightLog].reverse()} target={profile.targetWeight} />
+          ) : (
+            <EmptyState compact inline icon="scale" title="暂无体重记录" desc="手动记录体重后，这里会展示趋势；当前不绘制空数据曲线。" />
+          )}
         </Card>
       </div>
 

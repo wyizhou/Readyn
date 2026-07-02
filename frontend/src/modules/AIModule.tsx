@@ -35,6 +35,9 @@ interface ExpertReply {
   chips?: Chip[]
 }
 
+const hasSyncedTrainingData = (data: ApexData): boolean =>
+  data.activities.length > 0 || data.pmc.length > 0 || data.sleep.length > 0 || data.hrv.length > 0 || data.today.readiness > 0
+
 const sportColor = (s: string): string =>
   ({
     跑步: 'var(--blue-500)',
@@ -266,7 +269,13 @@ function Suggestions({ items, onPick }: { items: string[]; onPick: (s: string) =
 }
 
 // ---------- AI 对话 (sports-expert chat) ----------
-function expertReply(q: string): ExpertReply {
+function expertReply(q: string, hasData: boolean): ExpertReply {
+  if (!hasData) {
+    return {
+      text: '目前还没有同步的训练或健康数据，我不能根据空数据判断 HRV、睡眠、负荷或恢复状态。连接佳明并完成首次同步后，我可以基于真实活动、睡眠、体重和负荷数据给出分析。',
+      chips: [['数据状态', '等待同步']],
+    }
+  }
   if (q.includes('减量') || q.includes('恢复') || q.includes('风险') || q.includes('长距离')) {
     return {
       text: '当前 ACWR 1.18、状态 TSB 偏负，疲劳略高于体能。不必整体减量，但把周六长距离爬升控制在 130 AU 内、心率守 Z2，并保证周四主动恢复质量。若周六晨起 HRV 较基线低 8ms 以上，建议降级为中等强度。',
@@ -316,15 +325,22 @@ function expertReply(q: string): ExpertReply {
 
 function ChatTab({ data, seed, body, profile }: { data: ApexData; seed: Props['seed']; body: Props['body']; profile: Profile }) {
   const t = data.today
-  const [msgs, setMsgs] = useState<Message[]>([
-    {
-      role: 'ai',
-      text: '你好，林越。我是你的 AI 运动科学专家，已载入你近 14 天的训练与生理数据。今天就绪度 78、状态均衡。想聊聊本周安排，还是解读某项指标？',
-      chips: [
-        ['就绪度', '78'],
-        ['状态', '均衡'],
-      ],
-    },
+  const hasData = hasSyncedTrainingData(data)
+  const [msgs, setMsgs] = useState<Message[]>(() => [
+    hasData
+      ? {
+          role: 'ai',
+          text: `${data.profile.name ? `你好，${data.profile.name}。` : '你好。'}我是你的 AI 运动科学专家，已载入已同步的训练与生理数据。你可以询问本周安排、恢复状态或具体指标。`,
+          chips: [
+            ['就绪度', `${t.readiness || '—'}`],
+            ['周负荷', `${t.weekLoad || '—'} AU`],
+          ],
+        }
+      : {
+          role: 'ai',
+          text: '你好，我是你的 AI 运动科学专家。目前还没有同步的训练或健康数据，因此不会生成 HRV、睡眠、负荷或恢复结论。连接佳明并完成首次同步后，我会基于真实数据回答。',
+          chips: [['数据状态', '等待同步']],
+        },
   ])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
@@ -342,7 +358,7 @@ function ChatTab({ data, seed, body, profile }: { data: ApexData; seed: Props['s
     setMsgs((m) => [...m, { role: 'user', text: q }])
     setInput('')
     setTyping(true)
-    if (cfg) {
+    if (cfg && hasData) {
       const chat: ChatMessage[] = [
         { role: 'system', content: expertSystemPrompt(data, body ?? { weight: 0, bmi: 0 }) },
         ...history.map((mm) => ({ role: (mm.role === 'ai' ? 'assistant' : 'user') as 'assistant' | 'user', content: mm.text })),
@@ -351,14 +367,14 @@ function ChatTab({ data, seed, body, profile }: { data: ApexData; seed: Props['s
       aiChat(cfg, chat)
         .then((txt) => setMsgs((m) => [...m, { role: 'ai', text: txt || '（模型未返回内容）' }]))
         .catch(() => {
-          const r = expertReply(q)
+          const r = expertReply(q, hasData)
           setMsgs((m) => [...m, { role: 'ai', text: `调用 AI 模型失败（密钥 / 网络 / CORS 限制）。已切换内置解读：\n\n${r.text}`, chips: r.chips }])
         })
         .finally(() => setTyping(false))
     } else {
       setTimeout(() => {
         setTyping(false)
-        setMsgs((m) => [...m, { role: 'ai', ...expertReply(q) }])
+        setMsgs((m) => [...m, { role: 'ai', ...expertReply(q, hasData) }])
       }, 850)
     }
   }
@@ -378,13 +394,15 @@ function ChatTab({ data, seed, body, profile }: { data: ApexData; seed: Props['s
     if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight
   }, [msgs, typing])
 
-  const ctx: Chip[] = [
-    ['就绪度', `${t.readiness}`],
-    ['HRV', `${t.hrv}ms`],
-    ['周负荷', `${t.weekLoad} AU`],
-    ['睡眠', `${t.sleep}h`],
-  ]
-  if (body) {
+  const ctx: Chip[] = hasData
+    ? [
+        ['就绪度', `${t.readiness || '—'}`],
+        ['HRV', t.hrv ? `${t.hrv}ms` : '—'],
+        ['周负荷', t.weekLoad ? `${t.weekLoad} AU` : '—'],
+        ['睡眠', t.sleep ? `${t.sleep}h` : '—'],
+      ]
+    : [['数据状态', '等待同步']]
+  if (body && (body.weight > 0 || body.bmi > 0)) {
     ctx.push(['体重', `${body.weight}kg`])
     ctx.push(['BMI', `${body.bmi}`])
   }
@@ -404,7 +422,9 @@ function ChatTab({ data, seed, body, profile }: { data: ApexData; seed: Props['s
         }}
       >
         <Icon name="brain" size={18} color="var(--violet-300)" />
-        <span style={{ font: 'var(--fw-semibold) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-body)' }}>运动科学专家 · 已载入近 14 天数据</span>
+        <span style={{ font: 'var(--fw-semibold) var(--fs-sm)/1 var(--font-sans)', color: 'var(--text-body)' }}>
+          运动科学专家 · {hasData ? '已载入同步数据' : '等待同步数据'}
+        </span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 7 }}>
           {ctx.map(([k, v]) => (
             <span

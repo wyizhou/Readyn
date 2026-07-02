@@ -59,6 +59,7 @@ describe('App integration (empty-state / real-data)', () => {
     expect(screen.getByText('睡眠数据骨架')).toBeInTheDocument()
     await user.click(within(nav).getByRole('button', { name: '体重' }))
     expect(topHeading()).toContain('体重')
+    expect(screen.getByText('暂无体重记录')).toBeInTheDocument()
     await user.click(within(nav).getByRole('button', { name: /01 总览/ }))
     expect(topHeading()).toContain('总览')
   })
@@ -185,18 +186,19 @@ describe('App integration (empty-state / real-data)', () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: /05 教练/ }))
-    expect(screen.getByText(/运动科学专家 · 已载入/)).toBeInTheDocument()
+    expect(screen.getByText('运动科学专家 · 等待同步数据')).toBeInTheDocument()
+    expect(screen.queryByText(/已载入近 14 天数据/)).not.toBeInTheDocument()
     // The offline course-generation tab/canvas is not rendered.
     expect(screen.queryByText('AI 草拟计划')).not.toBeInTheDocument()
     expect(screen.queryByText('AI 训练')).not.toBeInTheDocument()
   })
 
-  it('sends a chat message and gets an expert reply (no AI key → built-in)', async () => {
+  it('does not fabricate expert metrics before data sync', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: /05 教练/ }))
     await user.click(screen.getByRole('button', { name: '我的睡眠怎么样？' }))
-    // The user message lands and the AI replies (sleep branch of expertReply).
-    expect(await screen.findByText(/近 7 晚平均 7\.4h/, {}, { timeout: 4000 })).toBeInTheDocument()
+    expect(await screen.findByText(/还没有同步的训练或健康数据/, {}, { timeout: 4000 })).toBeInTheDocument()
+    expect(screen.queryByText(/近 7 晚平均 7\.4h/)).not.toBeInTheDocument()
   })
 })

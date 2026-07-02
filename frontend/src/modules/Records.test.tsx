@@ -44,6 +44,12 @@ describe('Records (P4)', () => {
     expect(screen.getByText('暂无运动记录')).toBeInTheDocument()
   })
 
+  it('shows an honest empty state when connected but no activities exist', () => {
+    renderRecords({ data: emptyData, connected: true })
+    expect(screen.getByText('暂无运动记录')).toBeInTheDocument()
+    expect(screen.queryByText('活动0')).not.toBeInTheDocument()
+  })
+
   it('paginates with a default page size of 10', () => {
     renderRecords()
     expect(screen.getByText('第 1–10 条 · 共 3 页')).toBeInTheDocument()
